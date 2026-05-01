@@ -121,11 +121,15 @@ class InstagramPoster:
         import input_reader as ir
         return ir.read_rows(self.config["output"]["input_file"])
 
-    def find_next_to_post(self, rows: list[dict]) -> dict | None:
-        """Finde die erste Zeile mit video=X und insta_post leer."""
+    def find_next_to_post(self, rows: list[dict], story_nr: str | None = None) -> dict | None:
+        """Finde die erste Zeile mit video=X und insta_post leer.
+
+        Wenn story_nr gesetzt ist, wird gezielt diese Nummer gesucht.
+        """
         for row in rows:
             if row.get("status_video") == "X" and not row.get("insta_post", "").strip():
-                return row
+                if story_nr is None or str(row.get("nr", "")).strip() == str(story_nr).strip():
+                    return row
         return None
 
     def upload_to_cloudinary(self, video_path: Path) -> str:
@@ -350,10 +354,14 @@ class InstagramPoster:
         logger.info("=" * 60)
 
         # Nächste Story finden
+        story_nr = os.getenv("STORY_NR", "").strip() or None
         rows = self.read_input_csv()
-        row = self.find_next_to_post(rows)
+        row = self.find_next_to_post(rows, story_nr)
         if not row:
-            logger.info("[+] Keine ungeposteten Videos verfügbar")
+            if story_nr:
+                logger.error(f"[-] Story #{story_nr} nicht gefunden oder bereits gepostet")
+            else:
+                logger.info("[+] Keine ungeposteten Videos verfügbar")
             return False
 
         nr = row["nr"].strip()

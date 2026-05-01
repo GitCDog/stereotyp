@@ -48,6 +48,7 @@ jobs:
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: ${{ github.repository }}
+          STORY_NR: ${{ inputs.story_nr }}
         run: python instagram_poster.py
 
       - name: Dashboard aktualisieren
