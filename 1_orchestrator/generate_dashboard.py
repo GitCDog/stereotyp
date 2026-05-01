@@ -219,6 +219,7 @@ html = f'''<!DOCTYPE html>
                 <button class="action-btn" id="audioBtn"   onclick="showInput('audio')">🎵 Audio generieren</button>
                 <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
                 <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
+                <button class="action-btn" id="gptBtn"     onclick="runDirect('gpt')">📝 GPT Prompts</button>
                 <button class="action-btn" id="refreshBtn" onclick="doRefresh()">🔄 Refresh</button>
             </div>
         </h1>
@@ -286,7 +287,8 @@ html = f'''<!DOCTYPE html>
         'picture': {{ btn: 'picBtn',     api: '/api/generate-picture', label: '🖼️ Bild generieren'   }},
         'audio':   {{ btn: 'audioBtn',   api: '/api/generate-audio',   label: '🎵 Audio generieren'  }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   }},
-        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',   label: '📤 Instagram Post'    }},
+        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    }},
+        'gpt':     {{ btn: 'gptBtn',     api: '/api/generate-gpt-prompt', label: '📝 GPT Prompts'        }},
     }};
 
     let _pendingAction = null;

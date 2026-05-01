@@ -248,6 +248,24 @@ def instagram_post():
     return jsonify({"status": "started"})
 
 
+@app.route("/api/generate-gpt-prompt", methods=["POST"])
+def generate_gpt_prompt():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    def task():
+        try:
+            set_task("running", "GPT-Prompts generieren...", 30)
+            run_script(["generate_gpt_prompt.py"])
+            set_task("complete", "gpt_prompts.txt aktualisiert!", 100)
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Starte...", 5)
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
 # ── Refresh (Datei-Scan + Dashboard) ────────────────────────────────────────
 
 @app.route("/api/refresh", methods=["POST"])
