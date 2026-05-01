@@ -45,6 +45,8 @@
         .action-btn:hover { background: #c00e08; transform: scale(1.04); }
         .action-btn:active { transform: scale(0.97); }
         .action-btn.running { opacity: 0.65; cursor: not-allowed; }
+        .action-btn.disabled { background: #888; color: #ccc; cursor: not-allowed; }
+        .action-btn.disabled:hover { background: #888; transform: none; }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -75,8 +77,8 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            width: 48%;
-            min-width: 48%;
+            width: 49%;
+            min-width: 49%;
             transition: width 0.4s;
         }
         .log-box {
@@ -161,9 +163,9 @@
         <h1>
             <span>🇩🇪 Stereotypen Dashboard</span>
             <div class="btn-group">
-                <button class="action-btn" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
-                <button class="action-btn" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
-                <button class="action-btn" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+                <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
+                <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
+                <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
                 <button class="action-btn" id="audioBtn"   onclick="showInput('audio')">🎵 Audio generieren</button>
                 <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
                 <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
@@ -174,17 +176,17 @@
         <div class="stats">
             <div class="stat-box"><h3>Gesamt</h3><div class="val">123</div></div>
             <div class="stat-box"><h3>Story ✓</h3><div class="val">123</div></div>
-            <div class="stat-box"><h3>Caption ✓</h3><div class="val">120</div></div>
+            <div class="stat-box"><h3>Caption ✓</h3><div class="val">123</div></div>
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">36</div></div>
             <div class="stat-box"><h3>Bild ✓</h3><div class="val">8</div></div>
-            <div class="stat-box"><h3>Video ✓</h3><div class="val">8</div></div>
-            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">3</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">9</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">4</div></div>
         </div>
 
         <div class="progress-section">
-            <strong>Gesamtfortschritt (48%)</strong>
+            <strong>Gesamtfortschritt (49%)</strong>
             <div class="progress-bar">
-                <div class="progress-fill">48%</div>
+                <div class="progress-fill">49%</div>
             </div>
         </div>
 
@@ -270,7 +272,7 @@
                     <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="4" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="4" onclick="togglePost(this)" >✓ Gepostet</button>
                     </td>
                 </tr>
                 <tr>
@@ -1516,9 +1518,9 @@
                     <td class="status-cell" style="color: #ccc;">○</td>
                     <td class="center"></td>
                     <td class="status-cell" style="color: #ccc;">○</td>
-                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="100" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="100" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
                 <tr>
@@ -1785,7 +1787,7 @@
                     <td class="num">100_21</td>
                     <td class="name">gendern</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
-                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="status-cell" style="color: #ccc;">○</td>
                     <td class="center"></td>
                     <td class="status-cell" style="color: #ccc;">○</td>
@@ -1798,7 +1800,7 @@
                     <td class="num">100_22</td>
                     <td class="name">Das Arschgeweih</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
-                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="center">57</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
@@ -1811,7 +1813,7 @@
                     <td class="num">100_23</td>
                     <td class="name">Das Augenbrauenpiercing</td>
                     <td class="status-cell" style="color: #28a745;">✓</td>
-                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
                     <td class="status-cell" style="color: #ccc;">○</td>
                     <td class="center"></td>
                     <td class="status-cell" style="color: #ccc;">○</td>

@@ -95,6 +95,8 @@ html = f'''<!DOCTYPE html>
         .action-btn:hover {{ background: #c00e08; transform: scale(1.04); }}
         .action-btn:active {{ transform: scale(0.97); }}
         .action-btn.running {{ opacity: 0.65; cursor: not-allowed; }}
+        .action-btn.disabled {{ background: #888; color: #ccc; cursor: not-allowed; }}
+        .action-btn.disabled:hover {{ background: #888; transform: none; }}
         .stats {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -211,9 +213,9 @@ html = f'''<!DOCTYPE html>
         <h1>
             <span>🇩🇪 Stereotypen Dashboard</span>
             <div class="btn-group">
-                <button class="action-btn" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
-                <button class="action-btn" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
-                <button class="action-btn" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+                <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
+                <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
+                <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
                 <button class="action-btn" id="audioBtn"   onclick="showInput('audio')">🎵 Audio generieren</button>
                 <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
                 <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
