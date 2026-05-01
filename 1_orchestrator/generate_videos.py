@@ -16,10 +16,17 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
 
 import input_reader as ir
 
 load_dotenv()
+
+import ssl
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def _nr_str(nr) -> str:
@@ -39,6 +46,31 @@ def setup_logging() -> logging.Logger:
 def load_config(config_path: str = "config.yaml") -> dict:
     with open(config_path, encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def setup_cloudinary():
+    import os
+    cloud = os.getenv("CLOUDINARY_CLOUD_NAME")
+    key = os.getenv("CLOUDINARY_API_KEY")
+    secret = os.getenv("CLOUDINARY_API_SECRET")
+    if cloud and key and secret:
+        cloudinary.config(cloud_name=cloud, api_key=key, api_secret=secret, secure=True)
+        return True
+    return False
+
+
+def upload_to_cloudinary(video_path: Path, logger: logging.Logger):
+    try:
+        result = cloudinary.uploader.upload(
+            str(video_path),
+            resource_type="video",
+            folder="stereotypen",
+            public_id=video_path.stem,
+            overwrite=True,
+        )
+        logger.info(f"[+] Cloudinary Upload: {result['secure_url']}")
+    except Exception as e:
+        logger.warning(f"[!] Cloudinary Upload fehlgeschlagen: {e}")
 
 
 def find_image(nr, images_dir: str) -> Path | None:
@@ -130,6 +162,9 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
 
     logger.info(f"[+] Video erstellt: {output_path.name} ({output_path.stat().st_size / 1024 / 1024:.1f} MB)")
 
+    # Cloudinary Upload
+    upload_to_cloudinary(output_path, logger)
+
     # Bild in verwendete Bilder verschieben
     used_dir = Path(images_dir) / "1_used"
     used_dir.mkdir(exist_ok=True)
@@ -156,6 +191,7 @@ def main():
     logger = setup_logging()
     config = load_config(args.config)
     input_file = config["output"]["input_file"]
+    setup_cloudinary()
 
     if args.story:
         row = ir.find_row(args.story, input_file)

@@ -262,15 +262,16 @@ class InstagramPoster:
 
         if self.use_github:
             self._update_csv_github(row, nr)
-            self._update_posted_json_github(row, post_id)
         else:
             import input_reader as ir
             ir.update_field(nr, "insta_post", "X", self.config["output"]["input_file"])
 
+        self._log_posted_video(row, post_id)
+
         if public_id:
             self.delete_from_cloudinary(public_id)
 
-        logger.info(f"[+] Story #{nr} als gepostet markiert")
+        logger.info(f"[+] Story #{nr} als gepostet markiert | Post-ID: {post_id}")
 
     def _update_csv_github(self, row: dict, nr: int):
         try:
@@ -298,32 +299,48 @@ class InstagramPoster:
         except Exception as e:
             logger.error(f"[-] GitHub CSV-Update fehlgeschlagen: {e}")
 
-    def _update_posted_json_github(self, row: dict, post_id: str):
+    def _log_posted_video(self, row: dict, post_id: str):
+        """Schreibt Post-ID + Metadaten in posted_videos.json (lokal) und auf GitHub."""
+        entry = {
+            "nr": row.get("nr", "").strip(),
+            "stereotyp": row.get("stereotyp", "").strip(),
+            "post_id": post_id,
+            "posted_at": datetime.now().isoformat(),
+        }
+
+        # Immer lokal schreiben
+        local_path = Path(self.config["output"]["output_dir"]) / "posted_videos.json"
+        try:
+            data = json.loads(local_path.read_text(encoding="utf-8")) if local_path.exists() else {"videos": []}
+            data["videos"].append(entry)
+            local_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+            logger.info(f"[+] posted_videos.json lokal aktualisiert (Post-ID: {post_id})")
+        except Exception as e:
+            logger.error(f"[-] posted_videos.json lokal fehlgeschlagen: {e}")
+
+        # Zusätzlich auf GitHub schreiben (GitHub Actions)
+        if not self.use_github:
+            return
         try:
             repo = self.github.get_repo(self.github_repo_name)
             file_path = "1_orchestrator/posted_videos.json"
             try:
                 file = repo.get_contents(file_path)
-                data = json.loads(file.decoded_content.decode("utf-8"))
+                gh_data = json.loads(file.decoded_content.decode("utf-8"))
                 sha = file.sha
             except Exception:
-                data = {"videos": []}
+                gh_data = {"videos": []}
                 sha = None
 
-            data["videos"].append({
-                "nr": row.get("nr"),
-                "stereotyp": row.get("stereotyp"),
-                "post_id": post_id,
-                "posted_at": datetime.now().isoformat(),
-            })
-            content = json.dumps(data, indent=2, ensure_ascii=False)
+            gh_data["videos"].append(entry)
+            content = json.dumps(gh_data, indent=2, ensure_ascii=False)
             if sha:
-                repo.update_file(file_path, "[AUTO] posted_videos.json aktualisiert", content, sha)
+                repo.update_file(file_path, f"[AUTO] posted_videos.json – #{entry['nr']}", content, sha)
             else:
                 repo.create_file(file_path, "[AUTO] posted_videos.json erstellt", content)
             logger.info("[+] posted_videos.json auf GitHub aktualisiert")
         except Exception as e:
-            logger.error(f"[-] posted_videos.json Update fehlgeschlagen: {e}")
+            logger.error(f"[-] posted_videos.json GitHub fehlgeschlagen: {e}")
 
     def run(self):
         logger.info("=" * 60)
