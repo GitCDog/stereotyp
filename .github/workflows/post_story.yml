@@ -2,8 +2,8 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 18:23 CEST (Sommerzeit) = 16:23 UTC / 18:23 CET (Winterzeit) = 17:23 UTC
-    - cron: "23 16 * * *"
+    # Täglich 18:30 CEST (16:30 UTC) – schläft dann 0–60 Min zufällig → Post zwischen 18:30 und 19:30
+    - cron: "30 16 * * *"
   workflow_dispatch:
     inputs:
       story_nr:
@@ -21,6 +21,12 @@ jobs:
         working-directory: 1_orchestrator
 
     steps:
+      - name: Zufällige Pause (0–60 Min)
+        run: |
+          SECS=$(( RANDOM % 3601 ))
+          echo "Warte ${SECS}s ($(( SECS / 60 ))m $(( SECS % 60 ))s) vor dem Post..."
+          sleep $SECS
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
