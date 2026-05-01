@@ -1,0 +1,23 @@
+# 8_stereotypen – Instagram Automation
+
+# Story Generator
+anthropic>=0.8.0
+
+# TTS / Audio
+elevenlabs>=0.2.0
+pydub>=0.25.1
+
+# Image (OpenAI)
+openai>=1.0.0
+
+# Video (ffmpeg via subprocess – kein Python-Wrapper nötig)
+Pillow>=9.0.0
+
+# Instagram + Cloud
+requests>=2.28.0
+cloudinary>=1.30.0
+PyGithub>=2.0.0
+
+# Utilities
+python-dotenv>=0.19.0
+pyyaml>=6.0

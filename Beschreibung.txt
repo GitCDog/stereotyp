@@ -1,0 +1,66 @@
+In diesem Projekt geht es darum virale Posts für Instagram zu generieren und automatisch auf Instagram zu posten. Orientiere dich an der Infrastruktur von "5_kindergeschichten-automation". wir werden das gleiche machen, bloß statt Kindergeschichten werden wir virale stereotypen-<story> posten. es muss die Möglichkeit geben titel selbst vorzugeben als auch vom Agenten generieren zu lassen.
+
+Bevor wir mit dem Projekt starten lies dir diese Datei durch, und stelle es strukturiert dar.
+
+Für dieses Instagramprojekt brauchen wir folgende Agenten:
+
+1. einen intellektuellen Cosmopoliten der die Stereotypen und Bräuche Deutschlands kennt und dazu lustige Geschichte erfindet, ca. 140-160 Worte entspricht. beim
+Vorlesen ca. 2,3 Worte / Sekunde kommt jeder post auf 1 Minute Dauer. Er erfindet den Titel und die humorvolle <story>.
+
+Die Rolle: Handle als humoristischer Kulturanthropologe mit einem scharfen Auge für deutsche Eigenheiten und moderne Internet-Phänomene. Zieh die Leute durch den Kakao!
+
+    Aufgabe: Erstelle eine humorvolle, potenziell virale <story> zu einem spezifischen deutschen Stereotypen.
+
+    Struktur des Outputs:
+
+	Jede <story> startet mit "Aufgepasst, der / die ...."
+
+        Der Aufreißer: Ein kurzer, provokanter Satz, der das Klischee in eine Alltagssituation einbettet.
+
+        Der Mythos: Beschreibe das Verhalten so, als wäre es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik.
+
+        Die „deutsche Logik“: Erkläre in 2-3 Bulletpoints die (völlig übertriebene) rationale Rechtfertigung hinter diesem absurden Verhalten.
+
+        Der soziale Endgegner: Beschreibe die Reaktion auf jemanden, der diese Regel bricht (z.B. den „bösen Blick“ oder passiv-aggressive Kommentare).
+
+        Der virale Twist: Ein kurzer „Pro-Tipp“ oder ein Vergleich, der zeigt, wie man dieses Klischee im Alltag „nutzen“ kann.
+
+    Tonalität: Trockener Humor, leicht sarkastisch, beobachtend, aber nicht bösartig. 
+    Thema für den ersten Text: [Füge hier das Thema ein, z.B. „Das Stoßlüften im Großraumbüro“ oder „Die Pfandflaschen-Jagd“]
+
+Beispiel 1_<story> was die KI daraus macht (Thema: Pfand-Etikette):
+
+In Deutschland wirft man Gold eher in den Müll als eine Plastikflasche mit dem heiligen 25-Cent-Logo.
+Der Gang zum Leergutautomaten ist der moderne Jakobsweg des Deutschen. Es ist eine Mischung aus logistischer Meisterleistung (die Tüte darf nicht reißen!) und nervlichem Glücksspiel (wird der Automat heute meine zerbeulte Dose akzeptieren?).
+    Investitionsrechnung: Wer die 25 Cent zurücklässt, hat die Kontrolle über seine Finanzen verloren. Es geht nicht ums Geld, es geht ums Prinzip.
+    Jedes Mal, wenn das rote Licht am Automaten leuchtet und die Flasche eingezogen wird, bekommt ein Engel in den Alpen seine Wanderstiefel.
+Die Schlange hinter dir. Wenn du drei Säcke voller loser Einwegflaschen hast und der Automat bei der zweiten Flasche „Behälter voll“ anzeigt, spürst du die kollektive Verachtung der wartenden Meute in deinem Nacken. Es ist die einzige Situation, in der Deutsche ohne Termin aggressiv werden.
+Wahre Ehre beweist man, indem man die Flasche neben den Mülleimer stellt. Es ist das deutsche Äquivalent zum Ritterschlag – man spendet anonym an das Pfand-Ökosystem.
+
+Beispiel 2_<story>: (Thema: die weiße Frau auf Bali) 
+Betrachtet die weiße Frau auf Bali. Das hier ist kein Urlaub. Das hier ist ihre Transformation. Sie unterzieht sich einer balinesischen Reinigungszeremonie, einem heiligen Ritual, das seit Jahrhunderten praktiziert wird. Sie hat 200 Dollar für einen Schamanen bezahlt, der gerade genug Englisch spricht, um ihr genau das zu sagen, was sie hören will. Sie filmt es. Instagram-Content, natürlich. Es ist spirituelles Cosplay. Sie postet es mit der Bildunterschrift: ‚Lass alles los.‘ Ihr Post hat 847 Likes bekommen. Gerade genug, damit sie sich wieder besonders fühlt. Sie ist jetzt nicht mehr toxisch. Sie hat es in ihr Dankbarkeits-Tagebuch geschrieben, also muss es wahr sein. Und doch hat sie diese Woche zweimal ihrem Ex geschrieben. Sie selbst ist das Drama, vor dem sie hierher geflohen ist. Bali war einmal ein Ort echter spiritueller Traditionen. Jetzt ist es ein spiritueller Themenpark und eine Kulisse für weiße Frauen, die sich verloren fühlen und verzweifelt versuchen, sich selbst zu finden, indem sie vor der Realität davonlaufen und sich selbst dabei filmen. Sie ist die Hauptfigur. Alle anderen sind nur die Statisten in ihrer Heilungsgeschichte. Ach ja, die weiße Frau auf Bali. Im Namen aller weißen Menschen: Wir bitten um Entschuldigung.
+
+die <story> werden gespeichert C:\Users\slawa\Desktop\claude\8_stereotypen\1_orchestrator\00x_<story>.txt mit aufsteigender Nummer.
+
+2. Der zweite Agent generiert Instagram Bilder dazu, entweder liegen die Bilder bereits ab oder werden über die API zu OpenAI geholt.
+
+erstelle ein Bild in dem Stil (siehe unten) im Kontext Stereotyp in Deutschland zum Thema <stereotyp> und <story>
+
+der Stil der Bilder ist so: 
+A cinematic, highly detailed digital illustration in a modern comic style, showing a [CHARACTER TYPE] in a [URBAN / RELEVANT ENVIRONMENT] at [TIME OF DAY, e.g. night with neon lights and rain]. The scene includes realistic lighting with strong reflections, glowing street lights, and dramatic contrast.
+
+The main character stands in the center, wearing [CLOTHING DETAILS], with a slightly exaggerated facial expression showing [EMOTION]. The environment contains detailed background elements related to the theme, such as [OBJECTS / SIGNS / STORES].
+
+Add bold meme-style text overlay in German: 
+Top text: “[MAIN STATEMENT IN CAPS]”
+Bottom text: “[SUBTEXT / IRONIC COMMENT]”
+
+Typography is large, bold, and dynamic, using white, yellow, and red colors for emphasis.
+Style: viral Instagram meme illustration, semi-realistic cartoon, sharp lines, vibrant colors, cinematic atmosphere, humorous stereotype depiction, high detail, trending social media aesthetic.
+
+3. der dritte Agent lässt die <story> von Elevenlabs vertonen. 
+
+4. der vierte Agent postet die stories über GraphAPI auf Instagram mit Titel im caption.
+
+5. der fünfte Agent dokumentiert den Status aller stories und teilobjekte wie in "5_kindergeschichten-automation" sowohl in einem json file als auch in einem Dashboard
+

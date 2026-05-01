@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stereotypen Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8120a 0%, #000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        h1 {
+            color: #111;
+            font-size: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btn {
+            background: #e8120a;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: #c00e08; transform: scale(1.04); }
+        .action-btn:active { transform: scale(0.97); }
+        .action-btn.running { opacity: 0.65; cursor: not-allowed; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 4px solid #e8120a;
+        }
+        .stat-box h3 { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+        .stat-box .val { font-size: 26px; font-weight: bold; color: #28a745; }
+        .progress-section { margin-bottom: 5px; }
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 28px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            width: 48%;
+            min-width: 48%;
+            transition: width 0.4s;
+        }
+        .log-box {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .log-box.visible { display: block; }
+        .log-progress {
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 24px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .log-fill {
+            background: linear-gradient(90deg, #e8120a, #000);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+        .log-msg { font-size: 12px; color: #555; text-align: center; }
+        .pic-input {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .pic-input label { display: block; font-weight: 600; margin-bottom: 8px; }
+        .pic-input input {
+            padding: 7px; border: 1px solid #ddd; border-radius: 4px;
+            font-size: 14px; width: 160px;
+        }
+        .pic-input button {
+            margin-left: 8px; padding: 7px 14px;
+            background: #e8120a; color: white; border: none;
+            border-radius: 4px; cursor: pointer; font-weight: bold;
+        }
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+        .table-scroll { overflow-y: auto; flex: 1; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: #e8120a; color: white; position: sticky; top: 0; z-index: 10; }
+        th { padding: 11px 8px; text-align: left; font-weight: 600; white-space: nowrap; }
+        td { padding: 9px 8px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #fff5f5; }
+        .num { font-weight: bold; color: #e8120a; width: 35px; text-align: center; }
+        .name { min-width: 220px; font-weight: 500; }
+        .status-cell { text-align: center; width: 35px; font-size: 17px; font-weight: bold; }
+        .center { text-align: center; }
+        .insta-btn {
+            background: #e9ecef; border: none; padding: 5px 11px;
+            border-radius: 4px; cursor: pointer; font-weight: bold;
+            color: #666; transition: all 0.2s;
+        }
+        .insta-btn:hover { background: #dee2e6; }
+        .insta-btn.active { background: #28a745; color: white; }
+        .insta-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #e8120a; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            <span>🇩🇪 Stereotypen Dashboard</span>
+            <div class="btn-group">
+                <button class="action-btn" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
+                <button class="action-btn" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
+                <button class="action-btn" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+                <button class="action-btn" id="audioBtn"   onclick="showInput('audio')">🎵 Audio generieren</button>
+                <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
+                <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
+                <button class="action-btn" id="refreshBtn" onclick="doRefresh()">🔄 Refresh</button>
+            </div>
+        </h1>
+
+        <div class="stats">
+            <div class="stat-box"><h3>Gesamt</h3><div class="val">123</div></div>
+            <div class="stat-box"><h3>Story ✓</h3><div class="val">123</div></div>
+            <div class="stat-box"><h3>Caption ✓</h3><div class="val">120</div></div>
+            <div class="stat-box"><h3>Audio ✓</h3><div class="val">36</div></div>
+            <div class="stat-box"><h3>Bild ✓</h3><div class="val">8</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">8</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">3</div></div>
+        </div>
+
+        <div class="progress-section">
+            <strong>Gesamtfortschritt (48%)</strong>
+            <div class="progress-bar">
+                <div class="progress-fill">48%</div>
+            </div>
+        </div>
+
+        <div class="pic-input" id="actionInputDiv">
+            <label id="actionLabel"></label>
+            <input type="text" id="actionInput" placeholder="z.B. 5 | 1-10 | 100_01 | leer = alle ausstehenden"
+                   onkeydown="if(event.key==='Enter') startAction()">
+            <button onclick="startAction()">Starten</button>
+        </div>
+
+        <div class="log-box" id="logBox">
+            <strong id="logTitle">Verarbeitung...</strong>
+            <div class="log-progress">
+                <div class="log-fill" id="logFill" style="width:0%">0%</div>
+            </div>
+            <div class="log-msg" id="logMsg">Starte...</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Stereotyp</th>
+                        <th title="Story-Text">Text</th>
+                        <th title="Caption">Caption</th>
+                        <th title="Audio">Audio</th>
+                        <th>Sek.</th>
+                        <th title="Bild">Bild</th>
+                        <th title="Video">Video</th>
+                        <th title="Instagram">Post</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="num">1</td>
+                    <td class="name">Die Funktionskleidung</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">81</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn active" data-nr="1" onclick="togglePost(this)" >✓ Gepostet</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">2</td>
+                    <td class="name">Die Direktheit </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">65</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn active" data-nr="2" onclick="togglePost(this)" >✓ Gepostet</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">3</td>
+                    <td class="name">Die Tatort-Religiosität   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">73</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn active" data-nr="3" onclick="togglePost(this)" >✓ Gepostet</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">4</td>
+                    <td class="name">Stoßlüften   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">48</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="4" onclick="togglePost(this)" >Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">5</td>
+                    <td class="name">Hausschuhe für Gäste   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="5" onclick="togglePost(this)" >Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">6</td>
+                    <td class="name">Das haben wir schon immer so gemacht   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">54</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="6" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">7</td>
+                    <td class="name">Dienst ist Dienst   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="7" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">8</td>
+                    <td class="name">Der Hefter-Fetisch   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">51</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="8" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">9</td>
+                    <td class="name">Termintreue   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">54</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="9" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">10</td>
+                    <td class="name">Laminier-Wahn   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">56</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="10" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">11</td>
+                    <td class="name">Die Brot-Kultur   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">54</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="11" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">12</td>
+                    <td class="name">Schorle-Alles   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">51</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="12" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">13</td>
+                    <td class="name">Spargelzeit   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">56</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="13" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">14</td>
+                    <td class="name">Abendbrot   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">53</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="14" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">15</td>
+                    <td class="name">Die Ampel-Disziplin   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">52</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="15" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">16</td>
+                    <td class="name">Die Direktheit   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">52</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="16" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">17</td>
+                    <td class="name">Das Auto als Heiligtum   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">51</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="17" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">18</td>
+                    <td class="name">Mülltrennung als Extremsport   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="18" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">19</td>
+                    <td class="name">Kein Bargeld, keine Chance   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="19" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">20</td>
+                    <td class="name">Die Vereinsmeierei   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">57</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="20" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">21</td>
+                    <td class="name">Der Mallorca-Kegelclub   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">52</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="21" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">22</td>
+                    <td class="name">Sandalen mit Socken   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">53</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="22" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">23</td>
+                    <td class="name">Die Wandergruppe „Alpenglück“   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">48</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="23" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">24</td>
+                    <td class="name">Der Handtuch-Reservierer   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">47</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="24" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">25</td>
+                    <td class="name">Der Berliner Techno-Hipster   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">49</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="25" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">26</td>
+                    <td class="name">Der „Vanlife“-Aussteiger   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="26" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">27</td>
+                    <td class="name">Der Elektroauto-Missionar   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="27" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">28</td>
+                    <td class="name">Der Fitness-Influencer aus dem Dorf   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="28" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">29</td>
+                    <td class="name">Der Blockwart-Nachbar   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="29" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">30</td>
+                    <td class="name">Der Anzeige ist raus-Typ   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="30" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">31</td>
+                    <td class="name">Der DB-Wutbürger   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="31" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">32</td>
+                    <td class="name">Der Grillmeister   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="32" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">33</td>
+                    <td class="name">Die Bio-Mami   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="33" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">34</td>
+                    <td class="name">Der Feierabendbier-Verteidiger   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="34" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">35</td>
+                    <td class="name">Der Wiesn-Tourist   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="35" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">36</td>
+                    <td class="name">Der Sparkassen-Anleger   </td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="36" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">37</td>
+                    <td class="name">Die Kehrwoche-Aufsicht</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="37" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">38</td>
+                    <td class="name">Der passive-aggressive Treppenhaus-Zettel</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="38" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">39</td>
+                    <td class="name">Das „Mahlzeit“-Rufen im Büroflur</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="39" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">40</td>
+                    <td class="name">Die Angst vor „Durchzug“</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="40" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">41</td>
+                    <td class="name">Der Kassen-Stress (Einräumen gegen die Zeit)</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="41" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">42</td>
+                    <td class="name">„Tja“ – Die universelle Antwort</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="42" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">43</td>
+                    <td class="name">Der Schilderwald-Verteidiger</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="43" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">44</td>
+                    <td class="name">Die „Wo kommen Sie eigentlich her?“-Frage</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="44" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">45</td>
+                    <td class="name">Der Baumarkt-Samstag</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="45" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">46</td>
+                    <td class="name">Pünktlichkeit (5 Min. vor der Zeit)</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="46" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">47</td>
+                    <td class="name">Der „Haben wir das schriftlich?“-Kollege</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="47" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">48</td>
+                    <td class="name">Die Sonntagsruhe-Polizei</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="48" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">49</td>
+                    <td class="name">Der Fahrradweg-Sheriff</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="49" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">50</td>
+                    <td class="name">Die Über-Versicherung für alles</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="50" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">51</td>
+                    <td class="name">Der „Ich hab’s passend“-Zahler</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="51" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">52</td>
+                    <td class="name">Die Pfandflaschen-Jagd</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="52" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">53</td>
+                    <td class="name">Der „Draußen nur Kännchen“-Kellner</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="53" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">54</td>
+                    <td class="name">Der „Muss ja“-Sager</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="54" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">55</td>
+                    <td class="name">Die Brötchen-Namen-Diskussion</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="55" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">56</td>
+                    <td class="name">Der Autobahn-Linksblinker</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="56" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">57</td>
+                    <td class="name">Die „Jacke dabei?“-Mutter</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="57" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">58</td>
+                    <td class="name">Der „Nicht geschimpft ist Lob genug“-Chef</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="58" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">59</td>
+                    <td class="name">Das „So!“ beim Aufstehen</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="59" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">60</td>
+                    <td class="name">Der Saunagänger (Handtuch-Etikette)</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="60" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">61</td>
+                    <td class="name">Die penible Ferienhaus-Abnahme</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="61" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">62</td>
+                    <td class="name">Der Gaffer bei Baustellen</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="62" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">63</td>
+                    <td class="name">Das „Wir duzen uns jetzt“-Angebot</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="63" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">64</td>
+                    <td class="name">Der E-Bike-Rentner (Highspeed)</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="64" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">65</td>
+                    <td class="name">Die „Das ist aber teuer geworden“-Debatte</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="65" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">66</td>
+                    <td class="name">Der „Ich kenne da eine Abkürzung“-Fahrer</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="66" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">67</td>
+                    <td class="name">Der Hobby-Meteorologe (Regenradar-Check)</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="67" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">68</td>
+                    <td class="name">Die „Nur gucken“-Shopping-Tour</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="68" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">69</td>
+                    <td class="name">Der „Das ist deutsche Wertarbeit“-Sager</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="69" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">70</td>
+                    <td class="name">Der Kleingarten-Vorstand</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="70" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">71</td>
+                    <td class="name">Das Fax-Gerät im Amt</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="71" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">72</td>
+                    <td class="name">„Schatzi“-Paare im Partnerlook</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="72" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">73</td>
+                    <td class="name">Der Laubbläser-Fanatiker</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="73" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">74</td>
+                    <td class="name">Die Landlust-Idylle-Leserin</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="74" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">75</td>
+                    <td class="name">Der „Wir schenken uns nichts“-Lügner</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="75" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">76</td>
+                    <td class="name">„Bier ist ein Grundnahrungsmittel“</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="76" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">77</td>
+                    <td class="name">Der Kreuzfahrt-Rentner</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="77" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">78</td>
+                    <td class="name">Die Funkloch-Verzweiflung im Zug</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="78" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">79</td>
+                    <td class="name">Der „Früher war mehr Lametta“-Nostalgiker</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="79" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">80</td>
+                    <td class="name">Der „Darf ich mal vorbei?“-Drängler</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="80" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">81</td>
+                    <td class="name">Der Schnitzel-Größen-Check</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="81" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">82</td>
+                    <td class="name">„Man gönnt sich ja sonst nichts“</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="82" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">83</td>
+                    <td class="name">Der Flohmarkt-Feilscher</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="83" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">84</td>
+                    <td class="name">Der „Ordnung muss sein“-Vermieter</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="84" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">85</td>
+                    <td class="name">Die „Darf man das noch sagen?“-Runde</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="85" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">86</td>
+                    <td class="name">Der „Ich hab das im Internet gelesen“-Experte</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="86" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">87</td>
+                    <td class="name">Parkplatz-Reservieren mit dem Körper</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="87" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">88</td>
+                    <td class="name">Der „Morgenstund hat Gold im Mund“-Typ</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="88" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">89</td>
+                    <td class="name">Der Adventskranz-Wettbewerb</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="89" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">90</td>
+                    <td class="name">Die „Vielleicht später mal“-Absage</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="90" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">91</td>
+                    <td class="name">Der „Das zahlt die Kasse nicht“-Patient</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="91" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">92</td>
+                    <td class="name">Der „Ich war hier, bevor es cool war“-Tourist</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="92" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">93</td>
+                    <td class="name">Die „Schuhe bitte aus“-Regel</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="93" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">94</td>
+                    <td class="name">Der Billigflieger-Schnäppchenjäger</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="94" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">95</td>
+                    <td class="name">Die „Wir müssen mal wieder“-Floskel</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="95" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">96</td>
+                    <td class="name">Der Balkon-Sheriff</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="96" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">97</td>
+                    <td class="name">Der Kundenkarten-Sammler</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="97" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">98</td>
+                    <td class="name">Der „Schöner Hund“-Smalltalk</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="98" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">99</td>
+                    <td class="name">Der „So, Feierabend“-Klatscher</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="99" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100</td>
+                    <td class="name">Der Tatort-Spoilerer</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_01</td>
+                    <td class="name">Talahon</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">51</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_01" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_02</td>
+                    <td class="name">Wehrdienstverweigerer</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">54</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_02" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_03</td>
+                    <td class="name">Bali Yoga Retreat</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_03" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_04</td>
+                    <td class="name">Vibe Coder</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">47</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_04" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_05</td>
+                    <td class="name">Chaya in Frankfurt</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">52</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_05" onclick="togglePost(this)" >Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_06</td>
+                    <td class="name">Betriebsrat</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">53</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_06" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_07</td>
+                    <td class="name">Porschefahrer</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">50</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_07" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_08</td>
+                    <td class="name">Thermomix</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">51</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_08" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_09</td>
+                    <td class="name">Digga</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">53</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_09" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_10</td>
+                    <td class="name">Katzenmami</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">53</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_10" onclick="togglePost(this)" >Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_11</td>
+                    <td class="name">Mops</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_11" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_12</td>
+                    <td class="name">Klimaaktivist</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_12" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_13</td>
+                    <td class="name">DSGVO</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_13" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_14</td>
+                    <td class="name">Pattaya Urlaub</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_14" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_15</td>
+                    <td class="name">Bierleiche</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_15" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_16</td>
+                    <td class="name">Pilates</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_16" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_17</td>
+                    <td class="name">Mein Nervensystem</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_17" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_18</td>
+                    <td class="name">Longevity Trend</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_18" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_19</td>
+                    <td class="name">Verschwörungstheoretiker</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_19" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_20</td>
+                    <td class="name">Bitcoin Maxi</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_20" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_21</td>
+                    <td class="name">gendern</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_21" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_22</td>
+                    <td class="name">Das Arschgeweih</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">57</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_22" onclick="togglePost(this)" >Post</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">100_23</td>
+                    <td class="name">Das Augenbrauenpiercing</td>
+                    <td class="status-cell" style="color: #28a745;">✓</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center"></td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="status-cell" style="color: #ccc;">○</td>
+                    <td class="center">
+                        <button class="insta-btn " data-nr="100_23" onclick="togglePost(this)" disabled>Post</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ACTIONS = {
+        'story':   { btn: 'storyBtn',   api: '/api/generate-story',   label: '✍️ Story generieren'  },
+        'caption': { btn: 'captionBtn', api: '/api/generate-caption', label: '💬 Caption generieren' },
+        'picture': { btn: 'picBtn',     api: '/api/generate-picture', label: '🖼️ Bild generieren'   },
+        'audio':   { btn: 'audioBtn',   api: '/api/generate-audio',   label: '🎵 Audio generieren'  },
+        'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   },
+        'post':    { btn: 'postBtn',    api: '/api/instagram-post',   label: '📤 Instagram Post'    },
+    };
+
+    let _pendingAction = null;
+
+    function showInput(type) {
+        const div = document.getElementById('actionInputDiv');
+        if (_pendingAction === type && div.style.display === 'block') {
+            div.style.display = 'none';
+            _pendingAction = null;
+            return;
+        }
+        _pendingAction = type;
+        document.getElementById('actionLabel').textContent =
+            ACTIONS[type].label + ' – Nummer oder Bereich (leer = alle ausstehenden):';
+        document.getElementById('actionInput').value = '';
+        div.style.display = 'block';
+        document.getElementById('actionInput').focus();
+    }
+
+    async function startAction() {
+        if (!_pendingAction) return;
+        const type = _pendingAction;
+        const cfg = ACTIONS[type];
+        const val = document.getElementById('actionInput').value.trim();
+        document.getElementById('actionInputDiv').style.display = 'none';
+        _pendingAction = null;
+        await _launch(cfg, val);
+    }
+
+    async function runDirect(type) {
+        await _launch(ACTIONS[type], '');
+    }
+
+    async function _launch(cfg, val) {
+        const btn = document.getElementById(cfg.btn);
+        btn.classList.add('running');
+        btn.disabled = true;
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = cfg.label;
+        setLog(5, val ? `Starte für ${val}...` : 'Starte...');
+        try {
+            const resp = await fetch(cfg.api, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({story: val})
+            });
+            if (resp.ok) pollProgress(btn, cfg.label);
+            else resetBtn(btn, cfg.label);
+        } catch(e) {
+            resetBtn(btn, cfg.label);
+        }
+    }
+
+    function setLog(pct, msg) {
+        document.getElementById('logFill').style.width = pct + '%';
+        document.getElementById('logFill').textContent = pct + '%';
+        document.getElementById('logMsg').textContent = msg;
+    }
+
+    function resetBtn(btn, label) {
+        btn.classList.remove('running');
+        btn.disabled = false;
+        document.getElementById('logBox').classList.remove('visible');
+    }
+
+    function pollProgress(btn, label) {
+        let pct = 5;
+        const interval = setInterval(async () => {
+            try {
+                const resp = await fetch('/api/progress');
+                const data = await resp.json();
+                setLog(data.percent || pct, data.message || '...');
+                if (data.status === 'complete' || data.status === 'error') {
+                    clearInterval(interval);
+                    if (data.status === 'complete') {
+                        setLog(100, 'Fertig! Lade Dashboard neu...');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        resetBtn(btn, label);
+                    }
+                } else {
+                    pct = Math.min(pct + 10, 90);
+                }
+            } catch(e) {
+                pct = Math.min(pct + 5, 90);
+                setLog(pct, 'Verarbeitung läuft...');
+            }
+        }, 2000);
+    }
+
+    async function doRefresh() {
+        const btn = document.getElementById('refreshBtn');
+        btn.textContent = '⏳ Scanne...';
+        btn.disabled = true;
+        try { await fetch('/api/refresh', { method: 'POST' }); } catch(e) {}
+        location.reload();
+    }
+
+    async function togglePost(btn) {
+        if (btn.classList.contains('active')) return;
+        const nr = btn.getAttribute('data-nr');
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+            const resp = await fetch('/api/mark-posted', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({nr})
+            });
+            if (resp.ok) {
+                btn.classList.add('active');
+                btn.textContent = '✓ Gepostet';
+            } else {
+                btn.textContent = 'Fehler';
+                setTimeout(() => { btn.textContent = 'Post'; btn.disabled = false; }, 2000);
+            }
+        } catch(e) {
+            btn.textContent = 'Fehler';
+            setTimeout(() => { btn.textContent = 'Post'; btn.disabled = false; }, 2000);
+        }
+    }
+</script>
+</body>
+</html>

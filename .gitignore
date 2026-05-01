@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Lokale Claude-Konfiguration
+.claude/
+
+# Generierte Mediendateien (zu groß für Git)
+1_orchestrator/output/*.mp3
+1_orchestrator/output/*.mp4
+1_orchestrator/output/0_used/
+1_orchestrator/output/1_used/
+1_orchestrator/2_pic/*.png
+1_orchestrator/2_pic/1_used/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Logs
+1_orchestrator/logs/
+
+# Lokale IDE
+.vscode/
+.idea/

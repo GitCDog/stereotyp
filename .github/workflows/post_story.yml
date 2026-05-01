@@ -1,0 +1,60 @@
+name: Stereotypen – Täglicher Instagram Post
+
+on:
+  schedule:
+    # Täglich 18:00 UTC = 20:00 CEST (Sommerzeit) / 19:00 CET (Winterzeit)
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+    inputs:
+      story_nr:
+        description: "Story-Nummer (leer = nächste ausstehende)"
+        required: false
+        default: ""
+
+jobs:
+  post-story:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: 1_orchestrator
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Dependencies installieren
+        run: pip install -r requirements.txt
+
+      - name: Auf Instagram posten
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_RECIPIENT_ID: ${{ secrets.INSTAGRAM_RECIPIENT_ID }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: python instagram_poster.py
+
+      - name: Dashboard aktualisieren
+        run: |
+          python sync_status.py
+          python generate_dashboard.py
+
+      - name: Änderungen committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 1_orchestrator/1_input/1_input_file.txt \
+                  1_orchestrator/dashboard.html \
+                  1_orchestrator/posted_videos.json || true
+          git diff --staged --quiet || git commit -m "[AUTO] Instagram Post – $(date +'%Y-%m-%d')"
+          git push || true

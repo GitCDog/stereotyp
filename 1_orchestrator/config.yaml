@@ -1,0 +1,41 @@
+# 8_stereotypen – Konfiguration
+
+story_generation:
+  model: "claude-sonnet-4-6"
+  target_word_count: 135       # 130-140 Wörter → ~1 Minute Audio
+  words_per_second: 2.3
+
+text_to_speech:
+  # ElevenLabs Voice ID – deutsche, ausdrucksstarke Stimme
+  # Eintragen nach Auswahl auf elevenlabs.io
+  voice_id: "5euSC8RarC3AHrZ242sr"
+  model_id: "eleven_multilingual_v2"
+  stability: 0.9
+  similarity_boost: 0.81
+  style: 0.21
+  speed: 1.17
+
+video_creation:
+  width: 1080
+  height: 1920
+  fps: 24
+  bitrate: "6000k"
+  ffmpeg_path: "C:\\ffmpeg\\bin\\ffmpeg.exe"
+
+instagram:
+  hashtags:
+    - "Deutschland"
+    - "Stereotype"
+    - "Humor"
+    - "DeutscheSitten"
+    - "Viral"
+    - "Deutsch"
+    - "DeutscheProbleme"
+  caption_template: "{stereotyp} \U0001f1e9\U0001f1ea\n\n{story_intro}\n\n{hashtags}"
+
+output:
+  log_file: "./logs/workflow.log"
+  input_file: "./1_input/1_input_file.txt"
+  stories_dir: "./1_input"
+  images_dir: "./output"
+  output_dir: "./output"
