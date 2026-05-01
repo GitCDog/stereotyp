@@ -21,14 +21,14 @@ jobs:
         working-directory: 1_orchestrator
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Zufällige Pause (0–60 Min)
         run: |
           SECS=$(( RANDOM % 3601 ))
           echo "Warte ${SECS}s ($(( SECS / 60 ))m $(( SECS % 60 ))s) vor dem Post..."
           sleep $SECS
-
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
       - name: Python Setup
         uses: actions/setup-python@v5
