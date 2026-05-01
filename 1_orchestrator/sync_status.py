@@ -129,8 +129,11 @@ def sync():
 
     captions = {}
     if CAPTIONS_FILE.exists():
-        with open(CAPTIONS_FILE, encoding="utf-8") as f:
-            captions = json.load(f)
+        try:
+            with open(CAPTIONS_FILE, encoding="utf-8") as f:
+                captions = json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"[!] captions.json ungültig (JSON-Fehler): {e}")
 
     for row in rows:
         nr_val = row["nr"].strip()

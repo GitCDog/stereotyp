@@ -85,9 +85,14 @@ def save_captions_file(captions_path: Path, data: dict):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def update_story_json(nr: int, stereotyp: str, caption: str, output_dir: str):
+def _nr_str(nr: str) -> str:
+    nr = str(nr).strip()
+    return nr if "_" in nr else f"{int(nr):03d}"
+
+
+def update_story_json(nr: str, stereotyp: str, caption: str, output_dir: str):
     """Füge caption-Feld in das bestehende Story-JSON ein."""
-    nr_str = f"{int(nr):03d}"
+    nr_str = _nr_str(nr)
     # Suche JSON-Datei
     for p in Path(output_dir).glob(f"{nr_str}_*.json"):
         if "captions" not in p.name:
@@ -102,7 +107,7 @@ def update_story_json(nr: int, stereotyp: str, caption: str, output_dir: str):
 
 def process_caption(row: dict, client: anthropic.Anthropic, config: dict,
                     captions_data: dict, logger: logging.Logger, force: bool = False) -> bool:
-    nr = int(row["nr"])
+    nr = str(row["nr"]).strip()
     stereotyp = row["stereotyp"].strip()
     input_file = config["output"]["input_file"]
     output_dir = config["output"]["output_dir"]
@@ -124,7 +129,7 @@ def process_caption(row: dict, client: anthropic.Anthropic, config: dict,
     logger.info(f"[+] {caption}")
 
     # Globale captions.json aktualisieren
-    captions_data[str(nr)] = {
+    captions_data[nr] = {
         "nr": nr,
         "stereotyp": stereotyp,
         "caption": caption,
@@ -145,7 +150,7 @@ def process_caption(row: dict, client: anthropic.Anthropic, config: dict,
 
 def main():
     parser = argparse.ArgumentParser(description="Generiere Captions für alle Stories")
-    parser.add_argument("--story", type=int, help="Einzelne Story-Nummer")
+    parser.add_argument("--story", type=str, help="Einzelne Story-Nummer")
     parser.add_argument("--all", action="store_true", help="Alle (auch bereits generierte)")
     parser.add_argument("--model", default=None, help="Modell-Override (z.B. claude-haiku-4-5-20251001)")
     parser.add_argument("--config", default="config.yaml")
