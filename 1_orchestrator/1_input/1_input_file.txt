@@ -2,7 +2,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 1,Die Funktionskleidung,X,X,81,X,X,X,X
 2,Die Direktheit ,X,X,65,X,X,X,X
 3,Die Tatort-Religiosität   ,X,X,73,X,X,X,X
-4,Stoßlüften   ,X,X,48,X,X,X,
+4,Stoßlüften   ,X,X,48,X,X,X,X
 5,Hausschuhe für Gäste   ,X,X,50,X,X,X,
 6,Das haben wir schon immer so gemacht   ,X,X,54,,,X,
 7,Dienst ist Dienst   ,X,X,50,,,X,
