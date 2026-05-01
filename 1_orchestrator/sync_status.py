@@ -5,6 +5,7 @@ Wird vom Server beim Refresh aufgerufen.
 """
 
 import json
+import os
 import re
 import shutil
 from pathlib import Path
@@ -13,6 +14,24 @@ try:
     PYDUB_OK = True
 except ImportError:
     PYDUB_OK = False
+
+try:
+    import cloudinary
+    import cloudinary.api
+    from dotenv import load_dotenv
+    load_dotenv()
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.getenv("CLOUDINARY_API_KEY"),
+        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+        secure=True,
+    )
+    import ssl, urllib3
+    urllib3.disable_warnings()
+    ssl._create_default_https_context = ssl._create_unverified_context
+    CLOUDINARY_OK = bool(os.getenv("CLOUDINARY_CLOUD_NAME"))
+except Exception:
+    CLOUDINARY_OK = False
 
 import input_reader as ir
 
@@ -30,6 +49,22 @@ def _nr_str(nr_val: str) -> str:
     if "_" in nr_val:
         return nr_val
     return f"{int(nr_val):03d}"
+
+
+def delete_cloudinary_video(ns: str):
+    """Löscht Video mit Prefix stereotypen/{ns} von Cloudinary, falls vorhanden."""
+    if not CLOUDINARY_OK:
+        return
+    try:
+        resources = cloudinary.api.resources(
+            type="upload", resource_type="video",
+            prefix=f"stereotypen/{ns}", max_results=10,
+        )
+        for item in resources.get("resources", []):
+            cloudinary.api.delete_resources([item["public_id"]], resource_type="video")
+            print(f"[+] Cloudinary gelöscht: {item['public_id']}")
+    except Exception as e:
+        print(f"[!] Cloudinary Löschung fehlgeschlagen für {ns}: {e}")
 
 
 def archive_used_files(rows: list) -> int:
@@ -52,12 +87,13 @@ def archive_used_files(rows: list) -> int:
                     print(f"[>] Archiviert: {filename}")
                     moved += 1
 
-        # Video erst archivieren wenn gepostet
+        # Video erst archivieren wenn gepostet + Cloudinary löschen
         if row.get("insta_post") == "X":
             for mp4 in OUTPUT_DIR.glob(f"{ns}_*.mp4"):
                 shutil.move(str(mp4), str(USED_DIR / mp4.name))
                 print(f"[>] Archiviert: {mp4.name}")
                 moved += 1
+            delete_cloudinary_video(ns)
 
     return moved
 
