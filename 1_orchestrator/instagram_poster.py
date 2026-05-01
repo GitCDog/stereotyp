@@ -134,7 +134,7 @@ class InstagramPoster:
         result = cloudinary.uploader.upload(
             str(video_path),
             resource_type="video",
-            folder="stereotyp",
+            folder="stereotypen",
             public_id=video_path.stem,
             overwrite=True,
         )
