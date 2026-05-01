@@ -231,30 +231,32 @@ class InstagramPoster:
         logger.info(f"[+] Gepostet! Post-ID: {post_id}")
         return post_id
 
-    def find_on_cloudinary(self, nr) -> str | None:
-        """Suche nach bereits hochgeladenem Video auf Cloudinary."""
+    def find_on_cloudinary(self, nr) -> tuple[str, str] | tuple[None, None]:
+        """Suche nach bereits hochgeladenem Video auf Cloudinary. Gibt (url, public_id) zurück."""
         ns = _nr_str(nr)
         try:
-            result = cloudinary.api.resource(f"stereotyp/{ns}", resource_type="video")
+            result = cloudinary.api.resource(f"stereotypen/{ns}", resource_type="video")
             url = result.get("secure_url")
+            public_id = result.get("public_id")
             logger.info(f"[+] Cloudinary: Video gefunden: {url}")
-            return url
+            return url, public_id
         except Exception:
             pass
         # Breiteren Scan: alle Videos im Ordner mit Nummer-Prefix
         try:
             resources = cloudinary.api.resources(
                 type="upload", resource_type="video",
-                prefix=f"stereotyp/{ns}", max_results=10
+                prefix=f"stereotypen/{ns}", max_results=10
             )
             items = resources.get("resources", [])
             if items:
                 url = items[0]["secure_url"]
-                logger.info(f"[+] Cloudinary Scan: {items[0]['public_id']}")
-                return url
+                public_id = items[0]["public_id"]
+                logger.info(f"[+] Cloudinary Scan: {public_id}")
+                return url, public_id
         except Exception as e:
             logger.warning(f"[!] Cloudinary Scan fehlgeschlagen: {e}")
-        return None
+        return None, None
 
     def mark_posted(self, row: dict, post_id: str, public_id: str):
         """Markiere Story als gepostet in CSV + posted_videos.json."""
@@ -374,11 +376,11 @@ class InstagramPoster:
         if video_path.exists():
             # Lokal vorhanden → hochladen
             video_url = self.upload_to_cloudinary(video_path)
-            public_id = f"stereotyp/{video_path.stem}"
+            public_id = f"stereotypen/{video_path.stem}"
         else:
             # Kein lokales Video → auf Cloudinary suchen (GitHub Actions)
             logger.info(f"[*] Kein lokales Video – suche auf Cloudinary...")
-            video_url = self.find_on_cloudinary(nr)
+            video_url, public_id = self.find_on_cloudinary(nr)
             if not video_url:
                 logger.error(f"[-] Video für #{nr} weder lokal noch auf Cloudinary gefunden")
                 return False
