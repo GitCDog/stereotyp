@@ -58,3 +58,30 @@ jobs:
                   1_orchestrator/posted_videos.json || true
           git diff --staged --quiet || git commit -m "[AUTO] Instagram Post – $(date +'%Y-%m-%d')"
           git push || true
+
+      - name: Cloudinary Video-Vorrat prüfen
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(python3 - <<'EOF'
+          import cloudinary, cloudinary.api, os
+          cloudinary.config(
+              cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+              api_key=os.getenv("CLOUDINARY_API_KEY"),
+              api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+              secure=True,
+          )
+          r = cloudinary.api.resources(type="upload", resource_type="video", prefix="stereotypen/", max_results=50)
+          print(len(r.get("resources", [])))
+          EOF
+          )
+          echo "Videos auf Cloudinary: $COUNT"
+          if [ "$COUNT" -le 2 ]; then
+            gh issue create \
+              --title "⚠️ Nur noch $COUNT Video(s) auf Cloudinary – neue Videos generieren!" \
+              --body "Nach dem heutigen automatischen Post sind nur noch **$COUNT Video(s)** auf Cloudinary verfügbar. Bitte neue Videos generieren und hochladen, damit die täglichen Posts weiterlaufen." \
+              --repo ${{ github.repository }} || true
+          fi
