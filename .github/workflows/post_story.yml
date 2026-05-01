@@ -2,8 +2,8 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 18:00 UTC = 20:00 CEST (Sommerzeit) / 19:00 CET (Winterzeit)
-    - cron: "0 18 * * *"
+    # Täglich 18:00 CEST (Sommerzeit) = 16:00 UTC / 18:00 CET (Winterzeit) = 17:00 UTC
+    - cron: "0 16 * * *"
   workflow_dispatch:
     inputs:
       story_nr:
