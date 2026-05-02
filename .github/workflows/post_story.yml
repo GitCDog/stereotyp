@@ -14,6 +14,7 @@ on:
 jobs:
   post-story:
     runs-on: ubuntu-latest
+    environment: stereotyp
     permissions:
       contents: write
     defaults:
