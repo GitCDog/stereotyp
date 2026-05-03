@@ -52,7 +52,7 @@ for block in blocks:
 
     # Dateiname
     safe = ir.safe_name(stereotyp)
-    nr_str = f"{nr:03d}"
+    nr_str = f"{int(nr):04d}"
     out_path = STORIES_DIR / f"{nr_str}_{safe}.txt"
 
     if out_path.exists():

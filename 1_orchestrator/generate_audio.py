@@ -50,9 +50,7 @@ def get_audio_duration(audio_path: Path) -> int:
 def get_story_text(nr: int, stereotyp: str, stories_dir: str, output_dir: str) -> str | None:
     """Lese Story-Text aus Textdatei oder JSON."""
     safe = ir.safe_name(stereotyp)
-    nr_str = f"{int(nr):03d}"
-
-    nr_str = str(nr).strip() if "_" in str(nr) else f"{int(nr):03d}"
+    nr_str = f"{int(str(nr).strip()):04d}"
     txt_path = Path(stories_dir) / f"{nr_str}_{safe}.txt"
     if not txt_path.exists():
         for p in Path(stories_dir).glob(f"{nr_str}_*.txt"):
@@ -146,7 +144,7 @@ def process_audio(nr: int, config: dict, logger: logging.Logger, api_key: str) -
 
     # Speichern
     Path(output_dir).mkdir(parents=True, exist_ok=True)
-    nr_str = str(nr).strip() if "_" in str(nr) else f"{int(nr):03d}"
+    nr_str = f"{int(str(nr).strip()):04d}"
     audio_path = Path(output_dir) / f"{nr_str}_mp3.mp3"
     audio_path.write_bytes(audio_bytes)
     logger.info(f"[+] Audio gespeichert: {audio_path.name} ({len(audio_bytes):,} Bytes)")

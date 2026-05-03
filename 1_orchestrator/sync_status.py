@@ -44,11 +44,7 @@ CAPTIONS_FILE = OUTPUT_DIR / "captions.json"
 
 
 def _nr_str(nr_val: str) -> str:
-    """Gibt den Datei-Prefix zurück: '100_01' bleibt '100_01', '5' wird '005'."""
-    nr_val = nr_val.strip()
-    if "_" in nr_val:
-        return nr_val
-    return f"{int(nr_val):03d}"
+    return f"{int(str(nr_val).strip()):04d}"
 
 
 def delete_cloudinary_video(ns: str):
@@ -104,13 +100,13 @@ def check_sammelsurium() -> int:
         return 0
 
     text = SAMMELSURIUM.read_text(encoding="utf-8")
-    matches = list(re.finditer(r'^(100_\d+):\s*(.+)$', text, re.MULTILINE))
+    matches = list(re.finditer(r'^(\d{1,4}):\s*(.+)$', text, re.MULTILINE))
     if not matches:
         return 0
 
     entries = []
     for i, m in enumerate(matches):
-        nr = m.group(1).strip()
+        nr = f"{int(m.group(1)):04d}"
         name = m.group(2).strip()
         start = m.end()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)

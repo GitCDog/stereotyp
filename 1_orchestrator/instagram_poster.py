@@ -48,8 +48,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def _nr_str(nr) -> str:
-    nr = str(nr).strip()
-    return nr if "_" in nr else f"{int(nr):03d}"
+    return f"{int(str(nr).strip()):04d}"
 
 logging.basicConfig(
     level=logging.INFO,

@@ -24,8 +24,7 @@ DEFAULT_OUT = STORIES_DIR / "gpt_prompts.txt"
 
 
 def _nr_str(nr: str) -> str:
-    nr = nr.strip()
-    return nr if "_" in nr else f"{int(nr):03d}"
+    return f"{int(str(nr).strip()):04d}"
 
 
 def find_story_file(nr: str, stereotyp: str) -> Path | None:

@@ -86,8 +86,7 @@ def save_captions_file(captions_path: Path, data: dict):
 
 
 def _nr_str(nr: str) -> str:
-    nr = str(nr).strip()
-    return nr if "_" in nr else f"{int(nr):03d}"
+    return f"{int(str(nr).strip()):04d}"
 
 
 def update_story_json(nr: str, stereotyp: str, caption: str, output_dir: str):

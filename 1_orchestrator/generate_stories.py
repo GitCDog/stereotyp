@@ -106,7 +106,7 @@ def generate_auto_title(client: anthropic.Anthropic, model: str) -> str:
 def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1_input"):
     """Speichere Story als .txt in 1_input/."""
     safe = ir.safe_name(stereotyp)
-    nr_str = f"{int(nr):03d}"
+    nr_str = f"{int(nr):04d}"
 
     txt_path = Path(stories_dir) / f"{nr_str}_{safe}.txt"
     if not txt_path.exists():

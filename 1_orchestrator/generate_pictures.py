@@ -42,7 +42,7 @@ def load_config(config_path: str = "config.yaml") -> dict:
 
 def get_story_text(nr: int, stories_dir: str) -> str | None:
     """Lese Story-Text aus 1_input/."""
-    nr_str = f"{int(nr):03d}"
+    nr_str = f"{int(nr):04d}"
 
     for p in Path(stories_dir).glob(f"{nr_str}_*.txt"):
         return p.read_text(encoding="utf-8").strip()
@@ -168,7 +168,7 @@ def generate_image(api_key: str, prompt: str, nr: int, images_dir: str, logger: 
         return False
 
     Path(images_dir).mkdir(parents=True, exist_ok=True)
-    out_path = Path(images_dir) / f"{nr:03d}_pic.png"
+    out_path = Path(images_dir) / f"{int(nr):04d}_pic.png"
     out_path.write_bytes(img_data)
     logger.info(f"[+] Bild gespeichert: {out_path} ({len(img_data):,} Bytes)")
     return True
