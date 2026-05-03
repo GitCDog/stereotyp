@@ -120,5 +120,5 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 100_19,Verschwörungstheoretiker,X,,,,,X,
 100_20,Bitcoin Maxi,X,,,,,X,
 100_21,gendern,X,,,,,X,
-100_22,Das Arschgeweih,X,X,57,X,X,X,
+100_22,Das Arschgeweih,X,X,57,X,X,X,X
 100_23,Das Augenbrauenpiercing,X,,,,,X,
