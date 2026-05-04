@@ -18,10 +18,13 @@ def read_rows(input_file: str = INPUT_FILE) -> list[dict]:
         raise FileNotFoundError(f"Input-Datei nicht gefunden: {input_file}")
     with open(path, encoding="utf-8") as f:
         reader = csv.DictReader(f)
+        # Spaltennamen strippen (CSV kann Leerzeichen in Header haben)
+        reader.fieldnames = [k.strip() for k in reader.fieldnames]
         rows = []
         for row in reader:
-            if row.get("nr", "").strip() and row.get("stereotyp", "").strip():
-                rows.append(dict(row))
+            cleaned = {(k.strip() if k else k): v for k, v in row.items()}
+            if cleaned.get("nr", "").strip() and cleaned.get("stereotyp", "").strip():
+                rows.append(cleaned)
     return rows
 
 
@@ -48,7 +51,7 @@ def find_row(nr, input_file: str = INPUT_FILE) -> dict | None:
 def update_field(nr, field: str, value: str, input_file: str = INPUT_FILE) -> bool:
     """Aktualisiere ein Feld in der CSV für eine bestimmte Zeile (by nr)."""
     path = Path(input_file)
-    rows = read_rows(input_file)
+    rows = read_rows(input_file)  # gibt gestrippte Keys zurück
 
     updated = False
     for row in rows:
@@ -60,17 +63,12 @@ def update_field(nr, field: str, value: str, input_file: str = INPUT_FILE) -> bo
     if not updated:
         return False
 
-    # CSV zurückschreiben
-    with open(path, encoding="utf-8", newline="") as f:
-        original_content = f.read()
-
-    fieldnames = list(csv.DictReader(io.StringIO(original_content)).fieldnames)
-
+    # Immer mit sauberen COLUMNS schreiben (keine Leerzeichen in Header)
     with open(path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS)
         writer.writeheader()
         for row in rows:
-            writer.writerow({k: row.get(k, "") for k in fieldnames})
+            writer.writerow({k: row.get(k, "").strip() for k in COLUMNS})
 
     return True
 
@@ -79,11 +77,6 @@ def add_row(data: dict, input_file: str = INPUT_FILE) -> bool:
     """Füge eine neue Zeile ans Ende der CSV an. False wenn nr bereits vorhanden."""
     path = Path(input_file)
     nr = data.get("nr", "")
-
-    with open(path, encoding="utf-8", newline="") as f:
-        original_content = f.read()
-
-    fieldnames = list(csv.DictReader(io.StringIO(original_content)).fieldnames)
     rows = read_rows(input_file)
 
     for row in rows:
@@ -93,10 +86,10 @@ def add_row(data: dict, input_file: str = INPUT_FILE) -> bool:
     rows.append(data)
 
     with open(path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS)
         writer.writeheader()
         for row in rows:
-            writer.writerow({k: row.get(k, "") for k in fieldnames})
+            writer.writerow({k: row.get(k, "").strip() for k in COLUMNS})
 
     return True
 
