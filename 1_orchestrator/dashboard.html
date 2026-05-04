@@ -206,6 +206,7 @@
                 <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
                 <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
                 <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
+                <button class="action-btn" id="gptBtn"     onclick="runDirect('gpt')">📝 GPT Prompts</button>
                 <button class="action-btn" id="refreshBtn" onclick="doRefresh()">🔄 Refresh</button>
             </div>
         </h1>
@@ -215,9 +216,9 @@
             <div class="stat-box"><h3>Story ✓</h3><div class="val">173</div></div>
             <div class="stat-box"><h3>Caption ✓</h3><div class="val">173</div></div>
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">173</div></div>
-            <div class="stat-box"><h3>Bild ✓</h3><div class="val">25</div></div>
-            <div class="stat-box"><h3>Video ✓</h3><div class="val">25</div></div>
-            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">6</div></div>
+            <div class="stat-box"><h3>Bild ✓</h3><div class="val">27</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">27</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">8</div></div>
         </div>
 
         <div class="progress-section">
@@ -430,7 +431,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="13" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="13" onclick="togglePost(this)" >✓ Gepostet</button>
                     </td>
                 </tr>
                 <tr class="row-done">
@@ -1626,7 +1627,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="105" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="105" onclick="togglePost(this)" >✓ Gepostet</button>
                     </td>
                 </tr>
                 <tr class="row-done">
@@ -2240,30 +2241,30 @@
                         <button class="insta-btn " data-nr="152" onclick="togglePost(this)" disabled>Post</button>
                     </td>
                 </tr>
-                <tr>
+                <tr class="row-done">
                     <td class="num">153</td>
                     <td class="name">Mama und Tochter in Disko</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">55</td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="153" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="153" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
-                <tr>
+                <tr class="row-done">
                     <td class="num">154</td>
                     <td class="name">Fjällräven KÅNKEN Rucksack</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">54</td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="154" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="154" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
                 <tr>
@@ -2528,6 +2529,7 @@
         'audio-pic': { btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  },
         'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   },
         'post':    { btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    },
+        'gpt':     { btn: 'gptBtn',     api: '/api/generate-gpt-prompt', label: '📝 GPT Prompts'        },
     };
 
     let _pendingAction = null;
