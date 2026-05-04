@@ -66,8 +66,9 @@ def load_config(config_path: str = "config.yaml") -> dict:
 class InstagramPoster:
     """Postet Stereotypen-Reels auf Instagram."""
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, dry_run: bool = False):
         self.config = config
+        self.dry_run = dry_run
         self.access_token = os.getenv("INSTAGRAM_ACCESS_TOKEN")
         self.recipient_id = os.getenv("INSTAGRAM_RECIPIENT_ID")
         self.cloudinary_cloud = os.getenv("CLOUDINARY_CLOUD_NAME")
@@ -121,14 +122,37 @@ class InstagramPoster:
         return ir.read_rows(self.config["output"]["input_file"])
 
     def find_next_to_post(self, rows: list[dict], story_nr: str | None = None) -> dict | None:
-        """Finde die erste Zeile mit video=X und insta_post leer.
+        """Finde die nächste zu postende Story.
 
-        Wenn story_nr gesetzt ist, wird gezielt diese Nummer gesucht.
+        Reihenfolge:
+        1. story_nr (CLI / STORY_NR env) – gezielter Aufruf
+        2. 0_reihenfolge.txt – manuelle Reihenfolge (erste ungepostete Zeile)
+        3. Chronologisch – erste Zeile mit status_video=X und insta_post leer
         """
+        row_by_nr = {str(r.get("nr", "")).strip(): r for r in rows}
+
+        if story_nr:
+            row = row_by_nr.get(str(story_nr).strip())
+            if row and row.get("status_video") == "X" and not row.get("insta_post", "").strip():
+                return row
+            return None
+
+        # 0_reihenfolge.txt lesen
+        reihenfolge_path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+        if reihenfolge_path.exists():
+            lines = [l.strip() for l in reihenfolge_path.read_text(encoding="utf-8").splitlines()]
+            nrs = [l for l in lines if l and l.isdigit()]
+            if nrs:
+                for nr in nrs:
+                    row = row_by_nr.get(nr)
+                    if row and row.get("status_video") == "X" and not row.get("insta_post", "").strip():
+                        logger.info(f"[+] Reihenfolge-Datei: nächste Story = #{nr}")
+                        return row
+
+        # Fallback: chronologisch
         for row in rows:
             if row.get("status_video") == "X" and not row.get("insta_post", "").strip():
-                if story_nr is None or str(row.get("nr", "")).strip() == str(story_nr).strip():
-                    return row
+                return row
         return None
 
     def upload_to_cloudinary(self, video_path: Path) -> str:
@@ -396,6 +420,16 @@ class InstagramPoster:
         caption = self.build_caption(row)
         logger.info(f"[*] Caption:\n{caption}\n")
 
+        if self.dry_run:
+            logger.info("=" * 60)
+            logger.info("[DRY-RUN] Würde jetzt posten:")
+            logger.info(f"  Story:    #{nr} – {stereotyp}")
+            logger.info(f"  Video:    {video_url}")
+            logger.info(f"  Caption:  {caption[:80]}...")
+            logger.info("[DRY-RUN] Kein Upload. Abgebrochen vor post_reel().")
+            logger.info("=" * 60)
+            return True
+
         # Instagram Post
         post_id = self.post_reel(video_url, caption)
         if not post_id:
@@ -413,9 +447,14 @@ class InstagramPoster:
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true", help="Nur simulieren, nicht posten")
+    args = parser.parse_args()
+
     try:
         config = load_config()
-        poster = InstagramPoster(config)
+        poster = InstagramPoster(config, dry_run=args.dry_run)
         success = poster.run()
         sys.exit(0 if success else 1)
     except Exception as e:
