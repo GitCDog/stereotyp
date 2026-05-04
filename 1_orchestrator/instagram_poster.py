@@ -300,7 +300,20 @@ class InstagramPoster:
         if public_id:
             self.delete_from_cloudinary(public_id)
 
+        self._remove_from_reihenfolge(nr)
+
         logger.info(f"[+] Story #{nr} als gepostet markiert | Post-ID: {post_id}")
+
+    def _remove_from_reihenfolge(self, nr: str):
+        """Entfernt die gepostete Nummer aus 0_reihenfolge.txt."""
+        path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+        if not path.exists():
+            return
+        lines = path.read_text(encoding="utf-8").splitlines()
+        new_lines = [l for l in lines if l.strip() != nr]
+        if len(new_lines) != len(lines):
+            path.write_text("\n".join(new_lines) + ("\n" if new_lines else ""), encoding="utf-8")
+            logger.info(f"[+] #{nr} aus 0_reihenfolge.txt entfernt")
 
     def _update_csv_github(self, row: dict, nr: int):
         try:
