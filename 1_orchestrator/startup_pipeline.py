@@ -33,7 +33,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 def load_csv_rows() -> list[dict]:
     with open(INPUT_FILE, encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
 
 
 def process_known_images(rows: list[dict]) -> list[str]:
