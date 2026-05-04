@@ -103,7 +103,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 102,Wehrdienstverweigerer,X,X,54,X,X,X,
 103,Bali Yoga Retreat,X,X,50,X,X,X,
 104,Vibe Coder,X,X,47,X,X,X,
-105,Chaya in Frankfurt,X,X,52,X,X,X,
+105,Chaya in Frankfurt,X,X,52,X,X,X,X
 106,Betriebsrat,X,X,53,X,X,X,
 107,Porschefahrer,X,X,50,X,X,X,
 108,Thermomix,X,X,51,X,X,X,
