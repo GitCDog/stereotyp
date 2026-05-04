@@ -11,7 +11,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 10,Laminier-Wahn   ,X,X,56,X,X,X,
 11,Die Brot-Kultur   ,X,X,54,X,X,X,
 12,Schorle-Alles   ,X,X,51,X,X,X,
-13,Spargelzeit   ,X,X,56,X,X,X,
+13,Spargelzeit   ,X,X,56,X,X,X,X
 14,Abendbrot   ,X,X,53,X,X,X,
 15,Die Ampel-Disziplin   ,X,X,52,X,X,X,
 16,Die Direktheit   ,X,X,52,,,X,
