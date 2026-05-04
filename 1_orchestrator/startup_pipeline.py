@@ -2,15 +2,14 @@
 """
 Wird bei jedem Claude-Session-Start ausgeführt (via Hook).
 
-Ablauf (vollautomatisch, keine manuelle Eingriffe):
-1. OneDrive auf neue Bilder prüfen
-   - Korrekt benannte (NNNN_pic.png) → sofort verschieben
-   - Unbekannte Namen → Claude Vision API identifiziert sie, benennt um, verschiebt
+Ablauf:
+1. OneDrive prüfen
+   - Korrekt benannte Bilder (NNNN_pic.png) → sofort automatisch verarbeiten
+   - Unbekannte Namen → als direkte Aufgabe an Claude übergeben (sofort ausführen)
 2. Videos generieren für alle Stories mit Bild + Audio aber ohne Video
-3. Kurze Info-Zusammenfassung als systemMessage ausgeben
+3. systemMessage mit Zusammenfassung / Aufgaben ausgeben
 """
 
-import base64
 import csv
 import json
 import re
@@ -19,10 +18,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT_DIR   = Path(__file__).parent
-ONEDRIVE_DIR = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
-OUTPUT_DIR   = SCRIPT_DIR / "output"
-INPUT_FILE   = SCRIPT_DIR / "1_input" / "1_input_file.txt"
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent / ".env")
+except Exception:
+    pass
+
+SCRIPT_DIR    = Path(__file__).parent
+ONEDRIVE_DIR  = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
+OUTPUT_DIR    = SCRIPT_DIR / "output"
+INPUT_FILE    = SCRIPT_DIR / "1_input" / "1_input_file.txt"
 NAMED_PATTERN = re.compile(r'^\d{4}_pic\.png$')
 
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -33,100 +38,42 @@ def load_csv_rows() -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def identify_image_with_claude(img_path: Path, rows: list[dict]) -> str | None:
-    """Nutzt Claude Vision API um das Bild einer Story-Nummer zuzuordnen."""
-    try:
-        import anthropic, os
-        client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-        img_data = base64.standard_b64encode(img_path.read_bytes()).decode("utf-8")
-
-        # Stereotypen-Liste für Claude
-        story_list = "\n".join(
-            f"{r['nr']}: {r['stereotyp']}" for r in rows
-            if r.get("status_pic", "") != "X"
-        )
-
-        response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=50,
-            messages=[{
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": "image/png", "data": img_data},
-                    },
-                    {
-                        "type": "text",
-                        "text": (
-                            f"Dieses Bild gehört zu einer der folgenden Stereotypen-Stories. "
-                            f"Antworte NUR mit der Nummer (z.B. '42'), nichts sonst.\n\n{story_list}"
-                        ),
-                    },
-                ],
-            }],
-        )
-        nr = response.content[0].text.strip().strip(".")
-        if nr.isdigit():
-            return nr
-    except Exception as e:
-        print(f"[!] Vision-API Fehler: {e}", file=sys.stderr)
-    return None
-
-
-def process_onedrive_images(rows: list[dict]) -> tuple[list[str], list[str]]:
-    """Verarbeitet alle Bilder in OneDrive. Gibt (done, failed) zurück."""
+def process_known_images() -> list[str]:
+    """Verarbeitet korrekt benannte Bilder sofort. Gibt Liste der verarbeiteten zurück."""
     if not ONEDRIVE_DIR.exists():
-        return [], []
-
-    images = sorted(ONEDRIVE_DIR.glob("*.png"))
-    if not images:
-        return [], []
+        return []
 
     try:
         import input_reader as ir
     except ImportError:
         ir = None
 
-    done, failed = [], []
-
-    for img in images:
+    done = []
+    for img in sorted(ONEDRIVE_DIR.glob("*.png")):
         if NAMED_PATTERN.match(img.name):
-            # Korrekt benannt → direkt verschieben
             nr_int = int(img.stem.replace("_pic", ""))
             nr_str = f"{nr_int:04d}"
             dest = OUTPUT_DIR / f"{nr_str}_pic.png"
             shutil.copy2(img, dest)
             img.unlink()
-            done.append(f"{nr_str}_pic.png (bereits korrekt benannt)")
+            done.append(nr_str)
             if ir:
                 try:
                     ir.update_field(str(nr_int), "status_pic", "X", str(INPUT_FILE))
                 except Exception:
                     pass
-        else:
-            # Unbekannt → Claude Vision identifiziert
-            print(f"[*] Identifiziere: {img.name} ...", file=sys.stderr)
-            nr = identify_image_with_claude(img, rows)
-            if nr:
-                nr_str = f"{int(nr):04d}"
-                dest = OUTPUT_DIR / f"{nr_str}_pic.png"
-                shutil.copy2(img, dest)
-                img.unlink()
-                done.append(f"{nr_str}_pic.png (erkannt aus '{img.name}')")
-                if ir:
-                    try:
-                        ir.update_field(nr, "status_pic", "X", str(INPUT_FILE))
-                    except Exception:
-                        pass
-            else:
-                failed.append(img.name)
 
     if done:
         subprocess.run([sys.executable, "sync_status.py"], cwd=SCRIPT_DIR, capture_output=True)
 
-    return done, failed
+    return done
+
+
+def unrecognized_images() -> list[str]:
+    if not ONEDRIVE_DIR.exists():
+        return []
+    return [p.name for p in sorted(ONEDRIVE_DIR.glob("*.png"))
+            if not NAMED_PATTERN.match(p.name)]
 
 
 def pending_videos(rows: list[dict]) -> list[str]:
@@ -139,27 +86,40 @@ def pending_videos(rows: list[dict]) -> list[str]:
 
 
 def main():
-    summary = []
+    parts = []
 
-    rows = load_csv_rows()
+    # 1. Bekannte Bilder sofort verarbeiten
+    known_done = process_known_images()
+    if known_done:
+        parts.append(f"✅ {len(known_done)} Bild(er) automatisch aus OneDrive übernommen: "
+                     + ", ".join(known_done))
 
-    # 1. OneDrive-Bilder verarbeiten
-    if ONEDRIVE_DIR.exists() and list(ONEDRIVE_DIR.glob("*.png")):
-        done, failed = process_onedrive_images(rows)
-        if done:
-            summary.append(f"✅ {len(done)} Bild(er) aus OneDrive übernommen:\n" +
-                           "\n".join(f"  • {f}" for f in done))
-        if failed:
-            summary.append(f"⚠️ {len(failed)} Bild(er) konnten nicht identifiziert werden:\n" +
-                           "\n".join(f"  • {f}" for f in failed))
-        # Rows neu laden nach Änderungen
+    # 2. Unbekannte Bilder → direkte Aufgabe für Claude
+    unknown = unrecognized_images()
+    if unknown:
+        files = "\n".join(f"  - {ONEDRIVE_DIR / f}" for f in unknown)
         rows = load_csv_rows()
+        story_list = "\n".join(
+            f"{r['nr']}: {r['stereotyp']}" for r in rows
+            if r.get("status_pic", "") != "X"
+        )
+        parts.append(
+            f"AUFGABE – JETZT SOFORT AUSFÜHREN (vor jeder anderen Antwort):\n"
+            f"{len(unknown)} neue Bild(er) in OneDrive warten auf Verarbeitung:\n{files}\n\n"
+            f"Für jedes Bild:\n"
+            f"1. Bild mit Read-Tool öffnen und visuell prüfen\n"
+            f"2. Passende Story aus dieser Liste bestimmen:\n{story_list}\n"
+            f"3. Bild kopieren nach {OUTPUT_DIR}\\NNNN_pic.png\n"
+            f"4. Original aus {ONEDRIVE_DIR} löschen\n"
+            f"5. ir.update_field(nr, 'status_pic', 'X', ...) aufrufen\n"
+            f"6. sync_status.py + generate_dashboard.py ausführen\n"
+            f"7. generate_videos.py --story NR ausführen falls Audio vorhanden"
+        )
 
-    # 2. Videos generieren
+    # 3. Videos generieren (für bereits bekannte pending stories)
+    rows = load_csv_rows()
     pending = pending_videos(rows)
     if pending:
-        summary.append(f"🎬 Videogenerierung gestartet für {len(pending)} Story(s): " +
-                       ", ".join(f"#{n}" for n in pending))
         subprocess.run(
             [sys.executable, "generate_videos.py", "--all"],
             cwd=SCRIPT_DIR,
@@ -167,10 +127,11 @@ def main():
         )
         subprocess.run([sys.executable, "sync_status.py"], cwd=SCRIPT_DIR, capture_output=True)
         subprocess.run([sys.executable, "generate_dashboard.py"], cwd=SCRIPT_DIR, capture_output=True)
-        summary.append(f"✅ {len(pending)} Video(s) fertig + auf Cloudinary hochgeladen.")
+        parts.append(f"✅ {len(pending)} Video(s) generiert + Cloudinary hochgeladen: "
+                     + ", ".join(f"#{n}" for n in pending))
 
-    if summary:
-        print(json.dumps({"systemMessage": "🤖 Startup-Pipeline abgeschlossen:\n\n" + "\n\n".join(summary)}))
+    if parts:
+        print(json.dumps({"systemMessage": "\n\n".join(parts)}))
 
 
 if __name__ == "__main__":

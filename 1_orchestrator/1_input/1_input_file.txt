@@ -150,7 +150,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 149,Kiffer,X,X,49,,,X,
 150,Deutschrapper,X,X,49,,,X,
 151,Bootsschuhe,X,X,46,,,X,
-152,Zu alt für Skaterklamotten,X,X,52,,,X,
+152,Zu alt für Skaterklamotten,X,X,52,X,X,X,
 153,Mama und Tochter in Disko,X,X,46,X,X,X,
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,X,
 155,20 Kaffee am Tag,X,X,50,,,X,
