@@ -384,10 +384,46 @@ class InstagramPoster:
         except Exception as e:
             logger.error(f"[-] posted_videos.json GitHub fehlgeschlagen: {e}")
 
+    def already_posted_today(self) -> bool:
+        """Prüft ob heute bereits ein Video gepostet wurde."""
+        today = datetime.now().strftime("%Y-%m-%d")
+
+        # Lokal prüfen
+        local_path = Path(self.config["output"]["output_dir"]) / "posted_videos.json"
+        if local_path.exists():
+            try:
+                data = json.loads(local_path.read_text(encoding="utf-8"))
+                for v in data.get("videos", []):
+                    if v.get("posted_at", "").startswith(today):
+                        logger.warning(f"[!] Heute bereits gepostet: #{v['nr']} – {v['stereotyp']} um {v['posted_at'][11:16]} Uhr")
+                        return True
+            except Exception:
+                pass
+
+        # GitHub prüfen (falls lokal nichts gefunden)
+        if self.use_github:
+            try:
+                repo = self.github.get_repo(self.github_repo_name)
+                file = repo.get_contents("1_orchestrator/posted_videos.json")
+                data = json.loads(file.decoded_content.decode("utf-8"))
+                for v in data.get("videos", []):
+                    if v.get("posted_at", "").startswith(today):
+                        logger.warning(f"[!] Heute bereits gepostet (GitHub): #{v['nr']} – {v['stereotyp']}")
+                        return True
+            except Exception:
+                pass
+
+        return False
+
     def run(self):
         logger.info("=" * 60)
         logger.info("STEREOTYPEN – INSTAGRAM POSTER")
         logger.info("=" * 60)
+
+        # Maximal ein Post pro Tag
+        if not self.dry_run and self.already_posted_today():
+            logger.info("[+] Heute bereits gepostet – überspringe.")
+            return False
 
         # Nächste Story finden
         story_nr = os.getenv("STORY_NR", "").strip() or None
