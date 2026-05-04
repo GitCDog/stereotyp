@@ -77,6 +77,25 @@ def find_image(nr, images_dir: str) -> Path | None:
     return p if p.exists() else None
 
 
+def ensure_rgb_image(image_path: Path, logger: logging.Logger) -> Path:
+    """Konvertiert RGBA/Palette-Bilder zu RGB PNG. Gibt den Pfad zurück (ggf. temp-Datei)."""
+    try:
+        from PIL import Image
+        img = Image.open(image_path)
+        if img.mode in ("RGBA", "P", "LA"):
+            rgb = Image.new("RGB", img.size, (255, 255, 255))
+            if img.mode == "P":
+                img = img.convert("RGBA")
+            rgb.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
+            temp_path = image_path.with_stem(image_path.stem + "_rgb")
+            rgb.save(temp_path, "PNG")
+            logger.info(f"[*] Bild RGBA→RGB konvertiert: {temp_path.name}")
+            return temp_path
+    except Exception as e:
+        logger.warning(f"[!] Bild-Konvertierung fehlgeschlagen: {e}")
+    return image_path
+
+
 def find_audio(nr, output_dir: str) -> Path | None:
     p = Path(output_dir) / f"{_nr_str(nr)}_mp3.mp3"
     return p if p.exists() else None
@@ -123,6 +142,9 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
     logger.info(f"[*] Bild:  {image_path.name}")
     logger.info(f"[*] Audio: {audio_path.name}")
 
+    # RGBA → RGB konvertieren falls nötig
+    rgb_image_path = ensure_rgb_image(image_path, logger)
+
     # Output-Pfad
     safe = ir.safe_name(stereotyp)
     output_path = Path(output_dir) / f"{_nr_str(nr)}_{safe}.mp4"
@@ -131,7 +153,7 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
     cmd = [
         ffmpeg,
         "-loop", "1",
-        "-i", str(image_path),
+        "-i", str(rgb_image_path),
         "-i", str(audio_path),
         "-c:v", "libx264",
         "-c:a", "aac",
@@ -147,7 +169,7 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
     logger.info(f"[*] ffmpeg: {video_config['width']}x{video_config['height']}, {video_config['fps']}fps, {video_config['bitrate']}")
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if result.returncode != 0:
             logger.error(f"[-] ffmpeg Fehler:\n{result.stderr[-500:]}")
             return False
@@ -161,17 +183,23 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
 
     logger.info(f"[+] Video erstellt: {output_path.name} ({output_path.stat().st_size / 1024 / 1024:.1f} MB)")
 
+    # Temp RGB-Bild aufräumen
+    if rgb_image_path != image_path and rgb_image_path.exists():
+        rgb_image_path.unlink()
+
     # Cloudinary Upload
     upload_to_cloudinary(output_path, logger)
 
-    # Bild in verwendete Bilder verschieben
-    used_dir = Path(images_dir) / "1_used"
+    # Bild, Audio, Video → output/0_used/
+    used_dir = Path(output_dir) / "0_used"
     used_dir.mkdir(exist_ok=True)
-    try:
-        shutil.move(str(image_path), str(used_dir / image_path.name))
-        logger.info(f"[+] Bild verschoben nach: {used_dir.name}/{image_path.name}")
-    except Exception as e:
-        logger.warning(f"[!] Bild konnte nicht verschoben werden: {e}")
+    for src in [image_path, audio_path, output_path]:
+        if src and src.exists():
+            try:
+                shutil.move(str(src), str(used_dir / src.name))
+                logger.info(f"[+] → 0_used/{src.name}")
+            except Exception as e:
+                logger.warning(f"[!] Verschieben fehlgeschlagen ({src.name}): {e}")
 
     # CSV aktualisieren
     ir.update_field(nr, "status_video", "X", input_file)

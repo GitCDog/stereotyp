@@ -125,6 +125,10 @@ def process_audio(nr: int, config: dict, logger: logging.Logger, api_key: str) -
         logger.error(f"[-] Kein Story-Text für #{nr} gefunden")
         return False
 
+    if "\n\n" not in story_text:
+        logger.error(f"[-] Story #{nr} hat keinen Absatz – Vertonung abgebrochen. Erst Absatz bei ~50% einfügen.")
+        return False
+
     logger.info(f"[*] ElevenLabs TTS, Voice ID: {tts_config['voice_id'] or '(nicht gesetzt)'}")
 
     try:

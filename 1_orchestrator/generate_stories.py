@@ -103,6 +103,21 @@ def generate_auto_title(client: anthropic.Anthropic, model: str) -> str:
     return message.content[0].text.strip()
 
 
+def add_paragraph_break(text: str) -> str:
+    """Fügt einen Absatz bei ~50% des Textes nach einem Satzende ein."""
+    import re
+    text = re.sub(r'\s*\n\s*', ' ', text).strip()
+    if '\n\n' in text:
+        return text
+    target = len(text) // 2
+    sentence_ends = [m.start() + 1 for m in re.finditer(r'[.!?]\s+(?=[A-ZÄÖÜ])', text)]
+    if not sentence_ends:
+        return text
+    best = min(sentence_ends, key=lambda pos: abs(pos - target))
+    insert_at = text.index(' ', best)
+    return text[:insert_at] + '\n\n' + text[insert_at + 1:]
+
+
 def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1_input"):
     """Speichere Story als .txt in 1_input/."""
     safe = ir.safe_name(stereotyp)
@@ -110,7 +125,7 @@ def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1
 
     txt_path = Path(stories_dir) / f"{nr_str}_{safe}.txt"
     if not txt_path.exists():
-        txt_path.write_text(story_text, encoding="utf-8")
+        txt_path.write_text(add_paragraph_break(story_text), encoding="utf-8")
 
     return txt_path
 

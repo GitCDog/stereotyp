@@ -47,6 +47,20 @@ def _nr_str(nr_val: str) -> str:
     return f"{int(str(nr_val).strip()):04d}"
 
 
+def _ensure_paragraph(text: str) -> str:
+    """Fügt Absatz bei ~50% nach einem Satzende ein, falls noch keiner vorhanden."""
+    text = re.sub(r'\s*\n\s*', ' ', text).strip()
+    if '\n\n' in text:
+        return text
+    target = len(text) // 2
+    ends = [m.start() + 1 for m in re.finditer(r'[.!?]\s+(?=[A-ZÄÖÜ])', text)]
+    if not ends:
+        return text
+    best = min(ends, key=lambda p: abs(p - target))
+    insert_at = text.index(' ', best)
+    return text[:insert_at] + '\n\n' + text[insert_at + 1:]
+
+
 def delete_cloudinary_video(ns: str):
     """Löscht Video mit Prefix stereotypen/{ns} von Cloudinary, falls vorhanden."""
     if not CLOUDINARY_OK:
@@ -79,28 +93,50 @@ def archive_used_files(rows: list) -> int:
             for filename in [f"{ns}_pic.png", f"{ns}_mp3.mp3"]:
                 src = OUTPUT_DIR / filename
                 if src.exists():
-                    shutil.move(str(src), str(USED_DIR / filename))
-                    print(f"[>] Archiviert: {filename}")
-                    moved += 1
+                    try:
+                        shutil.move(str(src), str(USED_DIR / filename))
+                        print(f"[>] Archiviert: {filename}")
+                        moved += 1
+                    except Exception as e:
+                        print(f"[!] Konnte {filename} nicht verschieben: {e}")
 
         # Video erst archivieren wenn gepostet + Cloudinary löschen
         if row.get("insta_post") == "X":
             for mp4 in OUTPUT_DIR.glob(f"{ns}_*.mp4"):
-                shutil.move(str(mp4), str(USED_DIR / mp4.name))
-                print(f"[>] Archiviert: {mp4.name}")
-                moved += 1
+                try:
+                    shutil.move(str(mp4), str(USED_DIR / mp4.name))
+                    print(f"[>] Archiviert: {mp4.name}")
+                    moved += 1
+                except Exception as e:
+                    print(f"[!] Konnte {mp4.name} nicht verschieben: {e}")
             delete_cloudinary_video(ns)
 
     return moved
 
 
+def _clean_story_text(raw: str) -> str:
+    """Bereinigt Markdown-Formatierung aus Sammelsurium-Text."""
+    # Alles ab dem ersten --- Trenner abschneiden
+    raw = re.split(r'\n\s*---+', raw)[0]
+    # Markdown Bold **text** → text
+    raw = re.sub(r'\*\*(.+?)\*\*', r'\1', raw)
+    # Markdown Italic *text* → text
+    raw = re.sub(r'\*(.+?)\*', r'\1', raw)
+    # Markdown Header ### entfernen
+    raw = re.sub(r'^#{1,6}\s*', '', raw, flags=re.MULTILINE)
+    return raw.strip()
+
+
 def check_sammelsurium() -> int:
-    """Neue Einträge aus 00_sammelsurium.txt in CSV + Story-TXT übernehmen."""
+    """Neue Einträge aus 00_sammelsurium.txt in CSV + Story-TXT übernehmen.
+    Unterstützt Format: '### 124: Titel' oder '124: Titel'.
+    Erfolgreich extrahierte Einträge werden aus dem Sammelsurium gelöscht."""
     if not SAMMELSURIUM.exists():
         return 0
 
     text = SAMMELSURIUM.read_text(encoding="utf-8")
-    matches = list(re.finditer(r'^(\d{1,4}):\s*(.+)$', text, re.MULTILINE))
+    # Erkennt: "124: Titel" oder "### 124: Titel"
+    matches = list(re.finditer(r'^#{0,3}\s*(\d{1,4}):\s*(.+)$', text, re.MULTILINE))
     if not matches:
         return 0
 
@@ -110,39 +146,51 @@ def check_sammelsurium() -> int:
         name = m.group(2).strip()
         start = m.end()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        story_text = text[start:end].strip()
-        entries.append((nr, name, story_text))
+        story_text = _clean_story_text(text[start:end])
+        entries.append((nr, name, story_text, m.start(), end))
 
-    existing_nrs = {row["nr"].strip() for row in ir.read_rows(INPUT_FILE)}
+    existing_nrs = {int(row["nr"].strip()) for row in ir.read_rows(INPUT_FILE)}
     added = 0
+    processed_ranges = []
 
-    for nr, name, story_text in entries:
+    for nr, name, story_text, entry_start, entry_end in entries:
         safe = ir.safe_name(name)
         txt_path = STORIES_DIR / f"{nr}_{safe}.txt"
 
-        # TXT-Datei anlegen falls fehlend (auch wenn bereits in CSV)
         if not txt_path.exists() and story_text:
-            txt_path.write_text(story_text, encoding="utf-8")
+            txt_path.write_text(_ensure_paragraph(story_text), encoding="utf-8")
             print(f"[+] Story gespeichert: {txt_path.name}")
 
-        if nr in existing_nrs:
-            # CSV-Eintrag existiert – nur status_story sicherstellen
-            row = ir.find_row(nr, INPUT_FILE)
-            if row and row.get("status_story") != "X" and txt_path.exists():
-                ir.update_field(nr, "status_story", "X", INPUT_FILE)
-                print(f"[+] status_story=X gesetzt für {nr}")
+        if not txt_path.exists():
+            # Kein Text → im Sammelsurium lassen
             continue
 
-        # Komplett neuer Eintrag → CSV-Zeile hinzufügen
-        new_row = {
-            "nr": nr, "stereotyp": name,
-            "status_story": "X" if txt_path.exists() else "",
-            "status_audio": "", "seconds": "", "status_pic": "",
-            "status_video": "", "status_caption": "", "insta_post": "",
-        }
-        if ir.add_row(new_row, INPUT_FILE):
-            print(f"[+] CSV: {nr} '{name}' hinzugefügt")
-            added += 1
+        if int(nr) in existing_nrs:
+            row = ir.find_row(nr, INPUT_FILE)
+            if row and row.get("status_story") != "X":
+                ir.update_field(nr, "status_story", "X", INPUT_FILE)
+                print(f"[+] status_story=X gesetzt für {nr}")
+        else:
+            new_row = {
+                "nr": nr, "stereotyp": name,
+                "status_story": "X",
+                "status_audio": "", "seconds": "", "status_pic": "",
+                "status_video": "", "status_caption": "", "insta_post": "",
+            }
+            if ir.add_row(new_row, INPUT_FILE):
+                print(f"[+] CSV: {nr} '{name}' hinzugefügt")
+                added += 1
+
+        processed_ranges.append((entry_start, entry_end))
+
+    # Verarbeitete Einträge aus Sammelsurium entfernen
+    if processed_ranges:
+        remaining = text
+        for start, end in sorted(processed_ranges, reverse=True):
+            remaining = remaining[:start] + remaining[end:]
+        remaining = re.sub(r'\n{3,}', '\n\n', remaining).strip()
+        SAMMELSURIUM.write_text(remaining + ("\n" if remaining else ""), encoding="utf-8")
+        print(f"[+] {len(processed_ranges)} Einträge aus Sammelsurium entfernt")
 
     return added
 
@@ -200,10 +248,14 @@ def sync():
             ir.update_field(nr_val, "status_pic", "X", INPUT_FILE)
             changes += 1
 
-        # Video
-        mp4_files = list(OUTPUT_DIR.glob(f"{ns}_*.mp4"))
+        # Video – auch in 0_used suchen; Status korrigieren wenn Datei fehlt
+        mp4_files = list(OUTPUT_DIR.glob(f"{ns}_*.mp4")) + list(USED_DIR.glob(f"{ns}_*.mp4"))
         if mp4_files and row.get("status_video") != "X":
             ir.update_field(nr_val, "status_video", "X", INPUT_FILE)
+            changes += 1
+        elif not mp4_files and row.get("status_video") == "X" and row.get("insta_post") != "X":
+            ir.update_field(nr_val, "status_video", "", INPUT_FILE)
+            print(f"[!] status_video zurückgesetzt für #{nr_val} (kein MP4 gefunden)")
             changes += 1
 
         # Caption – in captions.json nachschlagen

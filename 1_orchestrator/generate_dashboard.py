@@ -19,8 +19,10 @@ steps = story_done + caption_done + audio_done + pic_done + video_done
 percent = round((steps / (total * 5)) * 100) if total else 0
 
 
-def ck(status): return "✓" if status == "X" else "○"
-def col(status): return "color: #28a745;" if status == "X" else "color: #ccc;"
+def block(status):
+    if status == "X":
+        return '<span class="blk blk-green"></span>'
+    return '<span class="blk blk-yellow"></span>'
 
 
 rows_html = ""
@@ -32,16 +34,17 @@ for row in data:
     insta_cls = "active" if insta == "X" else ""
     insta_lbl = "✓ Gepostet" if insta == "X" else "Post"
     vid_done  = row.get("status_video", "") == "X"
+    row_cls   = ' class="row-done"' if vid_done else ""
 
-    rows_html += f"""                <tr>
+    rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
                     <td class="name">{stereo}</td>
-                    <td class="status-cell" style="{col(row.get('status_story',''))}">{ck(row.get('status_story',''))}</td>
-                    <td class="status-cell" style="{col(row.get('status_caption',''))}">{ck(row.get('status_caption',''))}</td>
-                    <td class="status-cell" style="{col(row.get('status_audio',''))}">{ck(row.get('status_audio',''))}</td>
+                    <td class="status-cell">{block(row.get('status_story',''))}</td>
+                    <td class="status-cell">{block(row.get('status_caption',''))}</td>
+                    <td class="status-cell">{block(row.get('status_audio',''))}</td>
                     <td class="center">{sec}</td>
-                    <td class="status-cell" style="{col(row.get('status_pic',''))}">{ck(row.get('status_pic',''))}</td>
-                    <td class="status-cell" style="{col(row.get('status_video',''))}">{ck(row.get('status_video',''))}</td>
+                    <td class="status-cell">{block(row.get('status_pic',''))}</td>
+                    <td class="status-cell">{block(row.get('status_video',''))}</td>
                     <td class="center">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
                     </td>
@@ -158,6 +161,21 @@ html = f'''<!DOCTYPE html>
             transition: width 0.3s;
         }}
         .log-msg {{ font-size: 12px; color: #555; text-align: center; }}
+        .log-list {{
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            font-family: monospace;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 10px;
+            display: none;
+        }}
+        .log-list.visible {{ display: block; }}
+        .log-list div {{ padding: 2px 0; border-bottom: 1px solid #f0f0f0; }}
+        .log-list div:last-child {{ border-bottom: none; }}
         .pic-input {{
             display: none;
             margin-top: 12px;
@@ -192,7 +210,12 @@ html = f'''<!DOCTYPE html>
         tr:hover {{ background: #fff5f5; }}
         .num {{ font-weight: bold; color: #e8120a; width: 35px; text-align: center; }}
         .name {{ min-width: 220px; font-weight: 500; }}
-        .status-cell {{ text-align: center; width: 35px; font-size: 17px; font-weight: bold; }}
+        .status-cell {{ text-align: center; width: 35px; }}
+        .blk {{ display: inline-block; width: 16px; height: 16px; border-radius: 3px; vertical-align: middle; }}
+        .blk-green {{ background: #28a745; }}
+        .blk-yellow {{ background: #ffc107; }}
+        tr.row-done {{ background: #edfff3; }}
+        tr.row-done:hover {{ background: #d6f5e3; }}
         .center {{ text-align: center; }}
         .insta-btn {{
             background: #e9ecef; border: none; padding: 5px 11px;
@@ -205,6 +228,18 @@ html = f'''<!DOCTYPE html>
         ::-webkit-scrollbar {{ width: 8px; }}
         ::-webkit-scrollbar-track {{ background: #f1f1f1; }}
         ::-webkit-scrollbar-thumb {{ background: #e8120a; border-radius: 4px; }}
+        .server-status {{
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: #555;
+            background: #f0f0f0; border-radius: 20px;
+            padding: 5px 12px; white-space: nowrap;
+        }}
+        .server-dot {{
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ccc; flex-shrink: 0;
+        }}
+        .server-dot.online {{ background: #28a745; box-shadow: 0 0 6px #28a745; }}
+        .server-dot.offline {{ background: #dc3545; }}
     </style>
 </head>
 <body>
@@ -212,11 +247,16 @@ html = f'''<!DOCTYPE html>
     <div class="header">
         <h1>
             <span>🇩🇪 Stereotypen Dashboard</span>
+            <div class="server-status" id="serverStatus">
+                <span class="server-dot" id="serverDot"></span>
+                <span id="serverText">Verbinde...</span>
+            </div>
             <div class="btn-group">
                 <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
                 <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
                 <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
-                <button class="action-btn" id="audioBtn"   onclick="showInput('audio')">🎵 Audio generieren</button>
+                <button class="action-btn" id="audioBtn"      onclick="showInput('audio')">🎵 Audio generieren</button>
+                <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
                 <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
                 <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
                 <button class="action-btn" id="gptBtn"     onclick="runDirect('gpt')">📝 GPT Prompts</button>
@@ -249,11 +289,15 @@ html = f'''<!DOCTYPE html>
         </div>
 
         <div class="log-box" id="logBox">
-            <strong id="logTitle">Verarbeitung...</strong>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <strong id="logTitle">Verarbeitung...</strong>
+                <button id="abortBtn" onclick="abortTask()" style="background:#dc3545;color:white;border:none;padding:5px 14px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">⏹ Abbrechen</button>
+            </div>
             <div class="log-progress">
                 <div class="log-fill" id="logFill" style="width:0%">0%</div>
             </div>
             <div class="log-msg" id="logMsg">Starte...</div>
+            <div class="log-list" id="logList"></div>
         </div>
     </div>
 
@@ -285,13 +329,16 @@ html = f'''<!DOCTYPE html>
         'story':   {{ btn: 'storyBtn',   api: '/api/generate-story',   label: '✍️ Story generieren'  }},
         'caption': {{ btn: 'captionBtn', api: '/api/generate-caption', label: '💬 Caption generieren' }},
         'picture': {{ btn: 'picBtn',     api: '/api/generate-picture', label: '🖼️ Bild generieren'   }},
-        'audio':   {{ btn: 'audioBtn',   api: '/api/generate-audio',   label: '🎵 Audio generieren'  }},
+        'audio':     {{ btn: 'audioBtn',    api: '/api/generate-audio',         label: '🎵 Audio generieren'     }},
+        'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   }},
         'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    }},
         'gpt':     {{ btn: 'gptBtn',     api: '/api/generate-gpt-prompt', label: '📝 GPT Prompts'        }},
     }};
 
     let _pendingAction = null;
+    let _pollInterval = null;
+    let _activeBtn = null;
 
     function showInput(type) {{
         const div = document.getElementById('actionInputDiv');
@@ -324,8 +371,12 @@ html = f'''<!DOCTYPE html>
 
     async function _launch(cfg, val) {{
         const btn = document.getElementById(cfg.btn);
+        _activeBtn = btn;
         btn.classList.add('running');
         btn.disabled = true;
+        const abortBtn = document.getElementById('abortBtn');
+        abortBtn.disabled = false;
+        abortBtn.textContent = '⏹ Abbrechen';
         document.getElementById('logBox').classList.add('visible');
         document.getElementById('logTitle').textContent = cfg.label;
         setLog(5, val ? `Starte für ${{val}}...` : 'Starte...');
@@ -349,23 +400,34 @@ html = f'''<!DOCTYPE html>
     }}
 
     function resetBtn(btn, label) {{
-        btn.classList.remove('running');
-        btn.disabled = false;
+        if (btn) {{ btn.classList.remove('running'); btn.disabled = false; }}
         document.getElementById('logBox').classList.remove('visible');
+        _activeBtn = null;
+    }}
+
+    function updateLogList(lines) {{
+        const el = document.getElementById('logList');
+        if (!lines || lines.length === 0) {{ el.classList.remove('visible'); return; }}
+        el.classList.add('visible');
+        el.innerHTML = lines.map(l => `<div>${{l}}</div>`).join('');
+        el.scrollTop = el.scrollHeight;
     }}
 
     function pollProgress(btn, label) {{
+        if (_pollInterval) clearInterval(_pollInterval);
         let pct = 5;
-        const interval = setInterval(async () => {{
+        _pollInterval = setInterval(async () => {{
             try {{
                 const resp = await fetch('/api/progress');
                 const data = await resp.json();
                 setLog(data.percent || pct, data.message || '...');
-                if (data.status === 'complete' || data.status === 'error') {{
-                    clearInterval(interval);
+                updateLogList(data.log);
+                if (data.status === 'complete' || data.status === 'error' || data.status === 'idle') {{
+                    clearInterval(_pollInterval);
+                    _pollInterval = null;
                     if (data.status === 'complete') {{
                         setLog(100, 'Fertig! Lade Dashboard neu...');
-                        setTimeout(() => location.reload(), 1500);
+                        setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
                     }} else {{
                         resetBtn(btn, label);
                     }}
@@ -379,13 +441,51 @@ html = f'''<!DOCTYPE html>
         }}, 2000);
     }}
 
+    async function abortTask() {{
+        const btn = document.getElementById('abortBtn');
+        btn.textContent = '⏳...';
+        btn.disabled = true;
+        try {{
+            await fetch('/api/abort', {{ method: 'POST' }});
+        }} catch(e) {{}}
+        if (_pollInterval) {{ clearInterval(_pollInterval); _pollInterval = null; }}
+        resetBtn(_activeBtn, '');
+    }}
+
     async function doRefresh() {{
         const btn = document.getElementById('refreshBtn');
-        btn.textContent = '⏳ Scanne...';
+        _activeBtn = btn;
+        btn.textContent = '⏳ Refresh...';
+        btn.classList.add('running');
         btn.disabled = true;
-        try {{ await fetch('/api/refresh', {{ method: 'POST' }}); }} catch(e) {{}}
-        location.reload();
+        const abortBtn = document.getElementById('abortBtn');
+        abortBtn.disabled = false;
+        abortBtn.textContent = '⏹ Abbrechen';
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = '🔄 Refresh';
+        setLog(5, 'Starte...');
+        try {{
+            const resp = await fetch('/api/refresh', {{ method: 'POST' }});
+            if (resp.ok) pollProgress(btn, '🔄 Refresh');
+            else {{ btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }}
+        }} catch(e) {{ btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }}
     }}
+
+    async function updateServerStatus() {{
+        const dot = document.getElementById('serverDot');
+        const txt = document.getElementById('serverText');
+        try {{
+            const resp = await fetch('/api/status');
+            const data = await resp.json();
+            dot.className = 'server-dot online';
+            txt.textContent = `Server online · gestartet ${{data.started}} · Laufzeit ${{data.uptime}}`;
+        }} catch(e) {{
+            dot.className = 'server-dot offline';
+            txt.textContent = 'Server offline';
+        }}
+    }}
+    updateServerStatus();
+    setInterval(updateServerStatus, 30000);
 
     async function togglePost(btn) {{
         if (btn.classList.contains('active')) return;

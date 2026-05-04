@@ -7,10 +7,14 @@
 # Generierte Mediendateien (zu groß für Git)
 1_orchestrator/output/*.mp3
 1_orchestrator/output/*.mp4
+1_orchestrator/output/*.png
 1_orchestrator/output/0_used/
 1_orchestrator/output/1_used/
 1_orchestrator/2_pic/*.png
 1_orchestrator/2_pic/1_used/
+
+# Generierte Hilfsdateien
+1_orchestrator/1_input/gpt_prompts.txt
 
 # Python
 __pycache__/

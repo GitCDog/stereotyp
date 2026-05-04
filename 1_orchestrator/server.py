@@ -6,10 +6,12 @@ Verwendung:
   python server.py          # startet auf http://localhost:5000
 """
 
+import csv
 import json
 import subprocess
 import sys
 import threading
+from datetime import datetime
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_file
@@ -19,16 +21,30 @@ load_dotenv()
 
 app = Flask(__name__)
 
+_server_start = datetime.now()
+
 # Globaler Task-Status
-_task = {"status": "idle", "message": "", "percent": 0}
+_task = {"status": "idle", "message": "", "percent": 0, "log": []}
 _task_lock = threading.Lock()
 
+# Abort-Mechanismus
+_current_proc = None
+_proc_lock = threading.Lock()
+_abort_flag = threading.Event()
 
-def set_task(status, message, percent):
+
+def set_task(status, message, percent, log=None):
     with _task_lock:
         _task["status"] = status
         _task["message"] = message
         _task["percent"] = percent
+        if log is not None:
+            _task["log"] = log
+
+
+def append_log(entry: str):
+    with _task_lock:
+        _task["log"].append(entry)
 
 
 def parse_range(val: str) -> list[str]:
@@ -48,8 +64,20 @@ def parse_range(val: str) -> list[str]:
     return [val]
 
 
-def run_script(args: list[str]):
-    subprocess.run([sys.executable] + args, cwd=Path(__file__).parent)
+def run_script(args: list[str]) -> int:
+    global _current_proc
+    if _abort_flag.is_set():
+        return -1
+    proc = subprocess.Popen([sys.executable] + args, cwd=Path(__file__).parent)
+    with _proc_lock:
+        _current_proc = proc
+    try:
+        proc.wait()
+    finally:
+        with _proc_lock:
+            if _current_proc is proc:
+                _current_proc = None
+    return proc.returncode
 
 
 def refresh_dashboard():
@@ -62,6 +90,20 @@ def refresh_dashboard():
 @app.route("/")
 def index():
     return send_file("dashboard.html")
+
+
+# ── Server-Status ────────────────────────────────────────────────────────────
+
+@app.route("/api/status")
+def status():
+    uptime = datetime.now() - _server_start
+    h, rem = divmod(int(uptime.total_seconds()), 3600)
+    m, s = divmod(rem, 60)
+    return jsonify({
+        "started": _server_start.strftime("%d.%m.%Y %H:%M:%S"),
+        "uptime": f"{h:02d}:{m:02d}:{s:02d}",
+        "online": True,
+    })
 
 
 # ── Fortschritt ─────────────────────────────────────────────────────────────
@@ -86,20 +128,86 @@ def generate_audio():
         try:
             if story_val:
                 numbers = parse_range(story_val)
-                total = len(numbers)
-                for i, nr in enumerate(numbers):
-                    set_task("running", f"Audio #{nr}...", int((i / total) * 90))
-                    run_script(["generate_audio.py", "--story", str(nr)])
+                candidates = [(nr, "") for nr in numbers]
             else:
-                set_task("running", "Nächstes Audio...", 10)
-                run_script(["generate_audio.py"])
-            set_task("running", "Dashboard aktualisieren...", 95)
+                input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+                with open(input_file, encoding="utf-8") as f:
+                    rows = list(csv.DictReader(f))
+                candidates = [
+                    (r["nr"].strip(), r.get("stereotyp", "").strip()) for r in rows
+                    if r.get("status_story") == "X"
+                    and r.get("status_audio", "") != "X"
+                ]
+
+            total = len(candidates)
+            if not total:
+                set_task("complete", "Keine ausstehenden Audios.", 100, log=[])
+                return
+
+            log = [f"⏳ #{nr}  {name}" for nr, name in candidates]
+            set_task("running", f"0/{total} fertig", 5, log=log)
+
+            for i, (nr, name) in enumerate(candidates):
+                pct = int((i / total) * 90)
+                log[i] = f"🔄 #{nr}  {name}"
+                set_task("running", f"{i}/{total} fertig – generiere #{nr}...", pct, log=list(log))
+                run_script(["generate_audio.py", "--story", str(nr)])
+                log[i] = f"✅ #{nr}  {name}"
+                set_task("running", f"{i+1}/{total} fertig", int(((i+1) / total) * 90), log=list(log))
+
+            set_task("running", "Dashboard aktualisieren...", 95, log=list(log))
             refresh_dashboard()
-            set_task("complete", "Fertig!", 100)
+            set_task("complete", f"Fertig! {total} Audio(s) generiert.", 100, log=list(log))
         except Exception as e:
             set_task("error", str(e), 0)
 
-    set_task("running", "Starte...", 5)
+    set_task("running", "Starte...", 5, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
+# ── Audio für alle Pics ──────────────────────────────────────────────────────
+
+@app.route("/api/generate-audio-for-pics", methods=["POST"])
+def generate_audio_for_pics():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    def task():
+        try:
+            import csv
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+            with open(input_file, encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+            candidates = [
+                (r["nr"].strip(), r.get("stereotyp", "").strip()) for r in rows
+                if r.get("status_pic") == "X"
+                and r.get("status_audio", "") != "X"
+                and r.get("status_story", "") == "X"
+            ]
+            total = len(candidates)
+            if not total:
+                set_task("complete", "Keine ausstehenden Audios für vorhandene Bilder.", 100, log=[])
+                return
+
+            log = [f"⏳ #{nr}  {name}" for nr, name in candidates]
+            set_task("running", f"0/{total} fertig", 5, log=log)
+
+            for i, (nr, name) in enumerate(candidates):
+                pct = int(((i) / total) * 90)
+                log[i] = f"🔄 #{nr}  {name}"
+                set_task("running", f"{i}/{total} fertig – generiere #{nr}...", pct, log=list(log))
+                run_script(["generate_audio.py", "--story", nr])
+                log[i] = f"✅ #{nr}  {name}"
+                set_task("running", f"{i+1}/{total} fertig", int(((i+1) / total) * 90), log=list(log))
+
+            set_task("running", "Dashboard aktualisieren...", 95, log=list(log))
+            refresh_dashboard()
+            set_task("complete", f"Fertig! {total} Audio(s) generiert.", 100, log=list(log))
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Starte...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
 
@@ -205,23 +313,56 @@ def generate_video():
     story_val = str(body.get("story", "")).strip()
 
     def task():
+        _abort_flag.clear()
         try:
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
             if story_val:
                 numbers = parse_range(story_val)
-                total = len(numbers)
-                for i, nr in enumerate(numbers):
-                    set_task("running", f"Video #{nr}...", int((i / total) * 90))
-                    run_script(["generate_videos.py", "--story", str(nr)])
+                with open(input_file, encoding="utf-8") as f:
+                    all_rows = {r["nr"].strip(): r.get("stereotyp", "").strip()
+                                for r in csv.DictReader(f)}
+                candidates = [(nr, all_rows.get(nr, "")) for nr in numbers]
             else:
-                set_task("running", "Alle ausstehenden Videos...", 20)
-                run_script(["generate_videos.py", "--all"])
-            set_task("running", "Dashboard aktualisieren...", 95)
+                with open(input_file, encoding="utf-8") as f:
+                    rows = list(csv.DictReader(f))
+                candidates = [
+                    (r["nr"].strip(), r.get("stereotyp", "").strip()) for r in rows
+                    if r.get("status_audio") == "X"
+                    and r.get("status_pic") == "X"
+                    and r.get("status_video", "") != "X"
+                ]
+
+            total = len(candidates)
+            if not total:
+                set_task("complete", "Keine Videos ausstehend.", 100, log=[])
+                return
+
+            log = [f"⏳ #{nr}  {name}" for nr, name in candidates]
+            set_task("running", f"0/{total} Videos fertig", 5, log=log)
+
+            for i, (nr, name) in enumerate(candidates):
+                if _abort_flag.is_set():
+                    set_task("idle", "Abgebrochen", 0, log=list(log))
+                    return
+                pct = int((i / total) * 88) + 5
+                log[i] = f"🎬 #{nr}  {name}"
+                set_task("running", f"{i}/{total} – rendere #{nr}: {name}...", pct, log=list(log))
+                run_script(["generate_videos.py", "--story", str(nr)])
+                if _abort_flag.is_set():
+                    log[i] = f"⏹️ #{nr}  {name}"
+                    set_task("idle", "Abgebrochen", 0, log=list(log))
+                    return
+                log[i] = f"✅ #{nr}  {name}"
+                set_task("running", f"{i+1}/{total} fertig", int(((i + 1) / total) * 88) + 5, log=list(log))
+
+            set_task("running", "Dashboard aktualisieren...", 97, log=list(log))
             refresh_dashboard()
-            set_task("complete", "Fertig!", 100)
+            set_task("complete", f"Fertig! {total} Video(s) erstellt.", 100, log=list(log))
         except Exception as e:
             set_task("error", str(e), 0)
 
-    set_task("running", "Starte...", 5)
+    _abort_flag.clear()
+    set_task("running", "Starte...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
 
@@ -266,13 +407,59 @@ def generate_gpt_prompt():
     return jsonify({"status": "started"})
 
 
-# ── Refresh (Datei-Scan + Dashboard) ────────────────────────────────────────
+# ── Refresh (Datei-Scan + Dashboard + neue Stories) ─────────────────────────
 
 @app.route("/api/refresh", methods=["POST"])
 def refresh():
-    run_script(["sync_status.py"])
-    refresh_dashboard()
-    return jsonify({"status": "ok"})
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    def task():
+        _abort_flag.clear()
+        try:
+            set_task("running", "OneDrive prüfen...", 15)
+            run_script(["check_onedrive_images.py"])
+
+            set_task("running", "Sammelsurium → 1_input/ extrahieren...", 35)
+            import sync_status as ss
+            new_from_sammelsurium = ss.check_sammelsurium()
+
+            set_task("running", "Dateien scannen & CSV aktualisieren...", 65)
+            run_script(["sync_status.py"])
+
+            set_task("running", "GPT-Prompts für fehlende Bilder schreiben...", 80)
+            onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
+            run_script(["generate_gpt_prompt.py", "--no-pic", "--out", onedrive_out])
+
+            set_task("running", "Dashboard aktualisieren...", 90)
+            refresh_dashboard()
+
+            msg = f"Fertig! {new_from_sammelsurium} neue Stories extrahiert." if new_from_sammelsurium else "Fertig!"
+            log = [f"📄 {new_from_sammelsurium} Stories aus Sammelsurium extrahiert und gelöscht"] if new_from_sammelsurium else []
+            set_task("complete", msg, 100, log=log)
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    _abort_flag.clear()
+    set_task("running", "Starte Refresh...", 5, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
+# ── Abort ────────────────────────────────────────────────────────────────────
+
+@app.route("/api/abort", methods=["POST"])
+def abort_task():
+    _abort_flag.set()
+    with _proc_lock:
+        proc = _current_proc
+    if proc and proc.poll() is None:
+        proc.terminate()
+    with _task_lock:
+        _task["status"] = "idle"
+        _task["message"] = "Abgebrochen"
+        _task["percent"] = 0
+    return jsonify({"status": "aborted"})
 
 
 # ── Mark Posted ──────────────────────────────────────────────────────────────
