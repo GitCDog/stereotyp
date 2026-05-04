@@ -25,7 +25,6 @@ SCRIPT_DIR    = Path(__file__).parent
 ONEDRIVE_DIR  = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
 OUTPUT_DIR    = SCRIPT_DIR / "output"
 INPUT_FILE    = SCRIPT_DIR / "1_input" / "1_input_file.txt"
-NAMED_PATTERN = re.compile(r'^\d{4}_pic\.png$')
 PYTHON        = sys.executable
 
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -36,40 +35,10 @@ def load_csv_rows() -> list[dict]:
         return [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
 
 
-def process_known_images(rows: list[dict]) -> list[str]:
-    """Verarbeitet korrekt benannte Bilder sofort. Gibt verarbeitete nrs zurück."""
+def get_onedrive_images() -> list[str]:
     if not ONEDRIVE_DIR.exists():
         return []
-    try:
-        import input_reader as ir
-    except ImportError:
-        ir = None
-
-    done = []
-    for img in sorted(ONEDRIVE_DIR.glob("*.png")):
-        if not NAMED_PATTERN.match(img.name):
-            continue
-        nr_int = int(img.stem.replace("_pic", ""))
-        nr_str = f"{nr_int:04d}"
-        dest = OUTPUT_DIR / f"{nr_str}_pic.png"
-        shutil.copy2(img, dest)
-        img.unlink()
-        done.append(nr_str)
-        if ir:
-            try:
-                ir.update_field(str(nr_int), "status_pic", "X", str(INPUT_FILE))
-            except Exception:
-                pass
-    if done:
-        subprocess.run([PYTHON, "sync_status.py"], cwd=SCRIPT_DIR, capture_output=True)
-    return done
-
-
-def get_unrecognized() -> list[str]:
-    if not ONEDRIVE_DIR.exists():
-        return []
-    return [p.name for p in sorted(ONEDRIVE_DIR.glob("*.png"))
-            if not NAMED_PATTERN.match(p.name)]
+    return [p.name for p in sorted(ONEDRIVE_DIR.glob("*.png"))]
 
 
 def get_pending_videos(rows: list[dict]) -> list[str]:
@@ -91,14 +60,8 @@ def main():
     rows = load_csv_rows()
     msg_parts = ["🚀 Startup Pipeline gestartet"]
 
-    # 1. Bekannte Bilder
-    known = process_known_images(rows)
-    if known:
-        msg_parts.append(f"✅ {len(known)} Bild(er) aus OneDrive übernommen: {', '.join(known)}")
-        rows = load_csv_rows()
-
-    # 2. Unbekannte Bilder → Claude erledigt das automatisch
-    unknown = get_unrecognized()
+    # 1. Alle Bilder in OneDrive → Claude identifiziert und verarbeitet sie
+    unknown = get_onedrive_images()
     if unknown:
         story_list = "\n".join(
             f"{r['nr']}: {r['stereotyp']}" for r in rows

@@ -15,7 +15,6 @@ ONEDRIVE_DIR  = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
 OUTPUT_DIR    = Path(r"C:\Users\slawa\Desktop\claude\8_stereotypen\1_orchestrator\output")
 INPUT_FILE    = r"C:\Users\slawa\Desktop\claude\8_stereotypen\1_orchestrator\1_input\1_input_file.txt"
 SCRIPT_DIR    = Path(r"C:\Users\slawa\Desktop\claude\8_stereotypen\1_orchestrator")
-NAMED_PATTERN = re.compile(r'^\d{4}_pic\.png$')
 
 sys.path.insert(0, str(SCRIPT_DIR))
 
@@ -36,20 +35,7 @@ def process_onedrive_images() -> dict:
     done, unrecognized = [], []
 
     for img in images:
-        if NAMED_PATTERN.match(img.name):
-            nr_str = f"{int(img.stem.replace('_pic', '')):04d}"
-            dest = OUTPUT_DIR / f"{nr_str}_pic.png"
-            shutil.copy2(img, dest)
-            img.unlink()
-            done.append(dest.name)
-            print(f"[+] {img.name} → {dest.name}")
-            if ir:
-                try:
-                    ir.update_field(str(int(nr_str)), "status_pic", "X", INPUT_FILE)
-                except Exception:
-                    pass
-        else:
-            unrecognized.append(img.name)
+        unrecognized.append(img.name)
 
     if done:
         subprocess.run(["python", "sync_status.py"],        cwd=SCRIPT_DIR)
