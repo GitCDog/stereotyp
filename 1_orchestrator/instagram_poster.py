@@ -22,7 +22,7 @@ import random
 import logging
 import requests
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 import yaml
 from dotenv import load_dotenv
@@ -403,6 +403,25 @@ class InstagramPoster:
         except Exception as e:
             logger.error(f"[-] posted_videos.json GitHub fehlgeschlagen: {e}")
 
+    def _wait_for_posting_window(self):
+        """Wartet bis 18:30–19:15 CEST (16:30–17:15 UTC). Wird bei manuellem Dispatch übersprungen."""
+        now = datetime.now(timezone.utc)
+        minutes_offset = random.randint(0, 44)
+        total_minutes = 16 * 60 + 30 + minutes_offset
+        post_hour = total_minutes // 60
+        post_minute = total_minutes % 60
+        post_time = now.replace(hour=post_hour, minute=post_minute, second=0, microsecond=0)
+
+        if post_time <= now:
+            logger.info(f"[*] Posting-Fenster ({post_time.strftime('%H:%M')} UTC) bereits vorbei – poste sofort")
+            return
+
+        wait_seconds = (post_time - now).total_seconds()
+        cest = post_time + timedelta(hours=2)
+        logger.info(f"[*] Warte bis {cest.strftime('%H:%M')} CEST ({post_time.strftime('%H:%M')} UTC) – {wait_seconds / 60:.0f} Minuten")
+        time.sleep(wait_seconds)
+        logger.info("[*] Posting-Fenster erreicht – starte Post")
+
     def already_posted_today(self) -> bool:
         """Prüft ob heute bereits ein Video gepostet wurde."""
         today = datetime.now().strftime("%Y-%m-%d")
@@ -444,8 +463,11 @@ class InstagramPoster:
             logger.info("[+] Heute bereits gepostet – überspringe.")
             return False
 
-        # Nächste Story finden
+        # Posting-Fenster abwarten (Schedule-Run; bei manuellem Dispatch mit STORY_NR sofort posten)
         story_nr = os.getenv("STORY_NR", "").strip() or None
+        if not self.dry_run and not story_nr:
+            self._wait_for_posting_window()
+
         rows = self.read_input_csv()
         row = self.find_next_to_post(rows, story_nr)
         if not row:
