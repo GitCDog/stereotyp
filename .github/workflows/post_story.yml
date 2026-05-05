@@ -2,9 +2,7 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 18:30 CEST (16:30 UTC)
-    # Zufällige Pause deaktiviert – postet pünktlich um 18:30
-    # - cron-sleep: SECS=$(( RANDOM % 3601 )); sleep $SECS
+    # Täglich 18:30 CEST (16:30 UTC) + 0-60 min Zufallsverzögerung
     - cron: "30 16 * * *"
   workflow_dispatch:
     inputs:
@@ -60,10 +58,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase || true
           git add 1_orchestrator/1_input/1_input_file.txt \
                   1_orchestrator/1_input/0_reihenfolge.txt \
                   1_orchestrator/dashboard.html \
-                  1_orchestrator/posted_videos.json || true
+                  1_orchestrator/output/posted_videos.json || true
           git diff --staged --quiet || git commit -m "[AUTO] Instagram Post – $(date +'%Y-%m-%d')"
           git push || true
 
