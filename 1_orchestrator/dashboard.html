@@ -28,9 +28,10 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-row { margin-bottom: 8px; }
         .action-btn {
             background: #e8120a;
             color: white;
@@ -77,8 +78,8 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            width: 66%;
-            min-width: 66%;
+            width: 67%;
+            min-width: 67%;
             transition: width 0.4s;
         }
         .log-box {
@@ -187,6 +188,28 @@
         }
         .server-dot.online { background: #28a745; box-shadow: 0 0 6px #28a745; }
         .server-dot.offline { background: #dc3545; }
+        .summary-modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        .summary-modal.visible { display: flex; }
+        .summary-inner {
+            background: white; border-radius: 12px; padding: 28px 32px;
+            max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+        .summary-inner h3 { margin-bottom: 14px; color: #111; font-size: 17px; }
+        .summary-list { font-size: 13px; margin-bottom: 20px; }
+        .summary-list div { padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+        .summary-list div:last-child { border-bottom: none; }
+        .summary-ok {
+            background: #e8120a; color: white; border: none;
+            padding: 11px 0; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 14px; width: 100%;
+        }
+        .summary-ok:hover { background: #c00e08; }
     </style>
 </head>
 <body>
@@ -194,37 +217,41 @@
     <div class="header">
         <h1>
             <span>🇩🇪 Stereotypen Dashboard</span>
-            <div class="server-status" id="serverStatus">
-                <span class="server-dot" id="serverDot"></span>
-                <span id="serverText">Verbinde...</span>
-            </div>
-            <div class="btn-group">
-                <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
-                <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
-                <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
-                <button class="action-btn" id="audioBtn"      onclick="showInput('audio')">🎵 Audio generieren</button>
-                <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
-                <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
-                <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
-                <button class="action-btn" id="gptBtn"     onclick="runDirect('gpt')">📝 GPT Prompts</button>
-                <button class="action-btn" id="refreshBtn" onclick="doRefresh()">🔄 Refresh</button>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="server-status" id="serverStatus">
+                    <span class="server-dot" id="serverDot"></span>
+                    <span id="serverText">Verbinde...</span>
+                </div>
+                <button onclick="restartServer()" id="restartBtn" style="background:#333;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;">↺ Neustart</button>
             </div>
         </h1>
+        <div class="btn-group btn-row">
+            <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
+            <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
+            <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+        </div>
+        <div class="btn-group btn-row">
+            <button class="action-btn" id="refreshBtn"  onclick="doRefresh()">🔄 Refresh</button>
+            <button class="action-btn" id="audioBtn"    onclick="showInput('audio')">🎵 Audio generieren</button>
+            <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
+            <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 Video erstellen</button>
+            <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 Instagram Post</button>
+        </div>
 
         <div class="stats">
             <div class="stat-box"><h3>Gesamt</h3><div class="val">173</div></div>
             <div class="stat-box"><h3>Story ✓</h3><div class="val">173</div></div>
             <div class="stat-box"><h3>Caption ✓</h3><div class="val">173</div></div>
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">173</div></div>
-            <div class="stat-box"><h3>Bild ✓</h3><div class="val">28</div></div>
-            <div class="stat-box"><h3>Video ✓</h3><div class="val">28</div></div>
+            <div class="stat-box"><h3>Bild ✓</h3><div class="val">30</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">30</div></div>
             <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">8</div></div>
         </div>
 
         <div class="progress-section">
-            <strong>Gesamtfortschritt (66%)</strong>
+            <strong>Gesamtfortschritt (67%)</strong>
             <div class="progress-bar">
-                <div class="progress-fill">66%</div>
+                <div class="progress-fill">67%</div>
             </div>
         </div>
 
@@ -245,6 +272,14 @@
             </div>
             <div class="log-msg" id="logMsg">Starte...</div>
             <div class="log-list" id="logList"></div>
+        </div>
+    </div>
+
+    <div class="summary-modal" id="summaryModal" onclick="closeSummary()">
+        <div class="summary-inner" onclick="event.stopPropagation()">
+            <h3>✅ Refresh abgeschlossen</h3>
+            <div class="summary-list" id="summaryList"></div>
+            <button class="summary-ok" onclick="closeSummary()">OK</button>
         </div>
     </div>
 
@@ -280,7 +315,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">2</td>
-                    <td class="name">Die Direktheit </td>
+                    <td class="name">Die Direktheit</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -293,7 +328,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">3</td>
-                    <td class="name">Die Tatort-Religiosität   </td>
+                    <td class="name">Die Tatort-Religiosität</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -306,7 +341,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">4</td>
-                    <td class="name">Stoßlüften   </td>
+                    <td class="name">Stoßlüften</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -319,7 +354,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">5</td>
-                    <td class="name">Hausschuhe für Gäste   </td>
+                    <td class="name">Hausschuhe für Gäste</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -332,7 +367,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">6</td>
-                    <td class="name">Das haben wir schon immer so gemacht   </td>
+                    <td class="name">Das haben wir schon immer so gemacht</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -345,7 +380,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">7</td>
-                    <td class="name">Dienst ist Dienst   </td>
+                    <td class="name">Dienst ist Dienst</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -358,7 +393,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">8</td>
-                    <td class="name">Der Hefter-Fetisch   </td>
+                    <td class="name">Der Hefter-Fetisch</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -371,7 +406,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">9</td>
-                    <td class="name">Termintreue   </td>
+                    <td class="name">Termintreue</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -384,7 +419,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">10</td>
-                    <td class="name">Laminier-Wahn   </td>
+                    <td class="name">Laminier-Wahn</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -397,7 +432,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">11</td>
-                    <td class="name">Die Brot-Kultur   </td>
+                    <td class="name">Die Brot-Kultur</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -410,7 +445,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">12</td>
-                    <td class="name">Schorle-Alles   </td>
+                    <td class="name">Schorle-Alles</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -423,7 +458,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">13</td>
-                    <td class="name">Spargelzeit   </td>
+                    <td class="name">Spargelzeit</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -431,12 +466,12 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn active" data-nr="13" onclick="togglePost(this)" >✓ Gepostet</button>
+                        <button class="insta-btn " data-nr="13" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
                 <tr class="row-done">
                     <td class="num">14</td>
-                    <td class="name">Abendbrot   </td>
+                    <td class="name">Abendbrot</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -449,7 +484,7 @@
                 </tr>
                 <tr class="row-done">
                     <td class="num">15</td>
-                    <td class="name">Die Ampel-Disziplin   </td>
+                    <td class="name">Die Ampel-Disziplin</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -462,7 +497,7 @@
                 </tr>
                 <tr>
                     <td class="num">16</td>
-                    <td class="name">Die Direktheit   </td>
+                    <td class="name">Die Direktheit</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -475,7 +510,7 @@
                 </tr>
                 <tr>
                     <td class="num">17</td>
-                    <td class="name">Das Auto als Heiligtum   </td>
+                    <td class="name">Das Auto als Heiligtum</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -488,7 +523,7 @@
                 </tr>
                 <tr>
                     <td class="num">18</td>
-                    <td class="name">Mülltrennung als Extremsport   </td>
+                    <td class="name">Mülltrennung als Extremsport</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -501,11 +536,11 @@
                 </tr>
                 <tr>
                     <td class="num">19</td>
-                    <td class="name">Kein Bargeld, keine Chance   </td>
+                    <td class="name">Kein Bargeld</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">50</td>
+                    <td class="center">X</td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center">
@@ -514,7 +549,7 @@
                 </tr>
                 <tr>
                     <td class="num">20</td>
-                    <td class="name">Die Vereinsmeierei   </td>
+                    <td class="name">Die Vereinsmeierei</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -527,7 +562,7 @@
                 </tr>
                 <tr>
                     <td class="num">21</td>
-                    <td class="name">Der Mallorca-Kegelclub   </td>
+                    <td class="name">Der Mallorca-Kegelclub</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -540,7 +575,7 @@
                 </tr>
                 <tr>
                     <td class="num">22</td>
-                    <td class="name">Sandalen mit Socken   </td>
+                    <td class="name">Sandalen mit Socken</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -553,7 +588,7 @@
                 </tr>
                 <tr>
                     <td class="num">23</td>
-                    <td class="name">Die Wandergruppe „Alpenglück"   </td>
+                    <td class="name">Die Wandergruppe „Alpenglück</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -566,7 +601,7 @@
                 </tr>
                 <tr>
                     <td class="num">24</td>
-                    <td class="name">Der Handtuch-Reservierer   </td>
+                    <td class="name">Der Handtuch-Reservierer</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -579,7 +614,7 @@
                 </tr>
                 <tr>
                     <td class="num">25</td>
-                    <td class="name">Der Berliner Techno-Hipster   </td>
+                    <td class="name">Der Berliner Techno-Hipster</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -592,7 +627,7 @@
                 </tr>
                 <tr>
                     <td class="num">26</td>
-                    <td class="name">Der „Vanlife"-Aussteiger   </td>
+                    <td class="name">Der Vanlife-Aussteiger</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -605,7 +640,7 @@
                 </tr>
                 <tr>
                     <td class="num">27</td>
-                    <td class="name">Der Elektroauto-Missionar   </td>
+                    <td class="name">Der Elektroauto-Missionar</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -618,7 +653,7 @@
                 </tr>
                 <tr>
                     <td class="num">28</td>
-                    <td class="name">Der Fitness-Influencer aus dem Dorf   </td>
+                    <td class="name">Der Fitness-Influencer aus dem Dorf</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -631,7 +666,7 @@
                 </tr>
                 <tr>
                     <td class="num">29</td>
-                    <td class="name">Der Blockwart-Nachbar   </td>
+                    <td class="name">Der Blockwart-Nachbar</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -644,7 +679,7 @@
                 </tr>
                 <tr>
                     <td class="num">30</td>
-                    <td class="name">Der Anzeige ist raus-Typ   </td>
+                    <td class="name">Der Anzeige ist raus-Typ</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -657,7 +692,7 @@
                 </tr>
                 <tr>
                     <td class="num">31</td>
-                    <td class="name">Der DB-Wutbürger   </td>
+                    <td class="name">Der DB-Wutbürger</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -670,7 +705,7 @@
                 </tr>
                 <tr>
                     <td class="num">32</td>
-                    <td class="name">Der Grillmeister   </td>
+                    <td class="name">Der Grillmeister</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -683,7 +718,7 @@
                 </tr>
                 <tr>
                     <td class="num">33</td>
-                    <td class="name">Die Bio-Mami   </td>
+                    <td class="name">Die Bio-Mami</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -696,7 +731,7 @@
                 </tr>
                 <tr>
                     <td class="num">34</td>
-                    <td class="name">Der Feierabendbier-Verteidiger   </td>
+                    <td class="name">Der Feierabendbier-Verteidiger</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -709,7 +744,7 @@
                 </tr>
                 <tr>
                     <td class="num">35</td>
-                    <td class="name">Der Wiesn-Tourist   </td>
+                    <td class="name">Der Wiesn-Tourist</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -722,7 +757,7 @@
                 </tr>
                 <tr>
                     <td class="num">36</td>
-                    <td class="name">Der Sparkassen-Anleger   </td>
+                    <td class="name">Der Sparkassen-Anleger</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -761,7 +796,7 @@
                 </tr>
                 <tr>
                     <td class="num">39</td>
-                    <td class="name">Das „Mahlzeit"-Rufen im Büroflur</td>
+                    <td class="name">"Das „Mahlzeit""-Rufen im Büroflur"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -774,7 +809,7 @@
                 </tr>
                 <tr>
                     <td class="num">40</td>
-                    <td class="name">Die Angst vor „Durchzug"</td>
+                    <td class="name">"Die Angst vor „Durchzug"""</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -800,7 +835,7 @@
                 </tr>
                 <tr>
                     <td class="num">42</td>
-                    <td class="name">„Tja" – Die universelle Antwort</td>
+                    <td class="name">"„Tja"" – Die universelle Antwort"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -826,7 +861,7 @@
                 </tr>
                 <tr>
                     <td class="num">44</td>
-                    <td class="name">Die „Wo kommen Sie eigentlich her?"-Frage</td>
+                    <td class="name">"Die „Wo kommen Sie eigentlich her?""-Frage"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -865,7 +900,7 @@
                 </tr>
                 <tr>
                     <td class="num">47</td>
-                    <td class="name">Der „Haben wir das schriftlich?"-Kollege</td>
+                    <td class="name">"Der „Haben wir das schriftlich?""-Kollege"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -917,7 +952,7 @@
                 </tr>
                 <tr>
                     <td class="num">51</td>
-                    <td class="name">Der „Ich hab's passend"-Zahler</td>
+                    <td class="name">"Der „Ich hab's passend""-Zahler"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -943,7 +978,7 @@
                 </tr>
                 <tr>
                     <td class="num">53</td>
-                    <td class="name">Der „Draußen nur Kännchen"-Kellner</td>
+                    <td class="name">"Der „Draußen nur Kännchen""-Kellner"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -956,7 +991,7 @@
                 </tr>
                 <tr>
                     <td class="num">54</td>
-                    <td class="name">Der „Muss ja"-Sager</td>
+                    <td class="name">"Der „Muss ja""-Sager"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -995,7 +1030,7 @@
                 </tr>
                 <tr>
                     <td class="num">57</td>
-                    <td class="name">Die „Jacke dabei?"-Mutter</td>
+                    <td class="name">"Die „Jacke dabei?""-Mutter"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1008,7 +1043,7 @@
                 </tr>
                 <tr>
                     <td class="num">58</td>
-                    <td class="name">Der „Nicht geschimpft ist Lob genug"-Chef</td>
+                    <td class="name">"Der „Nicht geschimpft ist Lob genug""-Chef"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1021,7 +1056,7 @@
                 </tr>
                 <tr>
                     <td class="num">59</td>
-                    <td class="name">Das „So!" beim Aufstehen</td>
+                    <td class="name">"Das „So!"" beim Aufstehen"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1073,7 +1108,7 @@
                 </tr>
                 <tr>
                     <td class="num">63</td>
-                    <td class="name">Das „Wir duzen uns jetzt"-Angebot</td>
+                    <td class="name">"Das „Wir duzen uns jetzt""-Angebot"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1099,7 +1134,7 @@
                 </tr>
                 <tr>
                     <td class="num">65</td>
-                    <td class="name">Die „Das ist aber teuer geworden"-Debatte</td>
+                    <td class="name">"Die „Das ist aber teuer geworden""-Debatte"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1112,7 +1147,7 @@
                 </tr>
                 <tr>
                     <td class="num">66</td>
-                    <td class="name">Der „Ich kenne da eine Abkürzung"-Fahrer</td>
+                    <td class="name">"Der „Ich kenne da eine Abkürzung""-Fahrer"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1138,7 +1173,7 @@
                 </tr>
                 <tr>
                     <td class="num">68</td>
-                    <td class="name">Die „Nur gucken"-Shopping-Tour</td>
+                    <td class="name">"Die „Nur gucken""-Shopping-Tour"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1151,7 +1186,7 @@
                 </tr>
                 <tr>
                     <td class="num">69</td>
-                    <td class="name">Der „Das ist deutsche Wertarbeit"-Sager</td>
+                    <td class="name">"Der „Das ist deutsche Wertarbeit""-Sager"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1190,7 +1225,7 @@
                 </tr>
                 <tr>
                     <td class="num">72</td>
-                    <td class="name">„Schatzi"-Paare im Partnerlook</td>
+                    <td class="name">"„Schatzi""-Paare im Partnerlook"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1229,7 +1264,7 @@
                 </tr>
                 <tr>
                     <td class="num">75</td>
-                    <td class="name">Der „Wir schenken uns nichts"-Lügner</td>
+                    <td class="name">"Der „Wir schenken uns nichts""-Lügner"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1242,7 +1277,7 @@
                 </tr>
                 <tr>
                     <td class="num">76</td>
-                    <td class="name">„Bier ist ein Grundnahrungsmittel"</td>
+                    <td class="name">"„Bier ist ein Grundnahrungsmittel"""</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1281,7 +1316,7 @@
                 </tr>
                 <tr>
                     <td class="num">79</td>
-                    <td class="name">Der „Früher war mehr Lametta"-Nostalgiker</td>
+                    <td class="name">"Der „Früher war mehr Lametta""-Nostalgiker"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1294,7 +1329,7 @@
                 </tr>
                 <tr>
                     <td class="num">80</td>
-                    <td class="name">Der „Darf ich mal vorbei?"-Drängler</td>
+                    <td class="name">"Der „Darf ich mal vorbei?""-Drängler"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1320,7 +1355,7 @@
                 </tr>
                 <tr>
                     <td class="num">82</td>
-                    <td class="name">„Man gönnt sich ja sonst nichts"</td>
+                    <td class="name">"„Man gönnt sich ja sonst nichts"""</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1346,7 +1381,7 @@
                 </tr>
                 <tr>
                     <td class="num">84</td>
-                    <td class="name">Der „Ordnung muss sein"-Vermieter</td>
+                    <td class="name">"Der „Ordnung muss sein""-Vermieter"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1359,7 +1394,7 @@
                 </tr>
                 <tr>
                     <td class="num">85</td>
-                    <td class="name">Die „Darf man das noch sagen?"-Runde</td>
+                    <td class="name">"Die „Darf man das noch sagen?""-Runde"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1372,7 +1407,7 @@
                 </tr>
                 <tr>
                     <td class="num">86</td>
-                    <td class="name">Der „Ich hab das im Internet gelesen"-Experte</td>
+                    <td class="name">"Der „Ich hab das im Internet gelesen""-Experte"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1398,7 +1433,7 @@
                 </tr>
                 <tr>
                     <td class="num">88</td>
-                    <td class="name">Der „Morgenstund hat Gold im Mund"-Typ</td>
+                    <td class="name">"Der „Morgenstund hat Gold im Mund""-Typ"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1424,7 +1459,7 @@
                 </tr>
                 <tr>
                     <td class="num">90</td>
-                    <td class="name">Die „Vielleicht später mal"-Absage</td>
+                    <td class="name">"Die „Vielleicht später mal""-Absage"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1437,7 +1472,7 @@
                 </tr>
                 <tr>
                     <td class="num">91</td>
-                    <td class="name">Der „Das zahlt die Kasse nicht"-Patient</td>
+                    <td class="name">"Der „Das zahlt die Kasse nicht""-Patient"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1450,20 +1485,20 @@
                 </tr>
                 <tr>
                     <td class="num">92</td>
-                    <td class="name">Der „Ich war hier, bevor es cool war-Tourist"</td>
+                    <td class="name">"Der „Ich war hier</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">53</td>
+                    <td class="center">X</td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="92" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn active" data-nr="92" onclick="togglePost(this)" disabled>✓ Gepostet</button>
                     </td>
                 </tr>
                 <tr>
                     <td class="num">93</td>
-                    <td class="name">Die „Schuhe bitte aus"-Regel</td>
+                    <td class="name">"Die „Schuhe bitte aus""-Regel"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1489,7 +1524,7 @@
                 </tr>
                 <tr>
                     <td class="num">95</td>
-                    <td class="name">Die „Wir müssen mal wieder"-Floskel</td>
+                    <td class="name">"Die „Wir müssen mal wieder""-Floskel"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1528,7 +1563,7 @@
                 </tr>
                 <tr>
                     <td class="num">98</td>
-                    <td class="name">Der „Schöner Hund"-Smalltalk</td>
+                    <td class="name">"Der „Schöner Hund""-Smalltalk"</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -1541,15 +1576,15 @@
                 </tr>
                 <tr>
                     <td class="num">99</td>
-                    <td class="name">Der „So, Feierabend-Klatscher"</td>
+                    <td class="name">"Der „So</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">54</td>
+                    <td class="center">X</td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="99" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn active" data-nr="99" onclick="togglePost(this)" disabled>✓ Gepostet</button>
                     </td>
                 </tr>
                 <tr>
@@ -1627,7 +1662,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn active" data-nr="105" onclick="togglePost(this)" >✓ Gepostet</button>
+                        <button class="insta-btn " data-nr="105" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
                 <tr class="row-done">
@@ -2117,7 +2152,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">48</td>
+                    <td class="center">58</td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center">
@@ -2163,30 +2198,30 @@
                         <button class="insta-btn " data-nr="146" onclick="togglePost(this)" disabled>Post</button>
                     </td>
                 </tr>
-                <tr>
+                <tr class="row-done">
                     <td class="num">147</td>
                     <td class="name">DJ Fan Girl</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">46</td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="147" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="147" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
-                <tr>
+                <tr class="row-done">
                     <td class="num">148</td>
                     <td class="name">DJ Fan Guy</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">46</td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
-                        <button class="insta-btn " data-nr="148" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="148" onclick="togglePost(this)" >Post</button>
                     </td>
                 </tr>
                 <tr>
@@ -2247,7 +2282,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">46</td>
+                    <td class="center">55</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">
@@ -2377,7 +2412,7 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="center">47</td>
+                    <td class="center">57</td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center">
@@ -2529,12 +2564,12 @@
         'audio-pic': { btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  },
         'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   },
         'post':    { btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    },
-        'gpt':     { btn: 'gptBtn',     api: '/api/generate-gpt-prompt', label: '📝 GPT Prompts'        },
     };
 
     let _pendingAction = null;
     let _pollInterval = null;
     let _activeBtn = null;
+    let _isRefresh = false;
 
     function showInput(type) {
         const div = document.getElementById('actionInputDiv');
@@ -2621,7 +2656,11 @@
                 if (data.status === 'complete' || data.status === 'error' || data.status === 'idle') {
                     clearInterval(_pollInterval);
                     _pollInterval = null;
-                    if (data.status === 'complete') {
+                    if (data.status === 'complete' && _isRefresh) {
+                        _isRefresh = false;
+                        resetBtn(btn, label);
+                        showSummary(data.log, data.message);
+                    } else if (data.status === 'complete') {
                         setLog(100, 'Fertig! Lade Dashboard neu...');
                         setTimeout(() => { updateLogList([]); location.reload(); }, 1500);
                     } else {
@@ -2637,6 +2676,19 @@
         }, 2000);
     }
 
+    function showSummary(log, msg) {
+        const el = document.getElementById('summaryList');
+        const items = (log && log.length) ? log : [msg || 'Refresh abgeschlossen.'];
+        el.innerHTML = items.map(l => `<div>${l}</div>`).join('');
+        document.getElementById('summaryModal').classList.add('visible');
+        document.getElementById('logBox').classList.remove('visible');
+    }
+
+    function closeSummary(e) {
+        document.getElementById('summaryModal').classList.remove('visible');
+        location.reload();
+    }
+
     async function abortTask() {
         const btn = document.getElementById('abortBtn');
         btn.textContent = '⏳...';
@@ -2649,6 +2701,7 @@
     }
 
     async function doRefresh() {
+        _isRefresh = true;
         const btn = document.getElementById('refreshBtn');
         _activeBtn = btn;
         btn.textContent = '⏳ Refresh...';
@@ -2665,6 +2718,16 @@
             if (resp.ok) pollProgress(btn, '🔄 Refresh');
             else { btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }
         } catch(e) { btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }
+    }
+
+    async function restartServer() {
+        const btn = document.getElementById('restartBtn');
+        btn.textContent = '⏳ Neustart...';
+        btn.disabled = true;
+        try {
+            await fetch('/api/restart', { method: 'POST' });
+        } catch(e) {}
+        setTimeout(() => location.reload(), 4000);
     }
 
     async function updateServerStatus() {

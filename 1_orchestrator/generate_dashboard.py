@@ -81,9 +81,10 @@ html = f'''<!DOCTYPE html>
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }}
         .btn-group {{ display: flex; gap: 8px; flex-wrap: wrap; }}
+        .btn-row {{ margin-bottom: 8px; }}
         .action-btn {{
             background: #e8120a;
             color: white;
@@ -240,6 +241,28 @@ html = f'''<!DOCTYPE html>
         }}
         .server-dot.online {{ background: #28a745; box-shadow: 0 0 6px #28a745; }}
         .server-dot.offline {{ background: #dc3545; }}
+        .summary-modal {{
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.55); z-index: 1000;
+            justify-content: center; align-items: center;
+        }}
+        .summary-modal.visible {{ display: flex; }}
+        .summary-inner {{
+            background: white; border-radius: 12px; padding: 28px 32px;
+            max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }}
+        .summary-inner h3 {{ margin-bottom: 14px; color: #111; font-size: 17px; }}
+        .summary-list {{ font-size: 13px; margin-bottom: 20px; }}
+        .summary-list div {{ padding: 4px 0; border-bottom: 1px solid #f0f0f0; }}
+        .summary-list div:last-child {{ border-bottom: none; }}
+        .summary-ok {{
+            background: #e8120a; color: white; border: none;
+            padding: 11px 0; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 14px; width: 100%;
+        }}
+        .summary-ok:hover {{ background: #c00e08; }}
     </style>
 </head>
 <body>
@@ -247,22 +270,26 @@ html = f'''<!DOCTYPE html>
     <div class="header">
         <h1>
             <span>🇩🇪 Stereotypen Dashboard</span>
-            <div class="server-status" id="serverStatus">
-                <span class="server-dot" id="serverDot"></span>
-                <span id="serverText">Verbinde...</span>
-            </div>
-            <div class="btn-group">
-                <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
-                <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
-                <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
-                <button class="action-btn" id="audioBtn"      onclick="showInput('audio')">🎵 Audio generieren</button>
-                <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
-                <button class="action-btn" id="videoBtn"   onclick="showInput('video')">🎬 Video erstellen</button>
-                <button class="action-btn" id="postBtn"    onclick="runDirect('post')">📤 Instagram Post</button>
-                <button class="action-btn" id="gptBtn"     onclick="runDirect('gpt')">📝 GPT Prompts</button>
-                <button class="action-btn" id="refreshBtn" onclick="doRefresh()">🔄 Refresh</button>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="server-status" id="serverStatus">
+                    <span class="server-dot" id="serverDot"></span>
+                    <span id="serverText">Verbinde...</span>
+                </div>
+                <button onclick="restartServer()" id="restartBtn" style="background:#333;color:white;border:none;padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;">↺ Neustart</button>
             </div>
         </h1>
+        <div class="btn-group btn-row">
+            <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
+            <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
+            <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+        </div>
+        <div class="btn-group btn-row">
+            <button class="action-btn" id="refreshBtn"  onclick="doRefresh()">🔄 Refresh</button>
+            <button class="action-btn" id="audioBtn"    onclick="showInput('audio')">🎵 Audio generieren</button>
+            <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
+            <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 Video erstellen</button>
+            <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 Instagram Post</button>
+        </div>
 
         <div class="stats">
             <div class="stat-box"><h3>Gesamt</h3><div class="val">{total}</div></div>
@@ -301,6 +328,14 @@ html = f'''<!DOCTYPE html>
         </div>
     </div>
 
+    <div class="summary-modal" id="summaryModal" onclick="closeSummary()">
+        <div class="summary-inner" onclick="event.stopPropagation()">
+            <h3>✅ Refresh abgeschlossen</h3>
+            <div class="summary-list" id="summaryList"></div>
+            <button class="summary-ok" onclick="closeSummary()">OK</button>
+        </div>
+    </div>
+
     <div class="table-container">
         <div class="table-scroll">
             <table>
@@ -333,12 +368,12 @@ html = f'''<!DOCTYPE html>
         'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   }},
         'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    }},
-        'gpt':     {{ btn: 'gptBtn',     api: '/api/generate-gpt-prompt', label: '📝 GPT Prompts'        }},
     }};
 
     let _pendingAction = null;
     let _pollInterval = null;
     let _activeBtn = null;
+    let _isRefresh = false;
 
     function showInput(type) {{
         const div = document.getElementById('actionInputDiv');
@@ -425,7 +460,11 @@ html = f'''<!DOCTYPE html>
                 if (data.status === 'complete' || data.status === 'error' || data.status === 'idle') {{
                     clearInterval(_pollInterval);
                     _pollInterval = null;
-                    if (data.status === 'complete') {{
+                    if (data.status === 'complete' && _isRefresh) {{
+                        _isRefresh = false;
+                        resetBtn(btn, label);
+                        showSummary(data.log, data.message);
+                    }} else if (data.status === 'complete') {{
                         setLog(100, 'Fertig! Lade Dashboard neu...');
                         setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
                     }} else {{
@@ -441,6 +480,19 @@ html = f'''<!DOCTYPE html>
         }}, 2000);
     }}
 
+    function showSummary(log, msg) {{
+        const el = document.getElementById('summaryList');
+        const items = (log && log.length) ? log : [msg || 'Refresh abgeschlossen.'];
+        el.innerHTML = items.map(l => `<div>${{l}}</div>`).join('');
+        document.getElementById('summaryModal').classList.add('visible');
+        document.getElementById('logBox').classList.remove('visible');
+    }}
+
+    function closeSummary(e) {{
+        document.getElementById('summaryModal').classList.remove('visible');
+        location.reload();
+    }}
+
     async function abortTask() {{
         const btn = document.getElementById('abortBtn');
         btn.textContent = '⏳...';
@@ -453,6 +505,7 @@ html = f'''<!DOCTYPE html>
     }}
 
     async function doRefresh() {{
+        _isRefresh = true;
         const btn = document.getElementById('refreshBtn');
         _activeBtn = btn;
         btn.textContent = '⏳ Refresh...';
@@ -469,6 +522,16 @@ html = f'''<!DOCTYPE html>
             if (resp.ok) pollProgress(btn, '🔄 Refresh');
             else {{ btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }}
         }} catch(e) {{ btn.textContent = '🔄 Refresh'; resetBtn(btn, ''); location.reload(); }}
+    }}
+
+    async function restartServer() {{
+        const btn = document.getElementById('restartBtn');
+        btn.textContent = '⏳ Neustart...';
+        btn.disabled = true;
+        try {{
+            await fetch('/api/restart', {{ method: 'POST' }});
+        }} catch(e) {{}}
+        setTimeout(() => location.reload(), 4000);
     }}
 
     async function updateServerStatus() {{

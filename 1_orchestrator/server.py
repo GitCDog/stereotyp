@@ -48,17 +48,11 @@ def append_log(entry: str):
 
 
 def parse_range(val: str) -> list[str]:
-    """Unterstützt: '8', '4-10', '100_01', '100_01,100_02', '100_01-100_05'."""
-    import re
+    """Unterstützt: '8', '4-10', '1,2,5'."""
     val = val.strip()
     if "," in val:
         return [v.strip() for v in val.split(",") if v.strip()]
-    m = re.match(r'^(\d+)_(\d+)-\d+_(\d+)$', val)
-    if m:
-        prefix, start, end = m.group(1), int(m.group(2)), int(m.group(3))
-        width = len(m.group(2))
-        return [f"{prefix}_{i:0{width}d}" for i in range(start, end + 1)]
-    if "-" in val and "_" not in val:
+    if "-" in val:
         parts = val.split("-")
         return [str(i) for i in range(int(parts[0]), int(parts[1]) + 1)]
     return [val]
@@ -68,7 +62,11 @@ def run_script(args: list[str]) -> int:
     global _current_proc
     if _abort_flag.is_set():
         return -1
-    proc = subprocess.Popen([sys.executable] + args, cwd=Path(__file__).parent)
+    proc = subprocess.Popen(
+        [sys.executable] + args,
+        cwd=Path(__file__).parent,
+        creationflags=subprocess.CREATE_NO_WINDOW,
+    )
     with _proc_lock:
         _current_proc = proc
     try:
@@ -398,27 +396,44 @@ def refresh():
 
     def task():
         _abort_flag.clear()
+        log = []
         try:
-            set_task("running", "OneDrive prüfen...", 15)
-            run_script(["check_onedrive_images.py"])
+            onedrive_dir = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
+            imgs_before = len(list(onedrive_dir.glob("*.png"))) if onedrive_dir.exists() else 0
 
-            set_task("running", "Sammelsurium → 1_input/ extrahieren...", 35)
+            set_task("running", "OneDrive: neue Bilder identifizieren...", 10, log=list(log))
+            run_script(["onedrive_check.py", "--onedrive-only"])
+
+            imgs_after = len(list(onedrive_dir.glob("*.png"))) if onedrive_dir.exists() else 0
+            processed = imgs_before - imgs_after
+            if processed > 0:
+                log.append(f"🖼️ {processed} Bild(er) aus OneDrive identifiziert und verarbeitet")
+            else:
+                log.append("✅ OneDrive: Keine neuen Bilder")
+
+            set_task("running", "Sammelsurium → 1_input/ extrahieren...", 35, log=list(log))
             import sync_status as ss
             new_from_sammelsurium = ss.check_sammelsurium()
+            if new_from_sammelsurium:
+                log.append(f"📄 {new_from_sammelsurium} neue Stories aus Sammelsurium extrahiert")
+            else:
+                log.append("✅ Sammelsurium: Keine neuen Stories")
 
-            set_task("running", "Dateien scannen & CSV aktualisieren...", 65)
+            set_task("running", "Dateien scannen & CSV aktualisieren...", 65, log=list(log))
             run_script(["sync_status.py"])
+            log.append("🔄 CSV und Dateistatus synchronisiert")
 
-            set_task("running", "GPT-Prompts für fehlende Bilder schreiben...", 80)
+            set_task("running", "GPT-Prompts für fehlende Bilder schreiben...", 80, log=list(log))
             onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
             run_script(["generate_gpt_prompt.py", "--no-pic", "--out", onedrive_out])
+            log.append("📝 GPT Prompts aktualisiert")
 
-            set_task("running", "Dashboard aktualisieren...", 90)
+            set_task("running", "Dashboard aktualisieren...", 90, log=list(log))
             refresh_dashboard()
+            log.append("✅ Dashboard aktualisiert")
 
             msg = f"Fertig! {new_from_sammelsurium} neue Stories extrahiert." if new_from_sammelsurium else "Fertig!"
-            log = [f"📄 {new_from_sammelsurium} Stories aus Sammelsurium extrahiert und gelöscht"] if new_from_sammelsurium else []
-            set_task("complete", msg, 100, log=log)
+            set_task("complete", msg, 100, log=list(log))
         except Exception as e:
             set_task("error", str(e), 0)
 
@@ -426,6 +441,24 @@ def refresh():
     set_task("running", "Starte Refresh...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
+
+
+# ── Restart ──────────────────────────────────────────────────────────────────
+
+@app.route("/api/restart", methods=["POST"])
+def restart_server():
+    def do_restart():
+        import time, os
+        time.sleep(1)
+        subprocess.Popen(
+            [sys.executable, "server.py"],
+            cwd=Path(__file__).parent,
+            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP,
+        )
+        time.sleep(0.5)
+        os._exit(0)
+    threading.Thread(target=do_restart, daemon=True).start()
+    return jsonify({"status": "restarting"})
 
 
 # ── Abort ────────────────────────────────────────────────────────────────────
