@@ -2,8 +2,8 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 18:30 CEST (16:30 UTC) + 0-60 min Zufallsverzögerung
-    - cron: "30 16 * * *"
+    # Test: heute 19:57 CEST (17:57 UTC)
+    - cron: "57 17 * * *"
   workflow_dispatch:
     inputs:
       story_nr:
@@ -33,9 +33,6 @@ jobs:
 
       - name: Dependencies installieren
         run: pip install -r requirements.txt
-
-      - name: Zufällige Verzögerung (0–60 min)
-        run: sleep $(( RANDOM % 3601 ))
 
       - name: Auf Instagram posten
         env:
