@@ -36,6 +36,9 @@ jobs:
       - name: Dependencies installieren
         run: pip install -r requirements.txt
 
+      - name: Zufällige Verzögerung (0–60 min)
+        run: sleep $(( RANDOM % 3601 ))
+
       - name: Auf Instagram posten
         env:
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
