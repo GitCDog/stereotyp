@@ -62,7 +62,10 @@ def identify_image(img_path: Path, rows: list[dict]) -> str | None:
 def process_onedrive(rows: list[dict]):
     if not ONEDRIVE_DIR.exists():
         return
-    images = sorted(ONEDRIVE_DIR.glob("*.png"))
+    images = sorted([
+        p for ext in ("*.png", "*.jpg", "*.jpeg")
+        for p in ONEDRIVE_DIR.glob(ext)
+    ])
     if not images:
         return
 
@@ -77,7 +80,7 @@ def process_onedrive(rows: list[dict]):
         if not nr:
             continue
         nr_str = f"{int(nr):04d}"
-        dest = OUTPUT_DIR / f"{nr_str}_pic.png"
+        dest = OUTPUT_DIR / f"{nr_str}_pic{img.suffix.lower()}"
         shutil.copy2(img, dest)
         img.unlink()
         if ir:

@@ -399,12 +399,13 @@ def refresh():
         log = []
         try:
             onedrive_dir = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
-            imgs_before = len(list(onedrive_dir.glob("*.png"))) if onedrive_dir.exists() else 0
+            def _count_imgs(d): return sum(len(list(d.glob(f"*.{e}"))) for e in ("png","jpg","jpeg")) if d.exists() else 0
+            imgs_before = _count_imgs(onedrive_dir)
 
             set_task("running", "OneDrive: neue Bilder identifizieren...", 10, log=list(log))
             run_script(["onedrive_check.py", "--onedrive-only"])
 
-            imgs_after = len(list(onedrive_dir.glob("*.png"))) if onedrive_dir.exists() else 0
+            imgs_after = _count_imgs(onedrive_dir)
             processed = imgs_before - imgs_after
             if processed > 0:
                 log.append(f"🖼️ {processed} Bild(er) aus OneDrive identifiziert und verarbeitet")

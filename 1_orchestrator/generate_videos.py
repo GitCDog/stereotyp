@@ -73,8 +73,12 @@ def upload_to_cloudinary(video_path: Path, logger: logging.Logger):
 
 
 def find_image(nr, images_dir: str) -> Path | None:
-    p = Path(images_dir) / f"{_nr_str(nr)}_pic.png"
-    return p if p.exists() else None
+    ns = _nr_str(nr)
+    for ext in ("png", "jpg", "jpeg"):
+        p = Path(images_dir) / f"{ns}_pic.{ext}"
+        if p.exists():
+            return p
+    return None
 
 
 def ensure_rgb_image(image_path: Path, logger: logging.Logger) -> Path:

@@ -71,7 +71,7 @@ def main():
         text = re.sub(r"\s+", " ", text)
 
         lines.append(
-            f'{nr}. erstelle ein bild dazu, nicht düster und nicht böse und nehme nicht so viel text in das bild rein, '
+            f'{nr}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse und nehme nicht so viel text in das bild rein, '
             f'Titel "{stereotyp}". Story: "{text}"'
         )
 
