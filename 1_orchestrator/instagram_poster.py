@@ -305,15 +305,34 @@ class InstagramPoster:
         logger.info(f"[+] Story #{nr} als gepostet markiert | Post-ID: {post_id}")
 
     def _remove_from_reihenfolge(self, nr: str):
-        """Entfernt die gepostete Nummer aus 0_reihenfolge.txt."""
-        path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
-        if not path.exists():
+        """Entfernt die gepostete Nummer aus 0_reihenfolge.txt – lokal und auf GitHub."""
+        file_path_rel = "1_orchestrator/1_input/0_reihenfolge.txt"
+        local_path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+
+        if not local_path.exists():
             return
-        lines = path.read_text(encoding="utf-8").splitlines()
-        new_lines = [l for l in lines if l.strip() != nr]
-        if len(new_lines) != len(lines):
-            path.write_text("\n".join(new_lines) + ("\n" if new_lines else ""), encoding="utf-8")
-            logger.info(f"[+] #{nr} aus 0_reihenfolge.txt entfernt")
+        lines = local_path.read_text(encoding="utf-8").splitlines()
+        new_lines = [l for l in lines if l.strip() != str(nr)]
+        if len(new_lines) == len(lines):
+            return
+
+        new_content = "\n".join(new_lines) + ("\n" if new_lines else "")
+        local_path.write_text(new_content, encoding="utf-8")
+        logger.info(f"[+] #{nr} aus 0_reihenfolge.txt entfernt (lokal)")
+
+        if self.use_github:
+            try:
+                repo = self.github.get_repo(self.github_repo_name)
+                file = repo.get_contents(file_path_rel)
+                repo.update_file(
+                    file_path_rel,
+                    f"[AUTO] #{nr} aus Reihenfolge entfernt",
+                    new_content,
+                    file.sha,
+                )
+                logger.info(f"[+] 0_reihenfolge.txt auf GitHub aktualisiert")
+            except Exception as e:
+                logger.error(f"[-] GitHub Reihenfolge-Update fehlgeschlagen: {e}")
 
     def _update_csv_github(self, row: dict, nr: int):
         try:
