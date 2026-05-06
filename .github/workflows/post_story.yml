@@ -15,7 +15,6 @@ jobs:
   post-story:
     runs-on: ubuntu-latest
     timeout-minutes: 200
-    environment: stereotyp
     permissions:
       contents: write
     defaults:
