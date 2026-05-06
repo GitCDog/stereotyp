@@ -2,8 +2,8 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 16:00 CEST (14:00 UTC) – Script wartet intern auf 18:30–19:15 CEST
-    - cron: "0 14 * * *"
+    # Test: 17:00 CEST (15:00 UTC)
+    - cron: "0 15 * * *"
   workflow_dispatch:
     inputs:
       story_nr:
