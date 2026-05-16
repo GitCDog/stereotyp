@@ -19,6 +19,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+REPO_ROOT = Path(__file__).parent.parent
+REIHENFOLGE_REL = "1_orchestrator/1_input/0_reihenfolge.txt"
+
+
+def git_push_reihenfolge():
+    """Committet und pusht 0_reihenfolge.txt nach GitHub."""
+    try:
+        diff = subprocess.run(
+            ["git", "diff", "--quiet", REIHENFOLGE_REL],
+            cwd=str(REPO_ROOT), capture_output=True,
+        )
+        if diff.returncode == 0:
+            return  # keine Änderung
+        subprocess.run(["git", "add", REIHENFOLGE_REL], cwd=str(REPO_ROOT), check=True)
+        subprocess.run(
+            ["git", "commit", "-m", "fix: Posting-Reihenfolge aktualisiert"],
+            cwd=str(REPO_ROOT), check=True,
+        )
+        subprocess.run(["git", "push"], cwd=str(REPO_ROOT), check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Git Push Reihenfolge fehlgeschlagen: {e}")
+
 app = Flask(__name__)
 
 _server_start = datetime.now()
@@ -319,6 +341,7 @@ def create_story():
                     except Exception:
                         lines.append(new_nr)
                 reihenfolge_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                git_push_reihenfolge()
 
             set_task("running", "GPT-Prompt aktualisieren...", 88, log=list(log))
             onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
@@ -618,6 +641,7 @@ def set_reihenfolge():
             lines.append(nr)
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    threading.Thread(target=git_push_reihenfolge, daemon=True).start()
     return jsonify({"status": "ok", "reihenfolge": lines})
 
 
@@ -632,6 +656,7 @@ def remove_reihenfolge():
     if path.exists():
         lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and l.strip() != nr]
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    threading.Thread(target=git_push_reihenfolge, daemon=True).start()
     return jsonify({"status": "ok"})
 
 
