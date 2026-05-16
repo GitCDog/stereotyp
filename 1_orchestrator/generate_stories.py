@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
 """
-Agent 1: Generiert humorvolle Stereotypen-Stories via Claude API.
+Agent 1: Generiert humorvolle Stereotypen-Stories via Claude CLI (Pro-Account).
 
 Verwendung:
   python generate_stories.py              # Nächste ausstehende Story
   python generate_stories.py --story 5   # Story Nr. 5
   python generate_stories.py --all       # Alle ausstehenden Stories
-  python generate_stories.py --story 5 --auto-title  # Claude erfindet Titel
+  python generate_stories.py --story 5 --stichworte "Bier,Wurst,Lederhose"
 """
 
 import os
 import sys
-import json
 import argparse
 import logging
+import subprocess
 from pathlib import Path
-from datetime import datetime
 
 import yaml
 from dotenv import load_dotenv
-import anthropic
 
 import input_reader as ir
 
@@ -32,31 +30,22 @@ nicken müssen. Zieh die Leute durch den Kakao – aber mit Liebe."""
 
 STORY_PROMPT_TEMPLATE = """Erstelle eine humorvolle, potenziell virale Story zum deutschen Stereotyp: "{stereotyp}"
 
-Die Story soll exakt diese Struktur haben (130–140 Wörter gesamt):
+Die Story soll exakt diese Struktur haben (130-140 Woerter gesamt):
 
 Starte mit: "Aufgepasst - " (genau so, mit Bindestrich und Leerzeichen danach).
 
-1. **Der Aufreißer**: Ein kurzer, provokanter Satz, der das Klischee in eine konkrete Alltagssituation einbettet.
+1. Der Aufreisser: Ein kurzer, provokanter Satz, der das Klischee in eine konkrete Alltagssituation einbettet.
 
-2. **Der Mythos**: Beschreibe das Verhalten so, als wäre es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik (2–3 Sätze).
+2. Der Mythos: Beschreibe das Verhalten so, als waere es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik (2-3 Saetze).
 
-3. **Die „deutsche Logik"**: Erkläre in 2–3 Bulletpoints (mit •) die völlig übertriebene, aber irgendwie nachvollziehbare Rechtfertigung hinter diesem Verhalten.
+3. Die deutsche Logik: Erklaere in 2-3 Bulletpoints (mit *) die voellig uebertriebene, aber irgendwie nachvollziehbare Rechtfertigung hinter diesem Verhalten.
 
-4. **Der soziale Endgegner**: Beschreibe in 1–2 Sätzen die Reaktion der Gesellschaft auf jemanden, der diese ungeschriebene Regel bricht.
+4. Der soziale Endgegner: Beschreibe in 1-2 Saetzen die Reaktion der Gesellschaft auf jemanden, der diese ungeschriebene Regel bricht.
 
-5. **Der virale Twist**: Beende mit einem kurzen Pro-Tipp oder einem trockenen Vergleich (1 Satz).
+5. Der virale Twist: Beende mit einem kurzen Pro-Tipp oder einem trockenen Vergleich (1 Satz).
 
-Tonalität: Trocken, leicht sarkastisch, beobachtend – aber nie bösartig. Kein Emoji. Kein Hashtag. Nur reiner Text.
-Falls du am Ende eine abschließende Floskel verwendest, nutze "Tja," statt "Ah ja,"."""
-
-AUTO_TITLE_PROMPT = """Erfinde einen knackigen, viralen Titel für einen deutschen Stereotypen-Post.
-Der Titel soll:
-- 3–5 Wörter lang sein
-- Den Charakter oder das Verhalten auf den Punkt bringen
-- Sich wie ein Internet-Meme anfühlen
-- Auf Deutsch sein
-
-Antworte NUR mit dem Titel, ohne Anführungszeichen, ohne Erklärung."""
+Tonalitaet: Trocken, leicht sarkastisch, beobachtend - aber nie bösartig. Kein Emoji. Kein Hashtag. Nur reiner Text.
+Falls du am Ende eine abschliessende Floskel verwendest, nutze "Tja," statt "Ah ja,".{stichworte_block}"""
 
 
 def setup_logging(log_file: str = "./logs/workflow.log") -> logging.Logger:
@@ -81,30 +70,31 @@ def count_words(text: str) -> int:
     return len(text.split())
 
 
-def generate_story(client: anthropic.Anthropic, stereotyp: str, model: str) -> str:
-    """Generiere Story-Text via Claude."""
-    prompt = STORY_PROMPT_TEMPLATE.format(stereotyp=stereotyp)
-    message = client.messages.create(
-        model=model,
-        max_tokens=600,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return message.content[0].text.strip()
+def build_story_prompt(stereotyp: str, stichworte: list[str] | None = None) -> str:
+    if stichworte:
+        keywords = ", ".join(stichworte)
+        stichworte_block = f"\n\nWichtig: Folgende Stichworte sollen natuerlich und unauffaellig in die Story einfliessen: {keywords}"
+    else:
+        stichworte_block = ""
+    return STORY_PROMPT_TEMPLATE.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
 
 
-def generate_auto_title(client: anthropic.Anthropic, model: str) -> str:
-    """Lass Claude einen Titel erfinden."""
-    message = client.messages.create(
-        model=model,
-        max_tokens=50,
-        messages=[{"role": "user", "content": AUTO_TITLE_PROMPT}],
+def generate_story(stereotyp: str, stichworte: list[str] | None = None) -> str:
+    """Generiere Story-Text via Claude CLI (claude -p)."""
+    prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
+    result = subprocess.run(
+        ["claude", "-p", prompt],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=120,
     )
-    return message.content[0].text.strip()
+    if result.returncode != 0:
+        raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip()}")
+    return result.stdout.strip()
 
 
 def add_paragraph_break(text: str) -> str:
-    """Fügt einen Absatz bei ~50% des Textes nach einem Satzende ein."""
     import re
     text = re.sub(r'\s*\n\s*', ' ', text).strip()
     if '\n\n' in text:
@@ -119,58 +109,46 @@ def add_paragraph_break(text: str) -> str:
 
 
 def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1_input"):
-    """Speichere Story als .txt in 1_input/."""
     safe = ir.safe_name(stereotyp)
     nr_str = f"{int(nr):04d}"
-
     txt_path = Path(stories_dir) / f"{nr_str}_{safe}.txt"
     if not txt_path.exists():
         txt_path.write_text(add_paragraph_break(story_text), encoding="utf-8")
-
     return txt_path
 
 
-def process_story(row: dict, client: anthropic.Anthropic, config: dict, logger: logging.Logger, auto_title: bool = False):
-    """Verarbeite eine einzelne Story-Zeile."""
+def process_story(row: dict, config: dict, logger: logging.Logger,
+                  stichworte: list[str] | None = None):
     nr = int(row["nr"])
     stereotyp = row["stereotyp"].strip()
     input_file = config["output"]["input_file"]
-    output_dir = config["output"]["output_dir"]
     stories_dir = config["output"]["stories_dir"]
 
     logger.info("=" * 60)
     logger.info(f"Story #{nr}: {stereotyp}")
     logger.info("=" * 60)
 
-    # Überspringe wenn bereits fertig
     if row.get("status_story") == "X":
-        logger.info(f"[O] Bereits fertig – überspringe")
+        logger.info(f"[O] Bereits fertig – ueberspringe")
         return False
 
-    # Auto-Titel-Modus
-    if auto_title:
-        logger.info("[*] Generiere Titel automatisch via Claude...")
-        stereotyp = generate_auto_title(client, config["story_generation"]["model"])
-        logger.info(f"[+] Auto-Titel: {stereotyp}")
+    if stichworte:
+        logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
-    # Story generieren
-    logger.info(f"[*] Generiere Story via Claude ({config['story_generation']['model']})...")
-    story_text = generate_story(client, stereotyp, config["story_generation"]["model"])
+    logger.info(f"[*] Generiere Story via Claude CLI...")
+    story_text = generate_story(stereotyp, stichworte)
     word_count = count_words(story_text)
-    logger.info(f"[+] Story generiert ({word_count} Wörter)")
+    logger.info(f"[+] Story generiert ({word_count} Woerter)")
 
     if word_count < 120 or word_count > 150:
-        logger.warning(f"[!] Wortzahl außerhalb Zielbereich: {word_count} (Ziel: 130–140)")
+        logger.warning(f"[!] Wortzahl ausserhalb Zielbereich: {word_count} (Ziel: 130-140)")
 
-    # Speichern
     txt_path = save_story(nr, stereotyp, story_text, stories_dir)
     logger.info(f"[+] Text gespeichert: {txt_path.name}")
 
-    # CSV aktualisieren
     ir.update_field(nr, "status_story", "X", input_file)
     logger.info(f"[+] CSV aktualisiert: status_story=X")
 
-    # Story-Preview
     logger.info("\n" + "-" * 60)
     logger.info(story_text)
     logger.info("-" * 60)
@@ -182,27 +160,23 @@ def main():
     parser = argparse.ArgumentParser(description="Generiere Stereotypen-Stories")
     parser.add_argument("--story", type=int, help="Story-Nummer (z.B. 1)")
     parser.add_argument("--all", action="store_true", help="Alle ausstehenden Stories")
-    parser.add_argument("--auto-title", action="store_true", help="Titel von Claude generieren lassen")
+    parser.add_argument("--stichworte", type=str, default="",
+                        help="Kommagetrennte Stichworte die in die Story einfliessen sollen")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
 
     config = load_config(args.config)
     logger = setup_logging(config["output"]["log_file"])
-
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
-        logger.error("[-] ANTHROPIC_API_KEY fehlt in .env")
-        sys.exit(1)
-
-    client = anthropic.Anthropic(api_key=api_key)
     input_file = config["output"]["input_file"]
+
+    stichworte = [s.strip() for s in args.stichworte.split(",") if s.strip()] if args.stichworte else None
 
     if args.story:
         row = ir.find_row(args.story, input_file)
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        process_story(row, client, config, logger, auto_title=args.auto_title)
+        process_story(row, config, logger, stichworte=stichworte)
 
     elif args.all:
         rows = ir.read_rows(input_file)
@@ -210,7 +184,7 @@ def main():
         logger.info(f"[*] {len(pending)} ausstehende Stories")
         for row in pending:
             try:
-                process_story(row, client, config, logger, auto_title=args.auto_title)
+                process_story(row, config, logger, stichworte=stichworte)
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
 
@@ -219,7 +193,7 @@ def main():
         if not row:
             logger.info("[+] Keine ausstehenden Stories")
             return
-        process_story(row, client, config, logger, auto_title=args.auto_title)
+        process_story(row, config, logger, stichworte=stichworte)
 
 
 if __name__ == "__main__":

@@ -236,6 +236,107 @@ def generate_picture():
     return jsonify({"status": "started"})
 
 
+# ── Neue Story erstellen ─────────────────────────────────────────────────────
+
+@app.route("/api/create-story", methods=["POST"])
+def create_story():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    body = request.get_json(silent=True) or {}
+    stereotyp = body.get("stereotyp", "").strip()
+    stichworte = body.get("stichworte", "").strip()
+    position = body.get("position", "")  # "start", "end", Zahl, oder leer = nicht einreihen
+
+    if not stereotyp:
+        return jsonify({"error": "Stereotyp fehlt"}), 400
+
+    def task():
+        try:
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+            with open(input_file, encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+
+            # Prüfen ob Stereotyp schon existiert
+            existing = next((r for r in rows if r.get("stereotyp", "").strip().lower() == stereotyp.lower()), None)
+            if existing:
+                new_nr = existing["nr"].strip()
+                log = [f"ℹ️ #{new_nr} '{stereotyp}' existiert bereits – Story wird neu generiert"]
+                set_task("running", f"Regeneriere Story #{new_nr}...", 10, log=log)
+            else:
+                max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
+                new_nr = str(max_nr + 1)
+                fieldnames = list(rows[0].keys())
+                new_row = {k: "" for k in fieldnames}
+                new_row["nr"] = new_nr
+                new_row["stereotyp"] = stereotyp
+                with open(input_file, "a", encoding="utf-8", newline="") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writerow(new_row)
+                log = [f"📋 #{new_nr} '{stereotyp}' in CSV eingetragen"]
+                if stichworte:
+                    log.append(f"🔑 Stichworte: {stichworte}")
+                set_task("running", f"Story #{new_nr} generieren...", 10, log=log)
+
+            log.append(f"⏳ Story-Text via Claude generieren...")
+            set_task("running", f"Story #{new_nr} via Claude generieren...", 30, log=list(log))
+            args = ["generate_stories.py", "--story", new_nr]
+            if stichworte:
+                args += ["--stichworte", stichworte]
+            run_script(args)
+            log.append(f"✅ Story-Text gespeichert")
+
+            log.append(f"⏳ Audio via ElevenLabs vertonen...")
+            set_task("running", f"Audio für #{new_nr} generieren...", 65, log=list(log))
+            run_script(["generate_audio.py", "--story", new_nr])
+            log.append(f"✅ Audio fertig")
+
+            log.append(f"⏳ Caption via Claude generieren...")
+            set_task("running", f"Caption für #{new_nr} generieren...", 80, log=list(log))
+            caption_args = ["generate_captions.py", "--story", new_nr]
+            if stichworte:
+                caption_args += ["--stichworte", stichworte]
+            run_script(caption_args)
+            log.append(f"✅ Caption fertig")
+
+            if position:
+                reihenfolge_path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+                lines = []
+                if reihenfolge_path.exists():
+                    lines = [l.strip() for l in reihenfolge_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+                lines = [l for l in lines if l != new_nr]
+                if position == "start":
+                    lines.insert(0, new_nr)
+                    log.append(f"📋 #{new_nr} an den Anfang der Reihenfolge gesetzt")
+                elif position == "end":
+                    lines.append(new_nr)
+                    log.append(f"📋 #{new_nr} ans Ende der Reihenfolge gesetzt")
+                else:
+                    try:
+                        pos = max(0, int(position) - 1)
+                        lines.insert(pos, new_nr)
+                        log.append(f"📋 #{new_nr} an Position {position} der Reihenfolge gesetzt")
+                    except Exception:
+                        lines.append(new_nr)
+                reihenfolge_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+            set_task("running", "GPT-Prompt aktualisieren...", 88, log=list(log))
+            onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
+            run_script(["generate_gpt_prompt.py", "--no-pic", "--out", onedrive_out])
+            log.append(f"📝 GPT-Prompt aktualisiert")
+
+            log.append(f"📷 Bild muss noch manuell erstellt werden (GPT)")
+            set_task("running", "Dashboard aktualisieren...", 92, log=list(log))
+            refresh_dashboard()
+            set_task("complete", f"Story #{new_nr} '{stereotyp}' erstellt + vertont!", 100, log=list(log))
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Starte...", 5, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
 # ── Story ────────────────────────────────────────────────────────────────────
 
 @app.route("/api/generate-story", methods=["POST"])
@@ -476,6 +577,62 @@ def abort_task():
         _task["message"] = "Abgebrochen"
         _task["percent"] = 0
     return jsonify({"status": "aborted"})
+
+
+# ── Reihenfolge ──────────────────────────────────────────────────────────────
+
+@app.route("/api/reihenfolge", methods=["GET"])
+def get_reihenfolge():
+    path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+    lines = []
+    if path.exists():
+        lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return jsonify({"reihenfolge": lines})
+
+
+@app.route("/api/reihenfolge", methods=["POST"])
+def set_reihenfolge():
+    body = request.get_json(silent=True) or {}
+    nr = str(body.get("nr", "")).strip()
+    position = body.get("position", "end")  # "start", "end", oder Zahl
+
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+
+    path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+    lines = []
+    if path.exists():
+        lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    lines = [l for l in lines if l != nr]  # doppelte entfernen
+
+    if position == "start":
+        lines.insert(0, nr)
+    elif position == "end":
+        lines.append(nr)
+    else:
+        try:
+            pos = max(0, int(position) - 1)
+            lines.insert(pos, nr)
+        except Exception:
+            lines.append(nr)
+
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return jsonify({"status": "ok", "reihenfolge": lines})
+
+
+@app.route("/api/reihenfolge/remove", methods=["POST"])
+def remove_reihenfolge():
+    body = request.get_json(silent=True) or {}
+    nr = str(body.get("nr", "")).strip()
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+
+    path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+    if path.exists():
+        lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and l.strip() != nr]
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return jsonify({"status": "ok"})
 
 
 # ── Mark Posted ──────────────────────────────────────────────────────────────

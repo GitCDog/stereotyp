@@ -18,6 +18,47 @@ posted_done = sum(1 for r in data if r.get("insta_post")    == "X")
 steps = story_done + caption_done + audio_done + pic_done + video_done
 percent = round((steps / (total * 5)) * 100) if total else 0
 
+pie_posted    = posted_done
+pie_ready     = video_done - posted_done
+pie_incomplete = total - video_done
+
+# Reihenfolge-Daten laden – beide Formate ("0182" und "182") als Keys
+nr_to_stereotyp = {}
+for r in data:
+    raw = r.get("nr", "").strip()
+    name = r.get("stereotyp", "").strip()
+    nr_to_stereotyp[raw] = name
+    try:
+        nr_to_stereotyp[str(int(raw))] = name  # ohne führende Null
+    except ValueError:
+        pass
+reihenfolge_nrs = []
+reihenfolge_path = Path("1_input/0_reihenfolge.txt")
+if reihenfolge_path.exists():
+    reihenfolge_nrs = [l.strip() for l in reihenfolge_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+# Lookup: normalisierte nr → Position (1-basiert)
+reihenfolge_pos = {}
+for i, rq_nr in enumerate(reihenfolge_nrs, 1):
+    reihenfolge_pos[rq_nr] = i
+    try:
+        reihenfolge_pos[str(int(rq_nr))] = i   # ohne führende Null
+        reihenfolge_pos[f"{int(rq_nr):04d}"] = i  # mit führender Null
+    except ValueError:
+        pass
+
+reihenfolge_rows_html = ""
+if reihenfolge_nrs:
+    for i, nr in enumerate(reihenfolge_nrs, 1):
+        name = nr_to_stereotyp.get(nr, nr_to_stereotyp.get(nr.lstrip("0"), "—"))
+        reihenfolge_rows_html += f'<tr><td class="rq-pos">{i}</td><td class="rq-nr">#{nr}</td><td class="rq-name">{name}</td></tr>\n'
+else:
+    reihenfolge_rows_html = '<tr><td colspan="3" class="rq-empty">Reihenfolge ist leer</td></tr>'
+
+# nr→stereotyp als JSON für JS-Lookup
+import json as _json
+nr_lookup_json = _json.dumps(nr_to_stereotyp)
+
 
 def block(status):
     if status == "X":
@@ -34,7 +75,17 @@ for row in data:
     insta_cls = "active" if insta == "X" else ""
     insta_lbl = "✓ Gepostet" if insta == "X" else "Post"
     vid_done  = row.get("status_video", "") == "X"
-    row_cls   = ' class="row-done"' if vid_done else ""
+    audio_ok  = row.get("status_audio", "") == "X"
+    pic_ok    = row.get("status_pic", "") == "X"
+    if insta == "X":
+        row_cls = ' class="row-posted"'
+    elif vid_done:
+        row_cls = ' class="row-ready"'
+    elif not audio_ok or not pic_ok or not vid_done:
+        row_cls = ' class="row-incomplete"'
+    else:
+        row_cls = ""
+    rq_pos    = reihenfolge_pos.get(nr, reihenfolge_pos.get(str(int(nr)) if nr.isdigit() else nr, None))
 
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
@@ -45,9 +96,11 @@ for row in data:
                     <td class="center">{sec}</td>
                     <td class="status-cell">{block(row.get('status_pic',''))}</td>
                     <td class="status-cell">{block(row.get('status_video',''))}</td>
-                    <td class="center">
+                    <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
+                        <button class="queue-btn" data-nr="{nr}" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
+                    <td class="center rq-col" data-nr="{nr}">{f'<span class="rq-badge">{rq_pos}</span>' if rq_pos else ''}</td>
                 </tr>
 """
 
@@ -215,8 +268,27 @@ html = f'''<!DOCTYPE html>
         .blk {{ display: inline-block; width: 16px; height: 16px; border-radius: 3px; vertical-align: middle; }}
         .blk-green {{ background: #28a745; }}
         .blk-yellow {{ background: #ffc107; }}
-        tr.row-done {{ background: #edfff3; }}
-        tr.row-done:hover {{ background: #d6f5e3; }}
+        tr.row-posted {{ background: #1a4d2e; color: #c8f5d8; }}
+        tr.row-posted:hover {{ background: #245c38; }}
+        tr.row-posted td {{ color: #c8f5d8; }}
+        tr.row-ready {{ background: #d4f5e2; }}
+        tr.row-ready:hover {{ background: #baefd1; }}
+        tr.row-incomplete {{ background: #fff8d6; }}
+        tr.row-incomplete:hover {{ background: #fff0a0; }}
+        .pie-section {{
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: white;
+            padding: 18px 24px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }}
+        .pie-legend {{ display: flex; flex-direction: column; gap: 10px; }}
+        .legend-item {{ display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; }}
+        .legend-dot {{ width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; }}
         .center {{ text-align: center; }}
         .insta-btn {{
             background: #e9ecef; border: none; padding: 5px 11px;
@@ -226,9 +298,139 @@ html = f'''<!DOCTYPE html>
         .insta-btn:hover {{ background: #dee2e6; }}
         .insta-btn.active {{ background: #28a745; color: white; }}
         .insta-btn:disabled {{ opacity: 0.5; cursor: not-allowed; }}
+        .rq-col {{ width: 48px; }}
+        .rq-badge {{
+            display: inline-block;
+            background: #e8120a; color: white;
+            font-size: 11px; font-weight: 700;
+            border-radius: 10px; padding: 2px 7px;
+            min-width: 22px; text-align: center;
+        }}
         ::-webkit-scrollbar {{ width: 8px; }}
         ::-webkit-scrollbar-track {{ background: #f1f1f1; }}
         ::-webkit-scrollbar-thumb {{ background: #e8120a; border-radius: 4px; }}
+        .new-story-card {{
+            background: #fff8f8;
+            border: 2px solid #e8120a;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-top: 14px;
+        }}
+        .new-story-card h3 {{
+            font-size: 14px; font-weight: 700; color: #e8120a;
+            margin-bottom: 12px;
+        }}
+        .new-story-fields {{
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
+        }}
+        .new-story-field {{
+            display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px;
+        }}
+        .new-story-field label {{
+            font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px;
+        }}
+        .new-story-field input {{
+            padding: 9px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+        }}
+        .new-story-field input:focus {{
+            outline: none; border-color: #e8120a; box-shadow: 0 0 0 2px rgba(232,18,10,0.15);
+        }}
+        .new-story-submit {{
+            background: #e8120a; color: white; border: none;
+            padding: 9px 22px; border-radius: 6px; cursor: pointer;
+            font-size: 14px; font-weight: 700; white-space: nowrap;
+            align-self: flex-end;
+        }}
+        .new-story-submit:hover {{ background: #c00e08; }}
+        .new-story-submit:disabled {{ background: #aaa; cursor: not-allowed; }}
+        .new-story-field select {{
+            padding: 9px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; width: 100%; background: white;
+        }}
+        .new-story-field select:focus {{
+            outline: none; border-color: #e8120a;
+        }}
+        .pos-custom {{ display: none; margin-top: 6px; }}
+        .pos-custom input {{
+            padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 13px; width: 100%;
+        }}
+        .queue-btn {{
+            background: #f0f0f0; border: 1px solid #ddd; padding: 3px 8px;
+            border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;
+            color: #555; white-space: nowrap;
+        }}
+        .queue-btn:hover {{ background: #e8120a; color: white; border-color: #e8120a; }}
+        .queue-btn.in-queue {{ background: #28a745; color: white; border-color: #28a745; }}
+        .queue-modal {{
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            justify-content: center; align-items: center;
+        }}
+        .queue-modal.visible {{ display: flex; }}
+        .queue-inner {{
+            background: white; border-radius: 12px; padding: 24px 28px;
+            max-width: 360px; width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }}
+        .queue-inner h3 {{ font-size: 15px; margin-bottom: 14px; color: #111; }}
+        .queue-options {{ display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }}
+        .queue-opt {{
+            padding: 10px 14px; border: 2px solid #ddd; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 600; color: #333;
+            display: flex; align-items: center; gap: 8px;
+        }}
+        .queue-opt:hover {{ border-color: #e8120a; color: #e8120a; }}
+        .queue-opt.remove {{ border-color: #dc3545; color: #dc3545; }}
+        .queue-opt.remove:hover {{ background: #dc3545; color: white; }}
+        .queue-pos-row {{ display: flex; gap: 8px; align-items: center; }}
+        .queue-pos-row input {{
+            flex: 1; padding: 9px 12px; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 14px;
+        }}
+        .queue-pos-row input:focus {{ outline: none; border-color: #e8120a; }}
+        .queue-pos-btn {{
+            background: #e8120a; color: white; border: none;
+            padding: 9px 16px; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 700;
+        }}
+        .queue-cancel {{
+            background: none; border: none; color: #888; cursor: pointer;
+            font-size: 12px; margin-top: 8px; width: 100%; text-align: center;
+        }}
+        .reihenfolge-card {{
+            background: #fff8f8;
+            border: 1px solid #f0c0c0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 14px;
+        }}
+        .reihenfolge-card h3 {{
+            font-size: 13px; font-weight: 700; color: #c00;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }}
+        .reihenfolge-card.saved {{
+            border-color: #28a745;
+            background: #f0fff4;
+            transition: all 0.3s;
+        }}
+        .reihenfolge-table {{ width: 100%; border-collapse: collapse; font-size: 12px; }}
+        .reihenfolge-table td {{ padding: 5px 8px; border-bottom: 1px solid #f0e0e0; }}
+        .reihenfolge-table tr:last-child td {{ border-bottom: none; }}
+        .rq-pos {{ width: 28px; font-weight: 700; color: #e8120a; text-align: center; }}
+        .rq-nr {{ width: 40px; color: #999; text-align: center; }}
+        .rq-name {{ font-weight: 500; color: #222; }}
+        .rq-empty {{ color: #aaa; font-style: italic; font-size: 12px; padding: 6px 0; }}
+        @media (max-width: 600px) {{
+            .new-story-fields {{ flex-direction: column; }}
+            .new-story-submit {{ width: 100%; padding: 12px; font-size: 16px; }}
+            .new-story-field input, .new-story-field select {{ font-size: 16px; }}
+        }}
         .server-status {{
             display: flex; align-items: center; gap: 8px;
             font-size: 12px; color: #555;
@@ -291,6 +493,24 @@ html = f'''<!DOCTYPE html>
             <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 Instagram Post</button>
         </div>
 
+        <div class="pie-section">
+            <canvas id="statusPie" width="160" height="160"></canvas>
+            <div class="pie-legend">
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:#1a4d2e"></span>
+                    Gepostet: {pie_posted}
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:#22c55e"></span>
+                    Bereit zum Posten: {pie_ready}
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background:#fbbf24"></span>
+                    Unvollständig: {pie_incomplete}
+                </div>
+            </div>
+        </div>
+
         <div class="stats">
             <div class="stat-box"><h3>Gesamt</h3><div class="val">{total}</div></div>
             <div class="stat-box"><h3>Story ✓</h3><div class="val">{story_done}</div></div>
@@ -306,6 +526,45 @@ html = f'''<!DOCTYPE html>
             <div class="progress-bar">
                 <div class="progress-fill">{percent}%</div>
             </div>
+        </div>
+
+        <div class="new-story-card">
+            <h3>✍️ Neue Story erstellen</h3>
+            <div class="new-story-fields">
+                <div class="new-story-field">
+                    <label>Stereotyp *</label>
+                    <input type="text" id="newStereotyp" placeholder="z.B. Der Sparfuchs"
+                           onkeydown="if(event.key==='Enter') createStory()">
+                </div>
+                <div class="new-story-field">
+                    <label>Stichworte (optional)</label>
+                    <input type="text" id="newStichworte" placeholder="z.B. Sonderangebot, Coupons, Kassenzettel"
+                           onkeydown="if(event.key==='Enter') createStory()">
+                </div>
+                <div class="new-story-field" style="flex:0;min-width:150px;">
+                    <label>Reihenfolge</label>
+                    <select id="newPosition" onchange="toggleCustomPos()">
+                        <option value="">Nicht einreihen</option>
+                        <option value="start">Anfang</option>
+                        <option value="end">Ende</option>
+                        <option value="custom">Position...</option>
+                    </select>
+                    <div class="pos-custom" id="posCustomDiv">
+                        <input type="number" id="newPositionNr" min="1" placeholder="z.B. 3">
+                    </div>
+                </div>
+                <button class="new-story-submit" id="createStoryBtn" onclick="createStory()">Generieren</button>
+            </div>
+        </div>
+
+        <div class="reihenfolge-card">
+            <h3>
+                <span>📋 Posting-Reihenfolge</span>
+                <span id="rqCount" style="font-size:11px;color:#888;font-weight:400;">{len(reihenfolge_nrs)} Stories</span>
+            </h3>
+            <table class="reihenfolge-table" id="reihenfolgeTable">
+                {reihenfolge_rows_html}
+            </table>
         </div>
 
         <div class="pic-input" id="actionInputDiv">
@@ -325,6 +584,22 @@ html = f'''<!DOCTYPE html>
             </div>
             <div class="log-msg" id="logMsg">Starte...</div>
             <div class="log-list" id="logList"></div>
+        </div>
+    </div>
+
+    <div class="queue-modal" id="queueModal" onclick="closeQueueModal()">
+        <div class="queue-inner" onclick="event.stopPropagation()">
+            <h3 id="queueModalTitle">☰ Reihenfolge</h3>
+            <div class="queue-options">
+                <div class="queue-opt" onclick="setQueue('start')">⬆️ An den Anfang</div>
+                <div class="queue-opt" onclick="setQueue('end')">⬇️ Ans Ende</div>
+                <div class="queue-pos-row">
+                    <input type="number" id="queuePosInput" min="1" placeholder="Position (z.B. 2)">
+                    <button class="queue-pos-btn" onclick="setQueue('pos')">Einfügen</button>
+                </div>
+                <div class="queue-opt remove" id="queueRemoveBtn" onclick="setQueue('remove')">✕ Aus Reihenfolge entfernen</div>
+            </div>
+            <button class="queue-cancel" onclick="closeQueueModal()">Abbrechen</button>
         </div>
     </div>
 
@@ -350,6 +625,7 @@ html = f'''<!DOCTYPE html>
                         <th title="Bild">Bild</th>
                         <th title="Video">Video</th>
                         <th title="Instagram">Post</th>
+                        <th title="Posting-Reihenfolge">Reihenf.</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -360,6 +636,35 @@ html = f'''<!DOCTYPE html>
 </div>
 
 <script>
+    (function() {{
+        var canvas = document.getElementById('statusPie');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var data = [
+            {{ v: {pie_posted},     c: '#1a4d2e' }},
+            {{ v: {pie_ready},      c: '#22c55e' }},
+            {{ v: {pie_incomplete}, c: '#fbbf24' }}
+        ];
+        var total = data.reduce(function(s, d) {{ return s + d.v; }}, 0);
+        if (total === 0) return;
+        var start = -Math.PI / 2;
+        var cx = 80, cy = 80, r = 72;
+        data.forEach(function(d) {{
+            if (d.v === 0) return;
+            var angle = (d.v / total) * 2 * Math.PI;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, start + angle);
+            ctx.closePath();
+            ctx.fillStyle = d.c;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            start += angle;
+        }});
+    }})();
+
     const ACTIONS = {{
         'story':   {{ btn: 'storyBtn',   api: '/api/generate-story',   label: '✍️ Story generieren'  }},
         'caption': {{ btn: 'captionBtn', api: '/api/generate-caption', label: '💬 Caption generieren' }},
@@ -549,6 +854,147 @@ html = f'''<!DOCTYPE html>
     }}
     updateServerStatus();
     setInterval(updateServerStatus, 30000);
+
+    const NR_LOOKUP = {nr_lookup_json};
+    let _queueNr = null;
+    let _currentReihenfolge = [];
+
+    async function loadReihenfolge() {{
+        try {{
+            const r = await fetch('/api/reihenfolge');
+            const d = await r.json();
+            _currentReihenfolge = d.reihenfolge || [];
+        }} catch(e) {{ _currentReihenfolge = []; }}
+    }}
+
+    async function refreshQueueDisplay() {{
+        await loadReihenfolge();
+        const table = document.getElementById('reihenfolgeTable');
+        const count = document.getElementById('rqCount');
+        if (!_currentReihenfolge.length) {{
+            table.innerHTML = '<tr><td colspan="3" class="rq-empty">Reihenfolge ist leer</td></tr>';
+            count.textContent = '0 Stories';
+            return;
+        }}
+        count.textContent = _currentReihenfolge.length + ' Stories';
+        table.innerHTML = _currentReihenfolge.map((nr, i) => {{
+            const name = NR_LOOKUP[nr] || NR_LOOKUP[String(parseInt(nr))] || '—';
+            return `<tr><td class="rq-pos">${{i+1}}</td><td class="rq-nr">#${{nr}}</td><td class="rq-name">${{name}}</td></tr>`;
+        }}).join('');
+        // Reihenfolge-Spalte in der Tabelle aktualisieren
+        document.querySelectorAll('.rq-col').forEach(td => {{
+            const nr = td.getAttribute('data-nr');
+            const pos = _currentReihenfolge.indexOf(nr) + 1 ||
+                        _currentReihenfolge.indexOf(String(parseInt(nr))) + 1 ||
+                        _currentReihenfolge.indexOf(nr.padStart(4,'0')) + 1;
+            td.innerHTML = pos ? `<span class="rq-badge">${{pos}}</span>` : '';
+        }});
+    }}
+
+    function toggleCustomPos() {{
+        const sel = document.getElementById('newPosition');
+        const div = document.getElementById('posCustomDiv');
+        div.style.display = sel.value === 'custom' ? 'block' : 'none';
+    }}
+
+    async function openQueueModal(btn) {{
+        _queueNr = btn.getAttribute('data-nr');
+        await loadReihenfolge();
+        const inQueue = _currentReihenfolge.includes(_queueNr);
+        document.getElementById('queueModalTitle').textContent =
+            '☰ Reihenfolge – #' + _queueNr + (inQueue ? ' (aktuell in Queue)' : '');
+        document.getElementById('queueRemoveBtn').style.display = inQueue ? 'flex' : 'none';
+        document.getElementById('queuePosInput').value = '';
+        document.getElementById('queueModal').classList.add('visible');
+    }}
+
+    function closeQueueModal() {{
+        document.getElementById('queueModal').classList.remove('visible');
+        _queueNr = null;
+    }}
+
+    async function setQueue(action) {{
+        if (!_queueNr) return;
+        let position;
+        if (action === 'start') position = 'start';
+        else if (action === 'end') position = 'end';
+        else if (action === 'remove') {{
+            await fetch('/api/reihenfolge/remove', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{nr: _queueNr}})
+            }});
+            closeQueueModal();
+            document.querySelectorAll('.queue-btn[data-nr="' + _queueNr + '"]')
+                .forEach(b => b.classList.remove('in-queue'));
+            await refreshQueueDisplay();
+            flashSaved('Entfernt');
+            return;
+        }} else {{
+            const val = document.getElementById('queuePosInput').value.trim();
+            if (!val) {{ document.getElementById('queuePosInput').focus(); return; }}
+            position = val;
+        }}
+        await fetch('/api/reihenfolge', {{
+            method: 'POST', headers: {{'Content-Type': 'application/json'}},
+            body: JSON.stringify({{nr: _queueNr, position}})
+        }});
+        closeQueueModal();
+        document.querySelectorAll('.queue-btn[data-nr="' + _queueNr + '"]')
+            .forEach(b => b.classList.add('in-queue'));
+        await refreshQueueDisplay();
+        flashSaved('Gespeichert');
+    }}
+
+    function flashSaved(msg) {{
+        const card = document.querySelector('.reihenfolge-card');
+        const count = document.getElementById('rqCount');
+        card.classList.add('saved');
+        const prev = count.textContent;
+        count.innerHTML = '<span style="color:#28a745;font-weight:700;">✓ ' + msg + '</span>';
+        setTimeout(() => {{
+            card.classList.remove('saved');
+            count.textContent = _currentReihenfolge.length + ' Stories';
+        }}, 1800);
+    }}
+
+    async function createStory() {{
+        const stereotyp = document.getElementById('newStereotyp').value.trim();
+        const stichworte = document.getElementById('newStichworte').value.trim();
+        if (!stereotyp) {{
+            document.getElementById('newStereotyp').focus();
+            return;
+        }}
+        const btn = document.getElementById('createStoryBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳...';
+        _activeBtn = null;
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = '✍️ Story generieren: ' + stereotyp;
+        setLog(5, 'Starte...');
+        try {{
+            let position = document.getElementById('newPosition').value;
+        if (position === 'custom') {{
+            position = document.getElementById('newPositionNr').value.trim() || '';
+        }}
+        const resp = await fetch('/api/create-story', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{stereotyp, stichworte, position}})
+            }});
+            if (resp.ok) {{
+                pollProgress(btn, '✍️ Story generieren');
+                _activeBtn = btn;
+            }} else {{
+                const err = await resp.json();
+                alert('Fehler: ' + (err.error || 'Unbekannter Fehler'));
+                btn.disabled = false;
+                btn.textContent = 'Generieren';
+            }}
+        }} catch(e) {{
+            btn.disabled = false;
+            btn.textContent = 'Generieren';
+        }}
+    }}
 
     async function togglePost(btn) {{
         if (btn.classList.contains('active')) return;

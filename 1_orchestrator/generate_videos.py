@@ -8,6 +8,7 @@ Verwendung:
 """
 
 import sys
+import os
 import argparse
 import logging
 import subprocess
@@ -212,10 +213,34 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
     return True
 
 
+def git_push_csv(input_file: str, logger: logging.Logger):
+    """Commit und push CSV-Änderungen auf GitHub."""
+    repo_root = Path(__file__).parent.parent
+    rel_path = os.path.relpath(input_file, repo_root)
+    try:
+        diff = subprocess.run(
+            ["git", "diff", "--quiet", rel_path],
+            cwd=str(repo_root), capture_output=True
+        )
+        if diff.returncode == 0:
+            logger.info("[*] Keine CSV-Änderungen – kein Push nötig")
+            return
+        subprocess.run(["git", "add", rel_path], cwd=str(repo_root), check=True)
+        subprocess.run(
+            ["git", "commit", "-m", "fix: status_video aktualisiert nach Videogenerierung"],
+            cwd=str(repo_root), check=True
+        )
+        subprocess.run(["git", "push"], cwd=str(repo_root), check=True)
+        logger.info("[+] CSV-Änderungen auf GitHub gepusht")
+    except subprocess.CalledProcessError as e:
+        logger.warning(f"[!] Git Push fehlgeschlagen: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Erstelle Videos aus Bild + Audio")
     parser.add_argument("--story", type=str, help="Story-Nummer")
     parser.add_argument("--all", action="store_true", help="Alle bereitstehenden Videos")
+    parser.add_argument("--no-push", action="store_true", help="Kein automatischer Git Push")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
 
@@ -224,16 +249,18 @@ def main():
     input_file = config["output"]["input_file"]
     setup_cloudinary()
 
+    created = 0
+
     if args.story:
         row = ir.find_row(args.story, input_file)
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        create_video(args.story, row["stereotyp"].strip(), config, logger)
+        if create_video(args.story, row["stereotyp"].strip(), config, logger):
+            created += 1
 
     elif args.all:
         rows = ir.read_rows(input_file)
-        # Alle die Audio=X, Pic=X, Video noch nicht fertig
         candidates = [
             r for r in rows
             if r.get("status_audio") == "X"
@@ -243,7 +270,8 @@ def main():
         logger.info(f"[*] {len(candidates)} Videos zu erstellen")
         for row in candidates:
             try:
-                create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger)
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger):
+                    created += 1
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
 
@@ -254,10 +282,14 @@ def main():
             if (row.get("status_audio") == "X"
                     and row.get("status_pic") == "X"
                     and row.get("status_video", "") != "X"):
-                create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger)
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger):
+                    created += 1
                 break
         else:
             logger.info("[+] Keine Videos ausstehend")
+
+    if created > 0 and not args.no_push:
+        git_push_csv(input_file, logger)
 
 
 if __name__ == "__main__":

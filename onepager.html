@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    min-height: 1080px;
+    background: #0a0a0f;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    padding: 52px 56px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+  .flag { font-size: 44px; line-height: 1; }
+  .title-block { flex: 1; padding: 0 20px; }
+  .title {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #fff 0%, #a0b0d0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #7080a0;
+    font-weight: 400;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge {
+    background: #10102a;
+    border: 1px solid #3040a0;
+    border-radius: 0px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: #8090c0;
+    text-align: center;
+  }
+  .badge span { display: block; font-size: 18px; font-weight: 700; color: #fff; }
+
+  /* STATS ROW */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .stat {
+    background: #10102a;
+    border: 1px solid #2a2a60;
+    border-radius: 0px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 32px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+  }
+  .stat .label {
+    font-size: 10px;
+    color: #7080a0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+  }
+
+  /* PIPELINE */
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6070a0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .step {
+    flex: 1;
+    background: #10102a;
+    border: 1px solid #2a2a60;
+    border-radius: 0px;
+    padding: 16px 14px;
+    position: relative;
+    text-align: center;
+  }
+  .step .icon { font-size: 26px; margin-bottom: 6px; }
+  .step .name { font-size: 12px; font-weight: 700; color: #d0d8ff; line-height: 1.2; }
+  .step .api {
+    display: inline-block;
+    margin-top: 6px;
+    background: #1a1a40;
+    border: 1px solid #3040a0;
+    border-radius: 0px;
+    padding: 2px 7px;
+    font-size: 9px;
+    color: #8090d0;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .step.highlight { border-color: #4050c0; background: #0e0e25; }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    color: #5060b0;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* TWO COLUMN */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    background: #10102a;
+    border: 1px solid #2a2a60;
+    border-radius: 0px;
+    padding: 20px;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #7080b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  /* APIS */
+  .api-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .api-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0d0d22;
+    border: 1px solid #252550;
+    border-radius: 0px;
+    padding: 10px 12px;
+  }
+  .api-icon { font-size: 20px; flex-shrink: 0; }
+  .api-name { font-size: 11px; font-weight: 700; color: #d0d8f0; }
+  .api-desc { font-size: 9px; color: #7080a0; margin-top: 1px; }
+
+  /* AUTOMATION */
+  .flow-list { list-style: none; }
+  .flow-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1a1a40;
+    font-size: 12px;
+    color: #a0b0d0;
+    line-height: 1.4;
+  }
+  .flow-list li:last-child { border-bottom: none; }
+  .flow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4060d0;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .flow-dot.green { background: #30b070; }
+  .flow-dot.yellow { background: #c08020; }
+
+  /* TECH STACK */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    background: #0d0d22;
+    border: 1px solid #252550;
+    border-radius: 0px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #8090c0;
+  }
+
+  /* FOOTER */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #1a1a40;
+    margin-top: 4px;
+  }
+  .footer-left { font-size: 10px; color: #5060a0; }
+  .cron-badge {
+    background: #0a1525;
+    border: 1px solid #1a4080;
+    border-radius: 0px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: #4080c0;
+    font-weight: 600;
+  }
+  .cron-badge span { color: #60a0e0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="flag">🇩🇪</div>
+  <div class="title-block">
+    <div class="title">Stereotypen<br>Instagram Automation</div>
+    <div class="subtitle">Vollautomatisierte Reels-Pipeline · täglich · 100% serverless</div>
+  </div>
+  <div class="badge">
+    <span>291</span>
+    Stories
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="num">291</div>
+    <div class="label">Stories</div>
+  </div>
+  <div class="stat">
+    <div class="num">74</div>
+    <div class="label">Videos bereit</div>
+  </div>
+  <div class="stat">
+    <div class="num">19</div>
+    <div class="label">Gepostet</div>
+  </div>
+  <div class="stat">
+    <div class="num">1×</div>
+    <div class="label">täglich · 19:05</div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div class="section-label">Pipeline</div>
+<div class="pipeline">
+  <div class="step highlight">
+    <div class="icon">✍️</div>
+    <div class="name">Story<br>generieren</div>
+    <div class="api">Claude Sonnet</div>
+  </div>
+  <div class="arrow">›</div>
+  <div class="step">
+    <div class="icon">🎙️</div>
+    <div class="name">Audio<br>vertonen</div>
+    <div class="api">ElevenLabs</div>
+  </div>
+  <div class="arrow">›</div>
+  <div class="step">
+    <div class="icon">🖼️</div>
+    <div class="name">Bild<br>erstellen</div>
+    <div class="api">GPT-Image-1</div>
+  </div>
+  <div class="arrow">›</div>
+  <div class="step">
+    <div class="icon">🎬</div>
+    <div class="name">Video<br>rendern</div>
+    <div class="api">ffmpeg</div>
+  </div>
+  <div class="arrow">›</div>
+  <div class="step highlight">
+    <div class="icon">📱</div>
+    <div class="name">Instagram<br>posten</div>
+    <div class="api">Graph API</div>
+  </div>
+</div>
+
+<!-- TWO COLUMN -->
+<div class="two-col">
+
+  <!-- APIS -->
+  <div class="card">
+    <div class="card-title">APIs & Dienste</div>
+    <div class="api-grid">
+      <div class="api-item">
+        <div class="api-icon">🤖</div>
+        <div>
+          <div class="api-name">Anthropic</div>
+          <div class="api-desc">Story-Generierung</div>
+        </div>
+      </div>
+      <div class="api-item">
+        <div class="api-icon">🔊</div>
+        <div>
+          <div class="api-name">ElevenLabs</div>
+          <div class="api-desc">Text-to-Speech DE</div>
+        </div>
+      </div>
+      <div class="api-item">
+        <div class="api-icon">🎨</div>
+        <div>
+          <div class="api-name">OpenAI</div>
+          <div class="api-desc">Bildgenerierung</div>
+        </div>
+      </div>
+      <div class="api-item">
+        <div class="api-icon">☁️</div>
+        <div>
+          <div class="api-name">Cloudinary</div>
+          <div class="api-desc">Video-Hosting</div>
+        </div>
+      </div>
+      <div class="api-item">
+        <div class="api-icon">📸</div>
+        <div>
+          <div class="api-name">Instagram</div>
+          <div class="api-desc">Graph API v18</div>
+        </div>
+      </div>
+      <div class="api-item">
+        <div class="api-icon">🐙</div>
+        <div>
+          <div class="api-name">GitHub API</div>
+          <div class="api-desc">CSV-Sync & Actions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOMATION FLOW -->
+  <div class="card">
+    <div class="card-title">Automation Flow</div>
+    <ul class="flow-list">
+      <li><div class="flow-dot yellow"></div>Cron-Trigger täglich 19:05 CEST via GitHub Actions</li>
+      <li><div class="flow-dot"></div>Script liest nächste Story aus Reihenfolge-Datei</li>
+      <li><div class="flow-dot"></div>Video auf Cloudinary → URL an Instagram Graph API</li>
+      <li><div class="flow-dot"></div>Container erstellen → Polling bis FINISHED → Publish</li>
+      <li><div class="flow-dot green"></div>CSV-Status via GitHub API aktualisiert · Video gelöscht</li>
+      <li><div class="flow-dot green"></div>Bei ≤ 2 Videos: automatisches GitHub Issue als Warnung</li>
+    </ul>
+  </div>
+</div>
+
+<!-- TECH STACK -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-title">Tech Stack</div>
+  <div class="tags">
+    <div class="tag">Python 3.11</div>
+    <div class="tag">Flask</div>
+    <div class="tag">GitHub Actions</div>
+    <div class="tag">ffmpeg</div>
+    <div class="tag">PyGithub</div>
+    <div class="tag">Cloudinary SDK</div>
+    <div class="tag">Pillow</div>
+    <div class="tag">pydub</div>
+    <div class="tag">OneDrive Sync</div>
+    <div class="tag">CSV Pipeline State</div>
+    <div class="tag">lokales Dashboard</div>
+    <div class="tag">claude -p Vision</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">github.com/GitCDog/stereotyp · serverless · 0€ Hosting</div>
+  <div class="cron-badge">⏱ cron <span>5 17 * * *</span> · täglich automatisch</div>
+</div>
+
+</body>
+</html>
