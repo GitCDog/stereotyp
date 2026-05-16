@@ -293,4 +293,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 292,DSDS-Fan,X,X,58,X,X,X,
 293,Alles Toxisch,X,X,59,X,X,X,
 294,people pleaser,X,X,55,X,X,X,
-295,Basic Bee,X,X,57,X,,X,
+295,Basic Bee,X,X,57,X,X,X,
