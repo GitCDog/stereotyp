@@ -20,7 +20,7 @@ import input_reader as ir
 
 STORIES_DIR = Path("1_input")
 INPUT_FILE = "1_input/1_input_file.txt"
-DEFAULT_OUT = STORIES_DIR / "gpt_prompts.txt"
+DEFAULT_OUT = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
 
 
 def _nr_str(nr: str) -> str:
