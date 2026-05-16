@@ -90,14 +90,14 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 89,Der Adventskranz-Wettbewerb,X,X,55,,,X,
 90,"""Die „Vielleicht später mal""""-Absage""",X,X,53,,,X,
 91,"""Der „Das zahlt die Kasse nicht""""-Patient""",X,X,56,,,X,
-92,"""Der „Ich war hier",X,X,X,53,,X,X
+92,"Der „Ich war hier, bevor es cool war“-Tourist",X,X,53,,,X,
 93,"""Die „Schuhe bitte aus""""-Regel""",X,X,53,,,X,
 94,Der Billigflieger-Schnäppchenjäger,X,X,56,,,X,
 95,"""Die „Wir müssen mal wieder""""-Floskel""",X,X,49,,,X,
 96,Der Balkon-Sheriff,X,X,52,,,X,
 97,Der Kundenkarten-Sammler,X,X,57,,,X,
 98,"""Der „Schöner Hund""""-Smalltalk""",X,X,54,,,X,
-99,"""Der „So",X,X,X,,,X,X
+99,"Der „So, Feierabend“-Klatscher",X,X,,,,X,
 100,Der Tatort-Spoilerer,X,X,56,,,X,
 101,Talahon,X,X,51,X,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,X,
@@ -290,3 +290,5 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 0289,Ja ja,X,X,46,,,X,
 0290,Weihnachtsmarktpreise,X,X,44,,,X,
 0291,Stadtbilddebatte,X,X,49,,,X,
+292,DSDS-Fan,X,X,58,,,X,
+293,Alles Toxisch,X,,,,,X,
