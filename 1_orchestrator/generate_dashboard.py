@@ -900,8 +900,7 @@ html = f'''<!DOCTYPE html>
     }}
 
     async function openQueueModal(btn) {{
-        // Normalisieren: führende Nullen entfernen ("0182" → "182")
-        _queueNr = String(parseInt(btn.getAttribute('data-nr'), 10));
+        _queueNr = btn.getAttribute('data-nr');
         await loadReihenfolge();
         const inQueue = _currentReihenfolge.some(n => parseInt(n, 10) === parseInt(_queueNr, 10));
         document.getElementById('queueModalTitle').textContent =
