@@ -25,19 +25,22 @@ REIHENFOLGE_REL = "1_orchestrator/1_input/0_reihenfolge.txt"
 
 def git_push_reihenfolge():
     """Committet und pusht 0_reihenfolge.txt nach GitHub."""
+    no_window = subprocess.CREATE_NO_WINDOW
     try:
         diff = subprocess.run(
             ["git", "diff", "--quiet", REIHENFOLGE_REL],
-            cwd=str(REPO_ROOT), capture_output=True,
+            cwd=str(REPO_ROOT), capture_output=True, creationflags=no_window,
         )
         if diff.returncode == 0:
             return  # keine Änderung
-        subprocess.run(["git", "add", REIHENFOLGE_REL], cwd=str(REPO_ROOT), check=True)
+        subprocess.run(["git", "add", REIHENFOLGE_REL], cwd=str(REPO_ROOT),
+                       check=True, capture_output=True, creationflags=no_window)
         subprocess.run(
             ["git", "commit", "-m", "fix: Posting-Reihenfolge aktualisiert"],
-            cwd=str(REPO_ROOT), check=True,
+            cwd=str(REPO_ROOT), check=True, capture_output=True, creationflags=no_window,
         )
-        subprocess.run(["git", "push"], cwd=str(REPO_ROOT), check=True)
+        subprocess.run(["git", "push"], cwd=str(REPO_ROOT), check=True,
+                       capture_output=True, creationflags=no_window)
     except subprocess.CalledProcessError as e:
         print(f"[!] Git Push Reihenfolge fehlgeschlagen: {e}")
 
@@ -489,6 +492,34 @@ def generate_video():
     return jsonify({"status": "started"})
 
 
+# ── Bilder via Playwright (ChatGPT) ─────────────────────────────────────────
+
+@app.route("/api/generate-pictures-playwright", methods=["POST"])
+def generate_pictures_playwright():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    body = request.get_json(silent=True) or {}
+    story_val = str(body.get("story", "")).strip()
+
+    def task():
+        try:
+            if not story_val:
+                set_task("error", "Story-Nummer oder Bereich angeben (z.B. 49 oder 49,50,51)", 0)
+                return
+            set_task("running", f"Playwright: Bilder für {story_val}...", 10)
+            run_script(["generate_pictures_playwright.py", "--story", story_val])
+            set_task("running", "Dashboard aktualisieren...", 95)
+            refresh_dashboard()
+            set_task("complete", f"Fertig! Bilder für {story_val} generiert.", 100)
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Starte Playwright...", 5)
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
 # ── Instagram Post ───────────────────────────────────────────────────────────
 
 @app.route("/api/instagram-post", methods=["POST"])
@@ -654,7 +685,12 @@ def remove_reihenfolge():
 
     path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
     if path.exists():
-        lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and l.strip() != nr]
+        def _norm(s):
+            try: return str(int(s))
+            except: return s
+        nr_norm = _norm(nr)
+        lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines()
+                 if l.strip() and _norm(l.strip()) != nr_norm]
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     threading.Thread(target=git_push_reihenfolge, daemon=True).start()
     return jsonify({"status": "ok"})
@@ -670,6 +706,18 @@ def mark_posted():
         return jsonify({"error": "nr fehlt"}), 400
     import input_reader as ir
     ir.update_field(int(nr), "insta_post", "X", "1_input/1_input_file.txt")
+    refresh_dashboard()
+    return jsonify({"status": "ok"})
+
+
+@app.route("/api/unmark-posted", methods=["POST"])
+def unmark_posted():
+    body = request.get_json(silent=True) or {}
+    nr = body.get("nr")
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+    import input_reader as ir
+    ir.update_field(int(nr), "insta_post", "", "1_input/1_input_file.txt")
     refresh_dashboard()
     return jsonify({"status": "ok"})
 

@@ -486,10 +486,11 @@ html = f'''<!DOCTYPE html>
             <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
         </div>
         <div class="btn-group btn-row">
-            <button class="action-btn" id="refreshBtn"  onclick="doRefresh()">🔄 Refresh</button>
+            <button class="action-btn" id="refreshBtn"    onclick="doRefresh()">🔄 Refresh</button>
             <button class="action-btn" id="audioBtn"    onclick="showInput('audio')">🎵 Audio generieren</button>
             <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
             <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 Video erstellen</button>
+            <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 Bilder-Playwright</button>
             <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 Instagram Post</button>
         </div>
 
@@ -666,10 +667,11 @@ html = f'''<!DOCTYPE html>
     }})();
 
     const ACTIONS = {{
-        'story':   {{ btn: 'storyBtn',   api: '/api/generate-story',   label: '✍️ Story generieren'  }},
-        'caption': {{ btn: 'captionBtn', api: '/api/generate-caption', label: '💬 Caption generieren' }},
-        'picture': {{ btn: 'picBtn',     api: '/api/generate-picture', label: '🖼️ Bild generieren'   }},
-        'audio':     {{ btn: 'audioBtn',    api: '/api/generate-audio',         label: '🎵 Audio generieren'     }},
+        'story':      {{ btn: 'storyBtn',      api: '/api/generate-story',              label: '✍️ Story generieren'      }},
+        'caption':    {{ btn: 'captionBtn',    api: '/api/generate-caption',            label: '💬 Caption generieren'    }},
+        'picture':    {{ btn: 'picBtn',        api: '/api/generate-picture',            label: '🖼️ Bild generieren'      }},
+        'audio':      {{ btn: 'audioBtn',      api: '/api/generate-audio',              label: '🎵 Audio generieren'      }},
+        'playwright': {{ btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 Bilder-Playwright'     }},
         'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   }},
         'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    }},
@@ -898,9 +900,10 @@ html = f'''<!DOCTYPE html>
     }}
 
     async function openQueueModal(btn) {{
-        _queueNr = btn.getAttribute('data-nr');
+        // Normalisieren: führende Nullen entfernen ("0182" → "182")
+        _queueNr = String(parseInt(btn.getAttribute('data-nr'), 10));
         await loadReihenfolge();
-        const inQueue = _currentReihenfolge.includes(_queueNr);
+        const inQueue = _currentReihenfolge.some(n => parseInt(n, 10) === parseInt(_queueNr, 10));
         document.getElementById('queueModalTitle').textContent =
             '☰ Reihenfolge – #' + _queueNr + (inQueue ? ' (aktuell in Queue)' : '');
         document.getElementById('queueRemoveBtn').style.display = inQueue ? 'flex' : 'none';
@@ -997,8 +1000,34 @@ html = f'''<!DOCTYPE html>
     }}
 
     async function togglePost(btn) {{
-        if (btn.classList.contains('active')) return;
         const nr = btn.getAttribute('data-nr');
+        if (btn.classList.contains('active')) {{
+            if (!confirm(`Story #${{nr}} als NICHT gepostet markieren?`)) return;
+            btn.disabled = true;
+            btn.textContent = '...';
+            try {{
+                const resp = await fetch('/api/unmark-posted', {{
+                    method: 'POST',
+                    headers: {{'Content-Type': 'application/json'}},
+                    body: JSON.stringify({{nr}})
+                }});
+                if (resp.ok) {{
+                    btn.classList.remove('active');
+                    btn.textContent = 'Post';
+                    btn.disabled = false;
+                    const row = btn.closest('tr');
+                    if (row) {{ row.className = 'row-ready'; }}
+                }} else {{
+                    btn.textContent = '✓ Gepostet';
+                    btn.disabled = false;
+                }}
+            }} catch(e) {{
+                btn.textContent = '✓ Gepostet';
+                btn.disabled = false;
+            }}
+            return;
+        }}
+        if (!confirm(`Story #${{nr}} als gepostet markieren?`)) return;
         btn.disabled = true;
         btn.textContent = '...';
         try {{
@@ -1010,6 +1039,8 @@ html = f'''<!DOCTYPE html>
             if (resp.ok) {{
                 btn.classList.add('active');
                 btn.textContent = '✓ Gepostet';
+                const row = btn.closest('tr');
+                if (row) {{ row.className = 'row-posted'; }}
             }} else {{
                 btn.textContent = 'Fehler';
                 setTimeout(() => {{ btn.textContent = 'Post'; btn.disabled = false; }}, 2000);
