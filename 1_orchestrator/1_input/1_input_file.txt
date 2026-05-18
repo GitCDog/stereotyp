@@ -183,7 +183,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 0182,CDU,X,X,49,X,X,X,
 0183,SPD,X,X,54,X,X,X,
 0184,FDP,X,X,45,X,X,X,
-0185,Die Grünen,X,X,52,X,X,X,
+0185,Die Grünen,X,X,52,X,X,X,X
 0186,AFD,X,X,52,X,X,X,
 0187,Junge Union,X,X,51,X,X,X,
 0188,Bürokratie,X,X,49,X,X,X,
