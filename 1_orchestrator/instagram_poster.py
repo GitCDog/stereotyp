@@ -260,29 +260,35 @@ class InstagramPoster:
 
     def find_on_cloudinary(self, nr) -> tuple[str, str] | tuple[None, None]:
         """Suche nach bereits hochgeladenem Video auf Cloudinary. Gibt (url, public_id) zurück."""
-        ns = _nr_str(nr)
-        try:
-            result = cloudinary.api.resource(f"stereotypen/{ns}", resource_type="video")
-            url = result.get("secure_url")
-            public_id = result.get("public_id")
-            logger.info(f"[+] Cloudinary: Video gefunden: {url}")
-            return url, public_id
-        except Exception:
-            pass
-        # Breiteren Scan: alle Videos im Ordner mit Nummer-Prefix
-        try:
-            resources = cloudinary.api.resources(
-                type="upload", resource_type="video",
-                prefix=f"stereotypen/{ns}", max_results=10
-            )
-            items = resources.get("resources", [])
-            if items:
-                url = items[0]["secure_url"]
-                public_id = items[0]["public_id"]
-                logger.info(f"[+] Cloudinary Scan: {public_id}")
+        n = int(str(nr).strip())
+        # Alle historisch verwendeten Formate probieren: 4-stellig, 3-stellig, ohne Padding
+        prefixes = list(dict.fromkeys([
+            f"{n:04d}",  # 0042
+            f"{n:03d}",  # 042
+            str(n),      # 42
+        ]))
+        for prefix in prefixes:
+            try:
+                result = cloudinary.api.resource(f"stereotypen/{prefix}", resource_type="video")
+                url = result.get("secure_url")
+                public_id = result.get("public_id")
+                logger.info(f"[+] Cloudinary: Video gefunden ({prefix}): {url}")
                 return url, public_id
-        except Exception as e:
-            logger.warning(f"[!] Cloudinary Scan fehlgeschlagen: {e}")
+            except Exception:
+                pass
+            try:
+                resources = cloudinary.api.resources(
+                    type="upload", resource_type="video",
+                    prefix=f"stereotypen/{prefix}", max_results=10
+                )
+                items = resources.get("resources", [])
+                if items:
+                    url = items[0]["secure_url"]
+                    public_id = items[0]["public_id"]
+                    logger.info(f"[+] Cloudinary Scan ({prefix}): {public_id}")
+                    return url, public_id
+            except Exception as e:
+                logger.warning(f"[!] Cloudinary Scan fehlgeschlagen ({prefix}): {e}")
         return None, None
 
     def mark_posted(self, row: dict, post_id: str, public_id: str):
