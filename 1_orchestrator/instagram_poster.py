@@ -121,12 +121,30 @@ class InstagramPoster:
         import input_reader as ir
         return ir.read_rows(self.config["output"]["input_file"])
 
+    def _video_available(self, row: dict) -> bool:
+        """Prüft ob Video lokal oder auf Cloudinary vorhanden ist."""
+        import input_reader as ir
+        nr = row["nr"].strip()
+        ns = _nr_str(nr)
+        output_dir = Path(self.config["output"]["output_dir"])
+
+        # Lokale Suche
+        safe = ir.safe_name(row.get("stereotyp", "").strip())
+        if (output_dir / f"{ns}_{safe}.mp4").exists():
+            return True
+        if any(output_dir.glob(f"{ns}_*.mp4")):
+            return True
+
+        # Cloudinary-Suche
+        url, _ = self.find_on_cloudinary(nr)
+        return url is not None
+
     def find_next_to_post(self, rows: list[dict], story_nr: str | None = None) -> dict | None:
         """Finde die nächste zu postende Story.
 
         Reihenfolge:
         1. story_nr (CLI / STORY_NR env) – gezielter Aufruf
-        2. 0_reihenfolge.txt – manuelle Reihenfolge (erste ungepostete Zeile)
+        2. 0_reihenfolge.txt – manuelle Reihenfolge (erste mit Video auf Cloudinary/lokal)
         3. Chronologisch – erste Zeile mit status_video=X und insta_post leer
         """
         row_by_nr = {str(r.get("nr", "")).strip(): r for r in rows}
@@ -145,9 +163,12 @@ class InstagramPoster:
             if nrs:
                 for nr in nrs:
                     row = row_by_nr.get(nr)
-                    if row and row.get("status_video") == "X" and not row.get("insta_post", "").strip():
+                    if not row or row.get("status_video") != "X" or row.get("insta_post", "").strip():
+                        continue
+                    if self._video_available(row):
                         logger.info(f"[+] Reihenfolge-Datei: nächste Story = #{nr}")
                         return row
+                    logger.warning(f"[!] Story #{nr} in Reihenfolge – kein Video lokal/Cloudinary – überspringe")
 
         # Fallback: chronologisch
         for row in rows:
