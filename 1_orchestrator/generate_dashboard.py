@@ -903,6 +903,17 @@ html = f'''<!DOCTYPE html>
         _queueNr = btn.getAttribute('data-nr');
         await loadReihenfolge();
         const inQueue = _currentReihenfolge.some(n => parseInt(n, 10) === parseInt(_queueNr, 10));
+
+        if (!inQueue) {{
+            const r = await fetch('/api/cloudinary-check?nr=' + _queueNr);
+            const d = await r.json();
+            if (!d.exists) {{
+                alert('Story #' + _queueNr + ' hat noch kein Video auf Cloudinary.\nErst Video generieren und hochladen!');
+                _queueNr = null;
+                return;
+            }}
+        }}
+
         document.getElementById('queueModalTitle').textContent =
             '☰ Reihenfolge – #' + _queueNr + (inQueue ? ' (aktuell in Queue)' : '');
         document.getElementById('queueRemoveBtn').style.display = inQueue ? 'flex' : 'none';
