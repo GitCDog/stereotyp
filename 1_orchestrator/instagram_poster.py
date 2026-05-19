@@ -159,7 +159,7 @@ class InstagramPoster:
         reihenfolge_path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
         if reihenfolge_path.exists():
             lines = [l.strip() for l in reihenfolge_path.read_text(encoding="utf-8").splitlines()]
-            nrs = [l for l in lines if l and l.isdigit()]
+            nrs = [str(int(l)) for l in lines if l and l.isdigit()]
             if nrs:
                 for nr in nrs:
                     row = row_by_nr.get(nr)
