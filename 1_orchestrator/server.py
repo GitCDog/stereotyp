@@ -653,6 +653,9 @@ def set_reihenfolge():
     if not nr:
         return jsonify({"error": "nr fehlt"}), 400
 
+    try: nr = str(int(nr))
+    except ValueError: pass
+
     path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
     lines = []
     if path.exists():
