@@ -30,7 +30,7 @@ INPUT_FILE        = "1_input/1_input_file.txt"
 OUTPUT_DIR        = Path("output")
 PROMPTS_FILE      = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
 CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a083e90-3238-83eb-ae9d-255dabbe121c"
-DEFAULT_WAIT_MIN  = 30
+DEFAULT_WAIT_SEC  = 30
 
 
 def setup_logging() -> logging.Logger:
@@ -355,8 +355,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--story", type=str, required=True,
                         help="Story-Nr: '49', '49-55' oder '49,51,53'")
-    parser.add_argument("--wait", type=int, default=DEFAULT_WAIT_MIN,
-                        help=f"Wartezeit in Minuten zwischen Stories (Standard: {DEFAULT_WAIT_MIN})")
+    parser.add_argument("--wait", type=int, default=DEFAULT_WAIT_SEC,
+                        help=f"Wartezeit in Sekunden zwischen Stories (Standard: {DEFAULT_WAIT_SEC})")
     args = parser.parse_args()
 
     logger = setup_logging()
@@ -378,7 +378,7 @@ def main():
         return
 
     logger.info(f"[*] {len(to_process)} Story/s: {', '.join(to_process)}")
-    logger.info(f"[*] Wartezeit zwischen Stories: {args.wait} Minuten")
+    logger.info(f"[*] Wartezeit zwischen Stories: {args.wait} Sekunden")
 
     cdp_url = start_edge_with_debug(logger)
     if cdp_url is None:
@@ -414,12 +414,10 @@ def main():
         ok = err = 0
         for i, nr in enumerate(to_process):
             if i > 0:
-                wait_sec = args.wait * 60
+                wait_sec = args.wait
                 logger.info(f"")
-                logger.info(f"[*] Warte {args.wait} Minuten vor nächster Story...")
-                for remaining in range(wait_sec, 0, -30):
-                    logger.info(f"    ... noch {remaining // 60}:{remaining % 60:02d} min")
-                    time.sleep(min(30, remaining))
+                logger.info(f"[*] Warte {args.wait} Sekunden vor nächster Story...")
+                time.sleep(wait_sec)
 
             success = process_story(page, nr, logger)
             if success:
