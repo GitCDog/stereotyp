@@ -419,7 +419,11 @@ def main():
                 logger.info(f"[*] Warte {args.wait} Sekunden vor nächster Story...")
                 time.sleep(wait_sec)
 
-            success = process_story(page, nr, logger)
+            try:
+                success = process_story(page, nr, logger)
+            except Exception as e:
+                logger.error(f"[-] Story #{nr} Fehler: {e}")
+                success = False
             if success:
                 ok += 1
             else:
