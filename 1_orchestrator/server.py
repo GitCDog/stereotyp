@@ -8,26 +8,16 @@ Verwendung:
 
 import csv
 import json
-import os
 import subprocess
 import sys
 import threading
 from datetime import datetime
 from pathlib import Path
 
-import cloudinary
-import cloudinary.api
 from flask import Flask, jsonify, request, send_file
 from dotenv import load_dotenv
 
 load_dotenv()
-
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True,
-)
 
 REPO_ROOT = Path(__file__).parent.parent
 REIHENFOLGE_REL = "1_orchestrator/1_input/0_reihenfolge.txt"
@@ -645,24 +635,18 @@ def abort_task():
 
 # ── Reihenfolge ──────────────────────────────────────────────────────────────
 
-def _cloudinary_video_exists(nr) -> bool:
-    """Prüft ob Video für Story nr auf Cloudinary existiert."""
-    n = int(str(nr).strip())
-    for prefix in [f"{n:04d}", str(n)]:
-        try:
-            cloudinary.api.resource(f"stereotypen/{prefix}", resource_type="video")
-            return True
-        except Exception:
-            pass
-        try:
-            res = cloudinary.api.resources(
-                type="upload", resource_type="video",
-                prefix=f"stereotypen/{prefix}", max_results=1
-            )
-            if res.get("resources"):
-                return True
-        except Exception:
-            pass
+def _video_on_cloudinary(nr) -> bool:
+    """Prüft via CSV ob Video auf Cloudinary liegt.
+    Bedingung: status_video=X und insta_post leer (noch nicht gepostet/gelöscht)."""
+    input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+    nr_str = str(int(str(nr).strip()))
+    try:
+        with open(input_file, encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                if str(row.get("nr", "")).strip() == nr_str:
+                    return row.get("status_video", "").strip() == "X" and not row.get("insta_post", "").strip()
+    except Exception:
+        pass
     return False
 
 
@@ -671,11 +655,8 @@ def cloudinary_check():
     nr = request.args.get("nr", "").strip()
     if not nr:
         return jsonify({"error": "nr fehlt"}), 400
-    try:
-        exists = _cloudinary_video_exists(nr)
-        return jsonify({"exists": exists, "nr": nr})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    exists = _video_on_cloudinary(nr)
+    return jsonify({"exists": exists, "nr": nr})
 
 
 @app.route("/api/reihenfolge", methods=["GET"])
