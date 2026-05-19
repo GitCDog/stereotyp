@@ -908,7 +908,7 @@ html = f'''<!DOCTYPE html>
             const r = await fetch('/api/cloudinary-check?nr=' + _queueNr);
             const d = await r.json();
             if (!d.exists) {{
-                alert('Story #' + _queueNr + ' hat noch kein Video auf Cloudinary.\nErst Video generieren und hochladen!');
+                alert('Story #' + _queueNr + ' hat noch kein Video auf Cloudinary.\\nErst Video generieren und hochladen!');
                 _queueNr = null;
                 return;
             }}
