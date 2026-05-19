@@ -113,7 +113,12 @@ def refresh_dashboard():
 
 @app.route("/")
 def index():
-    return send_file("dashboard.html")
+    from flask import make_response
+    resp = make_response(send_file("dashboard.html"))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
 
 
 # ── Server-Status ────────────────────────────────────────────────────────────
