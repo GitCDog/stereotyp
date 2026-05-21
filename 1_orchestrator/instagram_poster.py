@@ -176,14 +176,19 @@ class InstagramPoster:
                 return row
         return None
 
-    def upload_to_cloudinary(self, video_path: Path) -> str:
+    def upload_to_cloudinary(self, video_path: Path, nr: str = None, stereotyp: str = None) -> str:
         """Lade Video zu Cloudinary und gib URL zurück."""
-        logger.info(f"[*] Cloudinary Upload: {video_path.name}...")
+        import input_reader as ir
+        if nr and stereotyp:
+            public_id = f"{_nr_str(nr)}_{ir.safe_name(stereotyp)}"
+        else:
+            public_id = video_path.stem
+        logger.info(f"[*] Cloudinary Upload: {video_path.name} → {public_id}...")
         result = cloudinary.uploader.upload(
             str(video_path),
             resource_type="video",
             folder="stereotypen",
-            public_id=video_path.stem,
+            public_id=public_id,
             overwrite=True,
         )
         url = result.get("secure_url")
@@ -523,8 +528,8 @@ class InstagramPoster:
         public_id = None
         if video_path.exists():
             # Lokal vorhanden → hochladen
-            video_url = self.upload_to_cloudinary(video_path)
-            public_id = f"stereotypen/{video_path.stem}"
+            video_url = self.upload_to_cloudinary(video_path, nr=nr, stereotyp=stereotyp)
+            public_id = f"stereotypen/{_nr_str(nr)}_{ir.safe_name(stereotyp)}"
         else:
             # Kein lokales Video → auf Cloudinary suchen (GitHub Actions)
             logger.info(f"[*] Kein lokales Video – suche auf Cloudinary...")
