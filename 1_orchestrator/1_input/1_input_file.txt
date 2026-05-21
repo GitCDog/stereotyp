@@ -49,7 +49,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 48,Die Sonntagsruhe-Polizei,X,X,51,X,X,X,
 49,Der Fahrradweg-Sheriff,X,X,55,X,X,X,
 50,Die Über-Versicherung für alles,X,X,53,X,X,X,
-51,"""Der „Ich hab's passend""""-Zahler""",X,X,48,X,,X,
+51,"""Der „Ich hab's passend""""-Zahler""",X,X,48,X,X,X,
 52,Die Pfandflaschen-Jagd,X,X,47,,,X,
 53,"""Der „Draußen nur Kännchen""""-Kellner""",X,X,48,,,X,
 54,"""Der „Muss ja""""-Sager""",X,X,47,,,X,
