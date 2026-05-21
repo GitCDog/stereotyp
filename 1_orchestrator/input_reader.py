@@ -48,10 +48,24 @@ def find_row(nr, input_file: str = INPUT_FILE) -> dict | None:
     return None
 
 
+def _write_rows(rows: list, path: Path):
+    """Schreibe Zeilen in CSV – nr wird immer als plain integer normalisiert."""
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer.writeheader()
+        for row in rows:
+            out = {k: row.get(k, "").strip() for k in COLUMNS}
+            try:
+                out["nr"] = str(int(out["nr"]))
+            except (ValueError, TypeError):
+                pass
+            writer.writerow(out)
+
+
 def update_field(nr, field: str, value: str, input_file: str = INPUT_FILE) -> bool:
     """Aktualisiere ein Feld in der CSV für eine bestimmte Zeile (by nr)."""
     path = Path(input_file)
-    rows = read_rows(input_file)  # gibt gestrippte Keys zurück
+    rows = read_rows(input_file)
 
     updated = False
     for row in rows:
@@ -63,13 +77,7 @@ def update_field(nr, field: str, value: str, input_file: str = INPUT_FILE) -> bo
     if not updated:
         return False
 
-    # Immer mit sauberen COLUMNS schreiben (keine Leerzeichen in Header)
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({k: row.get(k, "").strip() for k in COLUMNS})
-
+    _write_rows(rows, path)
     return True
 
 
@@ -84,12 +92,7 @@ def add_row(data: dict, input_file: str = INPUT_FILE) -> bool:
             return False
 
     rows.append(data)
-
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({k: row.get(k, "").strip() for k in COLUMNS})
+    _write_rows(rows, path)
 
     return True
 
