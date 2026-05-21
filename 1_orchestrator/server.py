@@ -317,13 +317,8 @@ def create_story():
             run_script(args)
             log.append(f"✅ Story-Text gespeichert")
 
-            log.append(f"⏳ Audio via ElevenLabs vertonen...")
-            set_task("running", f"Audio für #{new_nr} generieren...", 65, log=list(log))
-            run_script(["generate_audio.py", "--story", new_nr])
-            log.append(f"✅ Audio fertig")
-
             log.append(f"⏳ Caption via Claude generieren...")
-            set_task("running", f"Caption für #{new_nr} generieren...", 80, log=list(log))
+            set_task("running", f"Caption für #{new_nr} generieren...", 65, log=list(log))
             caption_args = ["generate_captions.py", "--story", new_nr]
             if stichworte:
                 caption_args += ["--stichworte", stichworte]
