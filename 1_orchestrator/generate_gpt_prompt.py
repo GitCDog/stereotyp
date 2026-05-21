@@ -49,7 +49,8 @@ def main():
     skipped = 0
 
     for row in rows:
-        nr = row["nr"].strip()
+        nr_raw = row["nr"].strip()
+        nr = str(int(nr_raw))  # immer plain integer, kein zero-padding
         stereotyp = row["stereotyp"].strip()
 
         if row.get("status_story") != "X":
@@ -60,14 +61,13 @@ def main():
             skipped += 1
             continue
 
-        story_file = find_story_file(nr, stereotyp)
+        story_file = find_story_file(nr_raw, stereotyp)
         if not story_file:
             print(f"[!] Kein Story-Text für #{nr} – überspringe")
             skipped += 1
             continue
 
         text = story_file.read_text(encoding="utf-8").strip()
-        # Zeilenumbrüche innerhalb des Texts entfernen (inline format)
         text = re.sub(r"\s+", " ", text)
 
         lines.append(
