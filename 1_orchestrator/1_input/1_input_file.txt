@@ -197,7 +197,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 0196,Berufsschule,X,X,50,,,X,
 0197,Home Office,X,X,52,X,X,X,
 0198,Schwarzarbeit,X,X,47,,,X,
-0199,Baustelle,X,X,48,X,,X,
+0199,Baustelle,X,X,48,X,X,X,
 0200,Tankstelle,X,X,51,X,,X,
 0201,Boxautomat,X,X,52,X,,X,
 0202,Autoscooter,X,X,48,,,X,
