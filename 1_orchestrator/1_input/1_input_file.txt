@@ -79,7 +79,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 78,Die Funkloch-Verzweiflung im Zug,X,X,55,X,X,X,
 79,"""Der „Früher war mehr Lametta""""-Nostalgiker""",X,X,52,X,X,X,
 80,"""Der „Darf ich mal vorbei?""""-Drängler""",X,X,50,X,X,X,
-81,Der Schnitzel-Größen-Check,X,X,54,X,,X,
+81,Der Schnitzel-Größen-Check,X,X,54,X,X,X,
 82,"""„Man gönnt sich ja sonst nichts""""""",X,X,49,,,X,
 83,Der Flohmarkt-Feilscher,X,X,52,,,X,
 84,"""Der „Ordnung muss sein""""-Vermieter""",X,X,53,,,X,
