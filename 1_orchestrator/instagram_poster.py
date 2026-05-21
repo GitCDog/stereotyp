@@ -436,10 +436,10 @@ class InstagramPoster:
             logger.error(f"[-] posted_videos.json GitHub fehlgeschlagen: {e}")
 
     def _wait_for_posting_window(self):
-        """Wartet bis 17:30–18:14 CEST (15:30–16:14 UTC). Wird bei manuellem Dispatch übersprungen."""
+        """Wartet bis 16:30–17:14 CEST (14:30–15:14 UTC). Wird bei manuellem Dispatch übersprungen."""
         now = datetime.now(timezone.utc)
         minutes_offset = random.randint(0, 44)
-        total_minutes = 15 * 60 + 30 + minutes_offset
+        total_minutes = 14 * 60 + 30 + minutes_offset
         post_hour = total_minutes // 60
         post_minute = total_minutes % 60
         post_time = now.replace(hour=post_hour, minute=post_minute, second=0, microsecond=0)
