@@ -149,7 +149,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 148,DJ Fan Guy,X,X,46,X,X,X,
 149,Kiffer,X,X,49,,,X,
 150,Deutschrapper,X,X,49,,,X,
-151,Bootsschuhe,X,X,46,X,,X,
+151,Bootsschuhe,X,X,46,X,X,X,
 152,Zu alt für Skaterklamotten,X,X,52,X,X,X,X
 153,Mama und Tochter in Disko,X,X,55,X,X,X,X
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,X,X
