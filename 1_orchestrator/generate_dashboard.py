@@ -89,7 +89,7 @@ for row in data:
 
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
-                    <td class="name">{stereo}</td>
+                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span></td>
                     <td class="status-cell">{block(row.get('status_story',''))}</td>
                     <td class="status-cell">{block(row.get('status_caption',''))}</td>
                     <td class="status-cell">{block(row.get('status_audio',''))}</td>
@@ -366,6 +366,21 @@ html = f'''<!DOCTYPE html>
         }}
         .queue-btn:hover {{ background: #e8120a; color: white; border-color: #e8120a; }}
         .queue-btn.in-queue {{ background: #28a745; color: white; border-color: #28a745; }}
+        .eye-btn {{
+            cursor: pointer; font-size: 12px; opacity: 0.35;
+            margin-left: 5px; user-select: none;
+            transition: opacity 0.15s;
+        }}
+        .eye-btn:hover {{ opacity: 1; }}
+        #story-tooltip {{
+            display: none; position: fixed; z-index: 9999;
+            background: #1a1a1a; color: #f0f0f0;
+            border: 1px solid #444; border-radius: 8px;
+            padding: 12px 15px; max-width: 420px;
+            font-size: 13px; line-height: 1.55;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+            white-space: pre-wrap; pointer-events: none;
+        }}
         .queue-modal {{
             display: none; position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -1007,6 +1022,38 @@ html = f'''<!DOCTYPE html>
             btn.disabled = false;
             btn.textContent = 'Generieren';
         }}
+    }}
+
+    const _storyCache = {{}};
+    const _tooltip = document.createElement('div');
+    _tooltip.id = 'story-tooltip';
+    document.body.appendChild(_tooltip);
+
+    async function showStory(eye) {{
+        const nr = eye.getAttribute('data-nr');
+        if (!_storyCache[nr]) {{
+            const r = await fetch('/api/story-text?nr=' + nr);
+            const d = await r.json();
+            _storyCache[nr] = d.text || '(kein Text vorhanden)';
+        }}
+        _tooltip.textContent = _storyCache[nr];
+        _tooltip.style.display = 'block';
+        document.addEventListener('mousemove', _moveTooltip);
+    }}
+
+    function hideStory() {{
+        _tooltip.style.display = 'none';
+        document.removeEventListener('mousemove', _moveTooltip);
+    }}
+
+    function _moveTooltip(e) {{
+        const gap = 14;
+        let x = e.clientX + gap;
+        let y = e.clientY + gap;
+        if (x + 440 > window.innerWidth) x = e.clientX - 440 - gap;
+        if (y + _tooltip.offsetHeight > window.innerHeight) y = e.clientY - _tooltip.offsetHeight - gap;
+        _tooltip.style.left = x + 'px';
+        _tooltip.style.top  = y + 'px';
     }}
 
     async function togglePost(btn) {{

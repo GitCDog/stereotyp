@@ -143,6 +143,26 @@ def progress():
         return jsonify(dict(_task))
 
 
+# ── Story-Text ───────────────────────────────────────────────────────────────
+
+@app.route("/api/story-text")
+def story_text():
+    nr = request.args.get("nr", "").strip()
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+    try:
+        nr4 = f"{int(nr):04d}"
+    except ValueError:
+        return jsonify({"error": "ungültige nr"}), 400
+    stories_dir = Path(__file__).parent / "1_input"
+    matches = [p for p in stories_dir.glob(f"{nr4}_*.txt")
+               if p.name not in ("00_sammelsurium.txt",)]
+    if not matches:
+        return jsonify({"text": None})
+    text = matches[0].read_text(encoding="utf-8").strip()
+    return jsonify({"text": text})
+
+
 # ── Audio ────────────────────────────────────────────────────────────────────
 
 @app.route("/api/generate-audio", methods=["POST"])
