@@ -13,6 +13,7 @@ import argparse
 import logging
 import subprocess
 import shutil
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -106,7 +107,79 @@ def find_audio(nr, output_dir: str) -> Path | None:
     return p if p.exists() else None
 
 
-def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) -> bool:
+def _seconds_to_ass(s: float) -> str:
+    h = int(s // 3600)
+    m = int((s % 3600) // 60)
+    sec = s % 60
+    return f"{h}:{m:02d}:{sec:05.2f}"
+
+
+def generate_subtitles(audio_path: Path, ass_path: Path, model_size: str = "small",
+                       chunk_size: int = 3, logger: logging.Logger = None) -> bool:
+    """Transkribiert Audio mit Whisper und erstellt ASS-Untertiteldatei."""
+    try:
+        import whisper
+    except ImportError:
+        if logger:
+            logger.error("[-] openai-whisper nicht installiert: pip install openai-whisper")
+        return False
+
+    try:
+        if logger:
+            logger.info(f"[*] Whisper ({model_size}) transkribiert Audio...")
+        model = whisper.load_model(model_size)
+        result = model.transcribe(str(audio_path), language="de", word_timestamps=True)
+
+        # Wörter aus allen Segmenten sammeln
+        words = []
+        for seg in result["segments"]:
+            for w in seg.get("words", []):
+                text = w["word"].strip()
+                if text:
+                    words.append({"word": text, "start": w["start"], "end": w["end"]})
+
+        # Wörter in Gruppen aufteilen
+        chunks = []
+        for i in range(0, len(words), chunk_size):
+            group = words[i:i + chunk_size]
+            chunks.append({
+                "text": " ".join(w["word"] for w in group).upper(),
+                "start": group[0]["start"],
+                "end": group[-1]["end"],
+            })
+
+        # ASS Datei schreiben (viraler Stil: weiß, fett, dicker schwarzer Outline)
+        ass_content = """[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,78,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,5,2,2,30,30,280,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+        lines = [ass_content.strip()]
+        for chunk in chunks:
+            start = _seconds_to_ass(chunk["start"])
+            end = _seconds_to_ass(chunk["end"])
+            lines.append(f"Dialogue: 0,{start},{end},Default,,0,0,0,,{chunk['text']}")
+
+        ass_path.write_text("\n".join(lines), encoding="utf-8")
+        if logger:
+            logger.info(f"[+] Untertitel: {len(chunks)} Blöcke → {ass_path.name}")
+        return True
+
+    except Exception as e:
+        if logger:
+            logger.warning(f"[!] Whisper fehlgeschlagen: {e}")
+        return False
+
+
+def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
+                 subtitles: bool = False) -> bool:
     """Erstelle MP4 aus Bild + Audio via ffmpeg."""
     input_file = config["output"]["input_file"]
     images_dir = config["output"]["images_dir"]
@@ -154,7 +227,21 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
     safe = ir.safe_name(stereotyp)
     output_path = Path(output_dir) / f"{_nr_str(nr)}_{safe}.mp4"
 
+    # Untertitel generieren (optional)
+    ass_path = None
+    if subtitles:
+        ass_path = Path(tempfile.mktemp(suffix=".ass"))
+        model_size = video_config.get("whisper_model", "small")
+        if not generate_subtitles(audio_path, ass_path, model_size=model_size, logger=logger):
+            ass_path = None
+
     # ffmpeg: Bild in Schleife + Audio, bis Audio endet
+    vf_filter = f"scale={video_config['width']}:{video_config['height']}"
+    if ass_path and ass_path.exists():
+        # Windows: Pfad für ffmpeg-Filter aufbereiten (Backslashes + Doppelpunkt escapen)
+        ass_str = str(ass_path).replace("\\", "/").replace(":", "\\:")
+        vf_filter += f",subtitles='{ass_str}'"
+
     cmd = [
         ffmpeg,
         "-loop", "1",
@@ -164,14 +251,14 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
         "-c:a", "aac",
         "-b:v", video_config["bitrate"],
         "-pix_fmt", "yuv420p",
-        "-s", f"{video_config['width']}x{video_config['height']}",
+        "-vf", vf_filter,
         "-r", str(video_config["fps"]),
         "-shortest",
         "-y",
         str(output_path),
     ]
 
-    logger.info(f"[*] ffmpeg: {video_config['width']}x{video_config['height']}, {video_config['fps']}fps, {video_config['bitrate']}")
+    logger.info(f"[*] ffmpeg: {video_config['width']}x{video_config['height']}, {video_config['fps']}fps, {video_config['bitrate']}{', Untertitel' if ass_path else ''}")
 
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
@@ -188,9 +275,11 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger) 
 
     logger.info(f"[+] Video erstellt: {output_path.name} ({output_path.stat().st_size / 1024 / 1024:.1f} MB)")
 
-    # Temp RGB-Bild aufräumen
+    # Temp-Dateien aufräumen
     if rgb_image_path != image_path and rgb_image_path.exists():
         rgb_image_path.unlink()
+    if ass_path and ass_path.exists():
+        ass_path.unlink()
 
     # Cloudinary Upload
     upload_to_cloudinary(output_path, logger)
@@ -240,6 +329,7 @@ def main():
     parser = argparse.ArgumentParser(description="Erstelle Videos aus Bild + Audio")
     parser.add_argument("--story", type=str, help="Story-Nummer")
     parser.add_argument("--all", action="store_true", help="Alle bereitstehenden Videos")
+    parser.add_argument("--subtitles", action="store_true", help="Burned-in Untertitel via Whisper")
     parser.add_argument("--no-push", action="store_true", help="Kein automatischer Git Push")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
@@ -256,7 +346,7 @@ def main():
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        if create_video(args.story, row["stereotyp"].strip(), config, logger):
+        if create_video(args.story, row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
             created += 1
 
     elif args.all:
@@ -270,7 +360,7 @@ def main():
         logger.info(f"[*] {len(candidates)} Videos zu erstellen")
         for row in candidates:
             try:
-                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger):
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
                     created += 1
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
@@ -282,7 +372,7 @@ def main():
             if (row.get("status_audio") == "X"
                     and row.get("status_pic") == "X"
                     and row.get("status_video", "") != "X"):
-                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger):
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
                     created += 1
                 break
         else:

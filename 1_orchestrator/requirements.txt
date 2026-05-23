@@ -21,6 +21,9 @@ PyGithub>=2.0.0
 # Browser Automation (ChatGPT Bildgenerierung)
 playwright>=1.40.0
 
+# Subtitles (Whisper)
+openai-whisper>=20231117
+
 # YouTube
 google-api-python-client>=2.0.0
 google-auth-oauthlib>=1.0.0
