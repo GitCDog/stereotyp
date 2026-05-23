@@ -24,6 +24,14 @@ __pycache__/
 
 # Logs
 1_orchestrator/logs/
+1_orchestrator/server.log
+
+# OAuth / Auth (sensibel)
+1_orchestrator/auth_state.json
+1_orchestrator/client_secret.json
+
+# Debug-Screenshots
+1_orchestrator/debug*.png
 
 # Lokale IDE
 .vscode/
