@@ -212,7 +212,7 @@ Buttons:
 - **Audio für alle Pics** – generiert Audios für alle Stories mit Bild aber ohne Audio
 - **Refresh** – scannt Dateien, prüft OneDrive, aktualisiert CSV + Dashboard
 - Andere Buttons (Story, Caption, Bild) sind bewusst grau (manueller Workflow)
-- **Generieren** – startet Video-Render **mit Untertiteln** (`--subtitles`), keine Audio-Generierung
+- **Video erstellen** – startet Video-Render **mit Untertiteln** (`--subtitles`), keine Audio-Generierung
 
 Features:
 - 👁 Augen-Icon neben jedem Story-Namen → Hover zeigt Story-Text als Tooltip
