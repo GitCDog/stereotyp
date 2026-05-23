@@ -12,7 +12,7 @@ Täglich wird automatisch ein Video auf Instagram gepostet via GitHub Actions.
 ## Pipeline (5 Schritte)
 
 ```
-Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) → Instagram Post → YouTube Short
+Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) → YouTube Short → Instagram Post
 ```
 
 | Schritt | Script | Status-Feld |
@@ -21,8 +21,8 @@ Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) 
 | 2. Audio vertonen | `generate_audio.py` | `status_audio` |
 | 3. Bild erstellen | `generate_pictures.py` | `status_pic` |
 | 4. Video rendern | `generate_videos.py` | `status_video` |
-| 5a. Instagram posten | `instagram_poster.py` | `insta_post` |
-| 5b. YouTube Short | `youtube_poster.py` (via instagram_poster) | `youtube_post` |
+| 5a. YouTube Short | `youtube_poster.py` (via instagram_poster) | `youtube_post` |
+| 5b. Instagram posten | `instagram_poster.py` | `insta_post` |
 
 ---
 
