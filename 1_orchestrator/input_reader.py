@@ -8,7 +8,7 @@ from pathlib import Path
 
 INPUT_FILE = "1_input/1_input_file.txt"
 COLUMNS = ["nr", "stereotyp", "status_story", "status_audio",
-           "seconds", "status_pic", "status_video", "status_caption", "insta_post"]
+           "seconds", "status_pic", "status_video", "status_caption", "insta_post", "youtube_post"]
 
 
 def read_rows(input_file: str = INPUT_FILE) -> list[dict]:

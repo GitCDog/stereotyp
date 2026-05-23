@@ -72,6 +72,7 @@ for row in data:
     stereo    = row.get("stereotyp", "")
     sec       = row.get("seconds", "")
     insta     = row.get("insta_post", "")
+    yt        = row.get("youtube_post", "")
     insta_cls = "active" if insta == "X" else ""
     insta_lbl = "✓ Gepostet" if insta == "X" else "Post"
     vid_done  = row.get("status_video", "") == "X"
@@ -96,6 +97,7 @@ for row in data:
                     <td class="center">{sec}</td>
                     <td class="status-cell">{block(row.get('status_pic',''))}</td>
                     <td class="status-cell">{block(row.get('status_video',''))}</td>
+                    <td class="status-cell">{block(yt)}</td>
                     <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
                         <button class="queue-btn" data-nr="{nr}" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
@@ -640,6 +642,7 @@ html = f'''<!DOCTYPE html>
                         <th>Sek.</th>
                         <th title="Bild">Bild</th>
                         <th title="Video">Video</th>
+                        <th title="YouTube Short">YT</th>
                         <th title="Instagram">Post</th>
                         <th title="Posting-Reihenfolge">Reihenf.</th>
                     </tr>

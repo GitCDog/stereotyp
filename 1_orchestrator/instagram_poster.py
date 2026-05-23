@@ -392,6 +392,27 @@ class InstagramPoster:
         except Exception as e:
             logger.error(f"[-] GitHub CSV-Update fehlgeschlagen: {e}")
 
+    def _update_csv_github_field(self, row: dict, nr, field: str, value: str):
+        try:
+            repo = self.github.get_repo(self.github_repo_name)
+            file_path = "1_orchestrator/1_input/1_input_file.txt"
+            file = repo.get_contents(file_path)
+            content = file.decoded_content.decode("utf-8")
+            rows = list(csv.DictReader(io.StringIO(content)))
+            for r in rows:
+                if r.get("nr", "").strip() == str(nr):
+                    r[field] = value
+                    break
+            output = io.StringIO()
+            fieldnames = list(rows[0].keys())
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+            repo.update_file(file_path, f"[AUTO] {field}={value} für #{nr}", output.getvalue(), file.sha)
+            logger.info(f"[+] GitHub CSV: {field}={value} für #{nr}")
+        except Exception as e:
+            logger.error(f"[-] GitHub CSV-Update ({field}) fehlgeschlagen: {e}")
+
     def _log_posted_video(self, row: dict, post_id: str):
         """Schreibt Post-ID + Metadaten in posted_videos.json (lokal) und auf GitHub."""
         entry = {
@@ -552,6 +573,40 @@ class InstagramPoster:
             logger.info("=" * 60)
             return True
 
+        # YouTube Short (optional – nur wenn Credentials vorhanden)
+        youtube_video_id = None
+        if all(os.getenv(k) for k in ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")):
+            try:
+                import json as _json
+                from youtube_poster import upload_short
+                txt_files = list(Path("1_input").glob(f"{ns}_*.txt"))
+                yt_desc = txt_files[0].read_text(encoding="utf-8").strip() if txt_files else stereotyp
+                captions_file = Path(self.config["output"]["output_dir"]) / "captions.json"
+                yt_tags = []
+                if captions_file.exists():
+                    caps = _json.loads(captions_file.read_text(encoding="utf-8"))
+                    cap = caps.get(nr) or caps.get(ns)
+                    if cap:
+                        yt_tags = cap.get("hashtags", [])
+                # Video lokal für YouTube brauchen
+                yt_video = video_path if video_path.exists() else None
+                if not yt_video:
+                    import requests as _req, tempfile, os as _os
+                    logger.info("[*] Lade Video für YouTube herunter...")
+                    r = _req.get(video_url, timeout=120, verify=False)
+                    tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
+                    tmp.write(r.content)
+                    tmp.close()
+                    yt_video = Path(tmp.name)
+                youtube_video_id = upload_short(yt_video, title=stereotyp, description=yt_desc, tags=yt_tags)
+                logger.info(f"[+] YouTube Short: https://youtube.com/shorts/{youtube_video_id}")
+                if yt_video != video_path and yt_video.exists():
+                    yt_video.unlink()
+            except Exception as e:
+                logger.warning(f"[!] YouTube Upload fehlgeschlagen (Instagram-Post läuft weiter): {e}")
+        else:
+            logger.info("[*] YouTube-Credentials nicht gesetzt – überspringe YouTube")
+
         # Instagram Post
         post_id = self.post_reel(video_url, caption)
         if not post_id:
@@ -561,9 +616,17 @@ class InstagramPoster:
         # Als gepostet markieren
         self.mark_posted(row, post_id, public_id)
 
+        if youtube_video_id:
+            if self.use_github:
+                self._update_csv_github_field(row, nr, "youtube_post", "X")
+            else:
+                ir.update_field(nr, "youtube_post", "X", self.config["output"]["input_file"])
+
         logger.info("=" * 60)
         logger.info(f"[SUCCESS] '{stereotyp}' auf Instagram gepostet")
         logger.info(f"[SUCCESS] Post-ID: {post_id}")
+        if youtube_video_id:
+            logger.info(f"[SUCCESS] YouTube Short: https://youtube.com/shorts/{youtube_video_id}")
         logger.info("=" * 60)
         return True
 
