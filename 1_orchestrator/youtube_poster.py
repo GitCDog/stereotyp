@@ -52,7 +52,7 @@ def upload_short(video_path: Path, title: str, description: str, tags: list[str]
 
     youtube = _build_youtube_client()
 
-    short_title = f"{title} #Shorts"
+    short_title = title[:100]
     short_description = f"{description}\n\n#Shorts"
 
     body = {
@@ -114,16 +114,15 @@ def main():
             return
         video_path = candidates[0]
 
-    txt_files = list(Path("1_input").glob(f"{nr4}_*.txt"))
-    description = txt_files[0].read_text(encoding="utf-8").strip() if txt_files else stereotyp
-
     captions_file = Path("output/captions.json")
+    description = stereotyp
     tags = []
     if captions_file.exists():
         import json
         captions = json.loads(captions_file.read_text(encoding="utf-8"))
         cap = captions.get(nr) or captions.get(nr4)
         if cap:
+            description = cap.get("caption", stereotyp)
             tags = cap.get("hashtags", [])
 
     print(f"[*] Upload: #{nr} {stereotyp} -> {video_path.name}")
