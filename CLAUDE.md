@@ -12,7 +12,7 @@ Täglich wird automatisch ein Video auf Instagram gepostet via GitHub Actions.
 ## Pipeline (5 Schritte)
 
 ```
-Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) → Instagram Post
+Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) → Instagram Post → YouTube Short
 ```
 
 | Schritt | Script | Status-Feld |
@@ -21,7 +21,8 @@ Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) 
 | 2. Audio vertonen | `generate_audio.py` | `status_audio` |
 | 3. Bild erstellen | `generate_pictures.py` | `status_pic` |
 | 4. Video rendern | `generate_videos.py` | `status_video` |
-| 5. Instagram posten | `instagram_poster.py` | `insta_post` |
+| 5a. Instagram posten | `instagram_poster.py` | `insta_post` |
+| 5b. YouTube Short | `youtube_poster.py` (via instagram_poster) | `youtube_post` |
 
 ---
 
@@ -65,13 +66,15 @@ Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) 
 Datei: `1_input/1_input_file.txt`
 
 ```
-nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_caption,insta_post
-1,Die Funktionskleidung,X,X,81,X,X,X,X
+nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_caption,insta_post,youtube_post
+1,Die Funktionskleidung,X,X,81,X,X,X,X,X
 ```
 
 - Status `X` = fertig, leer = ausstehend
 - `seconds` = Audio-Dauer in Sekunden
-- 173 Stories (Stand: Mai 2026), fortlaufend nummeriert bis 9999 möglich
+- `youtube_post` = `X` nach erfolgreichem YouTube-Upload
+- `nr` in CSV immer als plain integer (`"42"`, nie `"0042"`) — `_write_rows()` normalisiert automatisch
+- 173+ Stories (Stand: Mai 2026), fortlaufend nummeriert bis 9999 möglich
 
 ---
 
@@ -139,8 +142,47 @@ GPT-Bild-Prompts generieren: Dashboard → `📝 GPT Prompts` (speichert in `1_i
 - Videos liegen auf Cloudinary (`stereotypen/` Ordner) für GitHub Actions
 - `instagram_poster.py` sucht Video erst lokal, dann auf Cloudinary
 - Nach erfolgreichem Post: Video von Cloudinary gelöscht, `insta_post=X` gesetzt
-- GitHub Actions postet täglich random zwischen 18:30–19:30 CEST
+- GitHub Actions postet täglich random zwischen ~18:05–19:05 CEST
 - Bei ≤ 2 Videos auf Cloudinary: automatisch GitHub Issue als Warnung
+
+---
+
+## YouTube Shorts
+
+- `youtube_poster.py` – lädt Video als YouTube Short hoch (wird von `instagram_poster.py` aufgerufen)
+- `youtube_auth.py` – einmalige lokale Authentifizierung, gibt Refresh-Token aus
+- Scope: `https://www.googleapis.com/auth/youtube.force-ssl` (erlaubt upload + update)
+
+**Titel-Format** (max. 100 Zeichen):
+```
+Aufgepasst - {Stereotyp} | {hashtags aus caption} @aufgepasst.stereotyp
+```
+
+**Beschreibungs-Format:**
+```
+{volle caption (Titel + Hashtags)}
+
+#Shorts
+
+insta: @aufgepasst.stereotyp
+```
+
+**Auth-Setup (einmalig lokal):**
+```bash
+python youtube_auth.py   # Browser öffnet sich → Konto auswählen → Erlauben
+```
+→ Refresh-Token in `.env` eintragen: `YOUTUBE_REFRESH_TOKEN=...`
+→ Auch als GitHub Secret setzen: `gh secret set YOUTUBE_REFRESH_TOKEN --body "..."`
+
+**GitHub Secrets für YouTube:**
+- `YOUTUBE_CLIENT_ID`
+- `YOUTUBE_CLIENT_SECRET`
+- `YOUTUBE_REFRESH_TOKEN`
+
+**Manueller Upload:**
+```bash
+python youtube_poster.py --story 42
+```
 
 ---
 
@@ -155,15 +197,20 @@ Buttons:
 - **Audio für alle Pics** – generiert Audios für alle Stories mit Bild aber ohne Audio
 - **Refresh** – scannt Dateien, prüft OneDrive, aktualisiert CSV + Dashboard
 - Andere Buttons (Story, Caption, Bild) sind bewusst grau (manueller Workflow)
+- **Generieren** – startet nur Video-Render, **keine** Audio-Generierung
+
+Features:
+- 👁 Augen-Icon neben jedem Story-Namen → Hover zeigt Story-Text als Tooltip
+- `youtube_post`-Spalte in der Tabelle (YT-Icon)
 
 ---
 
 ## GitHub Actions
 
 Workflow: `.github/workflows/post_story.yml`
-- Cron: `30 16 * * *` (18:30 CEST) + random sleep 0–3600s
+- Cron: `5 15 * * *` (17:05 UTC = 19:05 CEST) + random sleep 0–3600s → Post ~19:05–20:05 CEST
 - Liest/schreibt CSV direkt via GitHub API
-- Secrets: `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_RECIPIENT_ID`, `CLOUDINARY_*`, `GITHUB_TOKEN`
+- Secrets: `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_RECIPIENT_ID`, `CLOUDINARY_*`, `GITHUB_TOKEN`, `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`
 - `STORY_NR` input für manuellen Dispatch einer bestimmten Story
 
 ---

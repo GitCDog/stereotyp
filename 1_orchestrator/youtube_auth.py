@@ -25,7 +25,7 @@ from pathlib import Path
 
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 CLIENT_SECRET_FILE = "client_secret.json"
 
 
@@ -45,7 +45,7 @@ def main():
     client_id = client_data["installed"]["client_id"]
     client_secret = client_data["installed"]["client_secret"]
 
-    print("\n✅ Authentifizierung erfolgreich!\n")
+    print("\n[OK] Authentifizierung erfolgreich!\n")
     print("Trage folgendes in deine .env und GitHub Secrets ein:")
     print(f"  YOUTUBE_CLIENT_ID={client_id}")
     print(f"  YOUTUBE_CLIENT_SECRET={client_secret}")

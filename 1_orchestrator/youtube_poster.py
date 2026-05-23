@@ -38,7 +38,7 @@ def _build_youtube_client():
         token_uri="https://oauth2.googleapis.com/token",
         client_id=client_id,
         client_secret=client_secret,
-        scopes=["https://www.googleapis.com/auth/youtube.upload"],
+        scopes=["https://www.googleapis.com/auth/youtube.force-ssl"],
     )
     request = google.auth.transport.requests.Request()
     creds.refresh(request)
@@ -52,7 +52,10 @@ def upload_short(video_path: Path, title: str, description: str, tags: list[str]
 
     youtube = _build_youtube_client()
 
-    short_title = title[:100]
+    parts = description.split("\n\n") if description else []
+    first_line = parts[0] if parts else title
+    hashtags = parts[1] if len(parts) > 1 else ""
+    short_title = f"{first_line} | {hashtags} @aufgepasst.stereotyp"[:100]
     short_description = f"{description}\n\n#Shorts\n\ninsta: @aufgepasst.stereotyp"
 
     body = {
