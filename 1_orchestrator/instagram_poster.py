@@ -602,6 +602,11 @@ class InstagramPoster:
                 logger.info(f"[+] YouTube Short: https://youtube.com/shorts/{youtube_video_id}")
                 if yt_video != video_path and yt_video.exists():
                     yt_video.unlink()
+                # Sofort nach Upload markieren – unabhängig vom Instagram-Ergebnis
+                if self.use_github:
+                    self._update_csv_github_field(row, nr, "youtube_post", "X")
+                else:
+                    ir.update_field(nr, "youtube_post", "X", self.config["output"]["input_file"])
             except Exception as e:
                 logger.warning(f"[!] YouTube Upload fehlgeschlagen (Instagram-Post läuft weiter): {e}")
         else:
@@ -615,12 +620,6 @@ class InstagramPoster:
 
         # Als gepostet markieren
         self.mark_posted(row, post_id, public_id)
-
-        if youtube_video_id:
-            if self.use_github:
-                self._update_csv_github_field(row, nr, "youtube_post", "X")
-            else:
-                ir.update_field(nr, "youtube_post", "X", self.config["output"]["input_file"])
 
         logger.info("=" * 60)
         logger.info(f"[SUCCESS] '{stereotyp}' auf Instagram gepostet")
