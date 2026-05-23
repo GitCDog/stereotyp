@@ -40,7 +40,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 39,"""Das „Mahlzeit""""-Rufen im Büroflur""",X,X,53,X,X,X,,
 40,"""Die Angst vor „Durchzug""""""",X,X,49,X,X,X,,
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,X,,
-42,"""„Tja"""" – Die universelle Antwort""",X,X,58,X,X,X,,
+42,"""„Tja"""" – Die universelle Antwort""",X,X,58,X,X,X,X,
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,X,,
 44,"""Die „Wo kommen Sie eigentlich her?""""-Frage""",X,X,50,X,X,X,,
 45,Der Baumarkt-Samstag,X,X,47,X,X,X,,
