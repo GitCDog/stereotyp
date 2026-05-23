@@ -74,7 +74,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 - `seconds` = Audio-Dauer in Sekunden
 - `youtube_post` = `X` nach erfolgreichem YouTube-Upload
 - `nr` in CSV immer als plain integer (`"42"`, nie `"0042"`) — `_write_rows()` normalisiert automatisch
-- 173+ Stories (Stand: Mai 2026), fortlaufend nummeriert bis 9999 möglich
+- 298+ Stories (Stand: Mai 2026), fortlaufend nummeriert bis 9999 möglich
 
 ---
 
@@ -129,11 +129,26 @@ GPT-Bild-Prompts generieren: Dashboard → `📝 GPT Prompts` (speichert in `1_i
 ## Video-Pipeline (nach ffmpeg-Render)
 
 `generate_videos.py` macht nach erfolgreicher Videogenerierung automatisch:
-1. Upload zu Cloudinary (`stereotypen/` Ordner)
-2. `output/0042_pic.png` → `output/0_used/`
-3. `output/0042_mp3.mp3` → `output/0_used/`
-4. `output/0042_Name.mp4` → `output/0_used/`
-5. `status_video=X` in CSV
+1. Whisper-Transkription → burned-in Karaoke-Untertitel
+2. Upload zu Cloudinary (`stereotypen/` Ordner, `overwrite=True`)
+3. `output/0042_pic.png` → `output/0_used/`
+4. `output/0042_mp3.mp3` → `output/0_used/`
+5. `output/0042_Name.mp4` → `output/0_used/`
+6. `status_video=X` in CSV
+
+**Untertitel-Spezifikation:**
+- Modell: Whisper `small`, Sprache: `de`, `word_timestamps=True`
+- Schrift: Trebuchet MS, 46px, Bold
+- Farbe: Weiß (gesprochen) / Gelb (noch nicht gesprochen) — Karaoke `\k`-Tags
+- Block-Größe: 5 Wörter, 1 Zeile sichtbar, Position: unten zentriert (MarginV=280)
+- Format: ASS mit `PlayResX: 1080 / PlayResY: 1920`
+
+**CLI-Flags:**
+```bash
+python generate_videos.py --story 42 --subtitles          # Mit Untertiteln (Standard via Dashboard)
+python generate_videos.py --story 42 --subtitle-words 5   # Wörter pro Block (default: 5)
+python generate_videos.py --all --subtitles               # Alle ausstehenden mit Untertiteln
+```
 
 ---
 
@@ -197,7 +212,7 @@ Buttons:
 - **Audio für alle Pics** – generiert Audios für alle Stories mit Bild aber ohne Audio
 - **Refresh** – scannt Dateien, prüft OneDrive, aktualisiert CSV + Dashboard
 - Andere Buttons (Story, Caption, Bild) sind bewusst grau (manueller Workflow)
-- **Generieren** – startet nur Video-Render, **keine** Audio-Generierung
+- **Generieren** – startet Video-Render **mit Untertiteln** (`--subtitles`), keine Audio-Generierung
 
 Features:
 - 👁 Augen-Icon neben jedem Story-Namen → Hover zeigt Story-Text als Tooltip
