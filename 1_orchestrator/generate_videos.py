@@ -115,7 +115,7 @@ def _seconds_to_ass(s: float) -> str:
 
 
 def generate_subtitles(audio_path: Path, ass_path: Path, model_size: str = "small",
-                       chunk_size: int = 3, logger: logging.Logger = None) -> bool:
+                       chunk_size: int = 5, logger: logging.Logger = None) -> bool:
     """Transkribiert Audio mit Whisper und erstellt ASS-Untertiteldatei."""
     try:
         import whisper
@@ -138,17 +138,8 @@ def generate_subtitles(audio_path: Path, ass_path: Path, model_size: str = "smal
                 if text:
                     words.append({"word": text, "start": w["start"], "end": w["end"]})
 
-        # Wörter in Gruppen aufteilen
-        chunks = []
-        for i in range(0, len(words), chunk_size):
-            group = words[i:i + chunk_size]
-            chunks.append({
-                "text": " ".join(w["word"] for w in group).upper(),
-                "start": group[0]["start"],
-                "end": group[-1]["end"],
-            })
-
-        # ASS Datei schreiben (viraler Stil: weiß, fett, dicker schwarzer Outline)
+        # Wörter in Gruppen aufteilen (Karaoke: \k-Tags für Word-Highlight)
+        # PrimaryColour = weiß (aktuell gesprochen), SecondaryColour = gelb (noch nicht)
         ass_content = """[Script Info]
 ScriptType: v4.00+
 PlayResX: 1080
@@ -156,20 +147,30 @@ PlayResY: 1920
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Arial,78,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,5,2,2,30,30,280,1
+Style: Default,Trebuchet MS,42,&H00FFFFFF,&H0000FFFF,&H00000000,&H00000000,-1,0,0,0,100,100,2,0,1,3,2,2,30,30,280,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
         lines = [ass_content.strip()]
-        for chunk in chunks:
-            start = _seconds_to_ass(chunk["start"])
-            end = _seconds_to_ass(chunk["end"])
-            lines.append(f"Dialogue: 0,{start},{end},Default,,0,0,0,,{chunk['text']}")
+        for i in range(0, len(words), chunk_size):
+            group = words[i:i + chunk_size]
+            start = _seconds_to_ass(group[0]["start"])
+            end = _seconds_to_ass(group[-1]["end"])
+            parts = []
+            for j, w in enumerate(group):
+                if j < len(group) - 1:
+                    duration_cs = max(1, int((group[j + 1]["start"] - w["start"]) * 100))
+                else:
+                    duration_cs = max(1, int((w["end"] - w["start"]) * 100))
+                parts.append(f"{{\\k{duration_cs}}}{w['word'].upper()} ")
+            text = "".join(parts).rstrip()
+            lines.append(f"Dialogue: 0,{start},{end},Default,,0,0,0,,{text}")
 
         ass_path.write_text("\n".join(lines), encoding="utf-8")
         if logger:
-            logger.info(f"[+] Untertitel: {len(chunks)} Blöcke → {ass_path.name}")
+            n_chunks = (len(words) + chunk_size - 1) // chunk_size
+            logger.info(f"[+] Untertitel: {n_chunks} Blöcke → {ass_path.name}")
         return True
 
     except Exception as e:
@@ -179,7 +180,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 
 def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
-                 subtitles: bool = False) -> bool:
+                 subtitles: bool = False, subtitle_words: int = 5) -> bool:
     """Erstelle MP4 aus Bild + Audio via ffmpeg."""
     input_file = config["output"]["input_file"]
     images_dir = config["output"]["images_dir"]
@@ -232,7 +233,8 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
     if subtitles:
         ass_path = Path(tempfile.mktemp(suffix=".ass"))
         model_size = video_config.get("whisper_model", "small")
-        if not generate_subtitles(audio_path, ass_path, model_size=model_size, logger=logger):
+        if not generate_subtitles(audio_path, ass_path, model_size=model_size,
+                                  chunk_size=subtitle_words, logger=logger):
             ass_path = None
 
     # ffmpeg: Bild in Schleife + Audio, bis Audio endet
@@ -330,6 +332,7 @@ def main():
     parser.add_argument("--story", type=str, help="Story-Nummer")
     parser.add_argument("--all", action="store_true", help="Alle bereitstehenden Videos")
     parser.add_argument("--subtitles", action="store_true", help="Burned-in Untertitel via Whisper")
+    parser.add_argument("--subtitle-words", type=int, default=5, help="Wörter pro Untertitel-Block (default: 5)")
     parser.add_argument("--no-push", action="store_true", help="Kein automatischer Git Push")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
@@ -346,7 +349,7 @@ def main():
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        if create_video(args.story, row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
+        if create_video(args.story, row["stereotyp"].strip(), config, logger, subtitles=args.subtitles, subtitle_words=args.subtitle_words):
             created += 1
 
     elif args.all:
@@ -360,7 +363,7 @@ def main():
         logger.info(f"[*] {len(candidates)} Videos zu erstellen")
         for row in candidates:
             try:
-                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles, subtitle_words=args.subtitle_words):
                     created += 1
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
@@ -372,7 +375,7 @@ def main():
             if (row.get("status_audio") == "X"
                     and row.get("status_pic") == "X"
                     and row.get("status_video", "") != "X"):
-                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles):
+                if create_video(row["nr"].strip(), row["stereotyp"].strip(), config, logger, subtitles=args.subtitles, subtitle_words=args.subtitle_words):
                     created += 1
                 break
         else:
