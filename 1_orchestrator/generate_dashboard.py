@@ -498,17 +498,17 @@ html = f'''<!DOCTYPE html>
             </div>
         </h1>
         <div class="btn-group btn-row">
-            <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ Story generieren</button>
-            <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 Caption generieren</button>
-            <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ Bild generieren</button>
+            <button class="action-btn disabled" id="storyBtn"   onclick="showInput('story')">✍️ generate_stories</button>
+            <button class="action-btn disabled" id="captionBtn" onclick="showInput('caption')">💬 generate_captions</button>
+            <button class="action-btn disabled" id="picBtn"     onclick="showInput('picture')">🖼️ generate_pictures</button>
         </div>
         <div class="btn-group btn-row">
-            <button class="action-btn" id="refreshBtn"    onclick="doRefresh()">🔄 Refresh</button>
-            <button class="action-btn" id="audioBtn"    onclick="showInput('audio')">🎵 Audio generieren</button>
-            <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 Audio für alle Pics</button>
-            <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 Video erstellen</button>
-            <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 Bilder-Playwright</button>
-            <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 Instagram Post</button>
+            <button class="action-btn" id="refreshBtn"    onclick="doRefresh()">🔄 sync_status</button>
+            <button class="action-btn" id="audioBtn"    onclick="showInput('audio')">🎵 generate_audio</button>
+            <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 generate_audio (alle Pics)</button>
+            <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 generate_videos</button>
+            <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 generate_pictures_playwright</button>
+            <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 instagram_poster</button>
         </div>
 
         <div class="pie-section">
@@ -685,14 +685,14 @@ html = f'''<!DOCTYPE html>
     }})();
 
     const ACTIONS = {{
-        'story':      {{ btn: 'storyBtn',      api: '/api/generate-story',              label: '✍️ Story generieren'      }},
-        'caption':    {{ btn: 'captionBtn',    api: '/api/generate-caption',            label: '💬 Caption generieren'    }},
-        'picture':    {{ btn: 'picBtn',        api: '/api/generate-picture',            label: '🖼️ Bild generieren'      }},
-        'audio':      {{ btn: 'audioBtn',      api: '/api/generate-audio',              label: '🎵 Audio generieren'      }},
-        'playwright': {{ btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 Bilder-Playwright'     }},
-        'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  }},
-        'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   }},
-        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    }},
+        'story':      {{ btn: 'storyBtn',      api: '/api/generate-story',              label: '✍️ generate_stories'              }},
+        'caption':    {{ btn: 'captionBtn',    api: '/api/generate-caption',            label: '💬 generate_captions'             }},
+        'picture':    {{ btn: 'picBtn',        api: '/api/generate-picture',            label: '🖼️ generate_pictures'            }},
+        'audio':      {{ btn: 'audioBtn',      api: '/api/generate-audio',              label: '🎵 generate_audio'                }},
+        'playwright': {{ btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 generate_pictures_playwright' }},
+        'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      }},
+        'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           }},
+        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster'                      }},
     }};
 
     let _pendingAction = null;

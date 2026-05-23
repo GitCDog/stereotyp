@@ -78,8 +78,8 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            width: 71%;
-            min-width: 71%;
+            width: 72%;
+            min-width: 72%;
             transition: width 0.4s;
         }
         .log-box {
@@ -412,11 +412,11 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#22c55e"></span>
-                    Bereit zum Posten: 58
+                    Bereit zum Posten: 59
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#fbbf24"></span>
-                    Unvollständig: 214
+                    Unvollständig: 213
                 </div>
             </div>
         </div>
@@ -427,14 +427,14 @@
             <div class="stat-box"><h3>Caption ✓</h3><div class="val">298</div></div>
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">298</div></div>
             <div class="stat-box"><h3>Bild ✓</h3><div class="val">87</div></div>
-            <div class="stat-box"><h3>Video ✓</h3><div class="val">84</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">85</div></div>
             <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">26</div></div>
         </div>
 
         <div class="progress-section">
-            <strong>Gesamtfortschritt (71%)</strong>
+            <strong>Gesamtfortschritt (72%)</strong>
             <div class="progress-bar">
-                <div class="progress-fill">71%</div>
+                <div class="progress-fill">72%</div>
             </div>
         </div>
 
@@ -4223,7 +4223,7 @@
                     </td>
                     <td class="center rq-col" data-nr="229"></td>
                 </tr>
-                <tr class="row-incomplete">
+                <tr class="row-ready">
                     <td class="num">230</td>
                     <td class="name">Smart Home <span class="eye-btn" data-nr="230" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span></td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
@@ -4231,10 +4231,10 @@
                     <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="center">43</td>
                     <td class="status-cell"><span class="blk blk-green"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="230" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn " data-nr="230" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="230" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="230"></td>
@@ -5340,8 +5340,8 @@
         var ctx = canvas.getContext('2d');
         var data = [
             { v: 26,     c: '#1a4d2e' },
-            { v: 58,      c: '#22c55e' },
-            { v: 214, c: '#fbbf24' }
+            { v: 59,      c: '#22c55e' },
+            { v: 213, c: '#fbbf24' }
         ];
         var total = data.reduce(function(s, d) { return s + d.v; }, 0);
         if (total === 0) return;
@@ -5364,14 +5364,14 @@
     })();
 
     const ACTIONS = {
-        'story':      { btn: 'storyBtn',      api: '/api/generate-story',              label: '✍️ Story generieren'      },
-        'caption':    { btn: 'captionBtn',    api: '/api/generate-caption',            label: '💬 Caption generieren'    },
-        'picture':    { btn: 'picBtn',        api: '/api/generate-picture',            label: '🖼️ Bild generieren'      },
-        'audio':      { btn: 'audioBtn',      api: '/api/generate-audio',              label: '🎵 Audio generieren'      },
-        'playwright': { btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 Bilder-Playwright'     },
-        'audio-pic': { btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 Audio für alle Pics'  },
-        'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 Video erstellen'   },
-        'post':    { btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 Instagram Post'    },
+        'story':      { btn: 'storyBtn',      api: '/api/generate-story',              label: '✍️ generate_stories'              },
+        'caption':    { btn: 'captionBtn',    api: '/api/generate-caption',            label: '💬 generate_captions'             },
+        'picture':    { btn: 'picBtn',        api: '/api/generate-picture',            label: '🖼️ generate_pictures'            },
+        'audio':      { btn: 'audioBtn',      api: '/api/generate-audio',              label: '🎵 generate_audio'                },
+        'playwright': { btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 generate_pictures_playwright' },
+        'audio-pic': { btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      },
+        'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           },
+        'post':    { btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster'                      },
     };
 
     let _pendingAction = null;
