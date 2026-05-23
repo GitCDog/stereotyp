@@ -126,7 +126,7 @@ def main():
         if cap:
             tags = cap.get("hashtags", [])
 
-    print(f"[*] Upload: #{nr} {stereotyp} → {video_path.name}")
+    print(f"[*] Upload: #{nr} {stereotyp} -> {video_path.name}")
     video_id = upload_short(video_path, title=stereotyp, description=description, tags=tags)
 
     ir.update_field(nr, "youtube_post", "X", input_file)
