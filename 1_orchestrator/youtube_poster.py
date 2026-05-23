@@ -53,7 +53,7 @@ def upload_short(video_path: Path, title: str, description: str, tags: list[str]
     youtube = _build_youtube_client()
 
     short_title = title[:100]
-    short_description = f"{description}\n\n#Shorts"
+    short_description = f"{description}\n\n#Shorts\n\ninsta: @aufgepasst.stereotyp"
 
     body = {
         "snippet": {
