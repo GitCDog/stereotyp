@@ -579,8 +579,7 @@ class InstagramPoster:
             try:
                 import json as _json
                 from youtube_poster import upload_short
-                txt_files = list(Path("1_input").glob(f"{ns}_*.txt"))
-                yt_desc = txt_files[0].read_text(encoding="utf-8").strip() if txt_files else stereotyp
+                yt_desc = caption
                 captions_file = Path(self.config["output"]["output_dir"]) / "captions.json"
                 yt_tags = []
                 if captions_file.exists():
