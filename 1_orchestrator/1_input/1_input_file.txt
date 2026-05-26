@@ -170,7 +170,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 169,Insta Süchtig,X,X,42,X,X,X,,
 170,Hipster,X,X,49,X,X,X,,
 171,Jutebeutel,X,X,54,X,X,X,,
-172,Rocker,X,X,51,X,,X,,
+172,Rocker,X,X,51,X,X,X,,
 173,Biker Gruss,X,X,47,,,X,,
 174,Silberlöffel im Mund,X,X,50,,,X,,
 175,Gammler,X,X,52,,,X,,
