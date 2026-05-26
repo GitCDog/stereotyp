@@ -166,7 +166,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 165,Face Lifting,X,X,46,,,X,,
 166,Schlauchboot Lippen,X,X,55,,,X,,
 167,Fake Louis Vuitton Tasche,X,X,48,X,X,X,,
-168,TikTok Süchtig,X,X,52,X,,X,,
+168,TikTok Süchtig,X,X,52,X,X,X,,
 169,Insta Süchtig,X,X,42,X,,X,,
 170,Hipster,X,X,49,X,,X,,
 171,Jutebeutel,X,X,54,X,,X,,
