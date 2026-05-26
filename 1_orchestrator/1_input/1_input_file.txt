@@ -159,7 +159,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 158,Papierstrohhalm,X,X,49,,,X,,
 159,Pornosüchtiger,X,X,51,X,X,X,,
 160,Unfallgaffer,X,X,50,X,X,X,,
-161,Botox Frau,X,X,46,X,,X,,
+161,Botox Frau,X,X,46,X,X,X,,
 162,Botox Mann,X,X,52,X,,X,,
 163,Alternative Lifestyle,X,X,57,X,,X,,
 164,Silikonbrüste,X,X,46,X,X,X,,
