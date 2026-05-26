@@ -25,7 +25,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 24,Der Handtuch-Reservierer,X,X,47,,,X,,
 25,Der Berliner Techno-Hipster,X,X,49,,,X,,
 26,Der Vanlife-Aussteiger,X,X,48,,,X,,
-27,Der Elektroauto-Missionar,X,X,52,X,X,X,,X
+27,Der Elektroauto-Missionar,X,X,52,X,X,X,X,X
 28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,X,,
 29,Der Blockwart-Nachbar,X,X,48,X,X,X,,
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,X,,
