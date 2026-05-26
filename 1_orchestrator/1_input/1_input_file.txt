@@ -298,4 +298,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 297,Friedrich Merz,X,X,55,X,X,X,X,X
 298,Bürgergeld,X,X,63,,X,X,,
 299,Die Linke,X,,,,,X,,
-300,Ferrari Luce,X,,,,,,,
+300,Ferrari Luce,X,,,,,X,,
