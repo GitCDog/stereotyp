@@ -84,7 +84,7 @@ def find_image(nr, images_dir: str) -> Path | None:
 
 
 def ensure_rgb_image(image_path: Path, logger: logging.Logger) -> Path:
-    """Konvertiert RGBA/Palette-Bilder zu RGB PNG und halbiert die Auflösung."""
+    """Konvertiert RGBA/Palette-Bilder zu RGB PNG. Gibt den Pfad zurück (ggf. temp-Datei)."""
     try:
         from PIL import Image
         img = Image.open(image_path)
@@ -93,17 +93,12 @@ def ensure_rgb_image(image_path: Path, logger: logging.Logger) -> Path:
             if img.mode == "P":
                 img = img.convert("RGBA")
             rgb.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
-            img = rgb
-        else:
-            img = img.convert("RGB")
-        new_size = (img.width // 2, img.height // 2)
-        img = img.resize(new_size, Image.LANCZOS)
-        temp_path = image_path.with_stem(image_path.stem + "_rgb")
-        img.save(temp_path, "PNG")
-        logger.info(f"[*] Bild → RGB, {new_size[0]}x{new_size[1]}: {temp_path.name}")
-        return temp_path
+            temp_path = image_path.with_stem(image_path.stem + "_rgb")
+            rgb.save(temp_path, "PNG")
+            logger.info(f"[*] Bild RGBA→RGB konvertiert: {temp_path.name}")
+            return temp_path
     except Exception as e:
-        logger.warning(f"[!] Bild-Verarbeitung fehlgeschlagen: {e}")
+        logger.warning(f"[!] Bild-Konvertierung fehlgeschlagen: {e}")
     return image_path
 
 
