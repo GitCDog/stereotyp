@@ -174,7 +174,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 173,Biker Gruss,X,X,47,X,X,X,,
 174,Silberlöffel im Mund,X,X,50,X,X,X,,
 175,Gammler,X,X,52,X,X,X,,
-176,GEZ,X,X,48,X,,X,,
+176,GEZ,X,X,48,X,X,X,,
 177,Technomädchen,X,X,52,X,,X,,
 178,Technojunge,X,X,49,,,X,,
 179,Love Parade,X,X,54,,,X,,
