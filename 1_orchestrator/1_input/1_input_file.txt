@@ -13,7 +13,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 12,Schorle-Alles,X,X,51,X,X,X,X,X
 13,Spargelzeit,X,X,56,X,X,X,X,X
 14,Abendbrot,X,X,53,X,X,X,X,X
-15,Die Ampel-Disziplin,X,X,52,X,X,X,X,
+15,Die Ampel-Disziplin,X,X,52,X,X,X,X,X
 16,Die Direktheit,X,X,52,X,X,X,,
 17,Das Auto als Heiligtum,X,X,51,X,X,X,,
 18,Mülltrennung als Extremsport,X,X,50,X,X,X,,
@@ -40,7 +40,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 39,"""Das „Mahlzeit""""-Rufen im Büroflur""",X,X,53,X,X,X,,
 40,"""Die Angst vor „Durchzug""""""",X,X,49,X,X,X,,
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,X,,
-42,"""„Tja"""" – Die universelle Antwort""",X,X,58,X,X,X,X,
+42,"""„Tja"""" – Die universelle Antwort""",X,X,58,X,X,X,X,X
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,X,,
 44,"""Die „Wo kommen Sie eigentlich her?""""-Frage""",X,X,50,X,X,X,,
 45,Der Baumarkt-Samstag,X,X,47,X,X,X,,
@@ -99,11 +99,11 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 98,"""Der „Schöner Hund""""-Smalltalk""",X,X,54,,,X,,
 99,"Der „So, Feierabend“-Klatscher",X,X,54,,,X,,
 100,Der Tatort-Spoilerer,X,X,56,,,X,,
-101,Talahon,X,X,51,X,X,X,X,
+101,Talahon,X,X,51,X,X,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,X,,
 103,Bali Yoga Retreat,X,X,49,,,X,,
 104,Vibe Coder,X,X,48,,,X,,
-105,Chaya in Frankfurt,X,X,52,X,X,X,X,
+105,Chaya in Frankfurt,X,X,52,X,X,X,X,X
 106,Betriebsrat,X,X,55,,,X,,
 107,Porschefahrer,X,X,50,,,X,,
 108,Thermomix,X,X,51,,,X,,
@@ -150,9 +150,9 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 149,Kiffer,X,X,49,,,X,,
 150,Deutschrapper,X,X,49,,,X,,
 151,Bootsschuhe,X,X,46,X,X,X,,
-152,Zu alt für Skaterklamotten,X,X,52,X,X,X,X,
-153,Mama und Tochter in Disko,X,X,55,X,X,X,X,
-154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,X,X,
+152,Zu alt für Skaterklamotten,X,X,52,X,X,X,X,X
+153,Mama und Tochter in Disko,X,X,55,X,X,X,X,X
+154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,X,X,X
 155,20 Kaffee am Tag,X,X,50,X,X,X,,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,,,X,,
 157,Veganes Steak,X,X,55,,,X,,
