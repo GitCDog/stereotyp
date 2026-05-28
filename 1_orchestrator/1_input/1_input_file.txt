@@ -297,5 +297,5 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 296,Frühstück ans Bett,X,X,57,,,X,,
 297,Friedrich Merz,X,X,55,X,X,X,X,X
 298,Bürgergeld,X,X,63,X,X,X,,
-299,Die Linke,X,X,58,X,,X,,
+299,Die Linke,X,X,58,X,X,X,,
 300,Ferrari Luce,X,X,67,,X,X,X,X
