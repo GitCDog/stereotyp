@@ -116,7 +116,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 115,Bierleiche,X,X,53,,,X,,
 116,Pilates,X,X,51,,,X,,
 117,Mein Nervensystem,X,X,56,,,X,,
-118,Longevity Trend,X,X,49,X,X,X,,
+118,Longevity Trend,X,X,49,X,X,X,X,
 119,Verschwörungstheoretiker,X,X,52,,,X,,
 120,Bitcoin Maxi,X,X,53,,,X,,
 121,Gendern,X,X,55,X,X,X,,
