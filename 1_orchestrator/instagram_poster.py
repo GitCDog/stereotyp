@@ -162,7 +162,8 @@ class InstagramPoster:
             nrs = [str(int(l)) for l in lines if l and l.isdigit()]
             if nrs:
                 for nr in nrs:
-                    row = row_by_nr.get(nr)
+                    # Beide Formate probieren: "184" und "0184"
+                    row = row_by_nr.get(nr) or row_by_nr.get(f"{int(nr):04d}")
                     if not row or row.get("status_video") != "X" or row.get("insta_post", "").strip():
                         continue
                     if self._video_available(row):
@@ -344,7 +345,12 @@ class InstagramPoster:
         if not local_path.exists():
             return
         lines = local_path.read_text(encoding="utf-8").splitlines()
-        new_lines = [l for l in lines if l.strip() != str(nr)]
+        # Numerisch vergleichen – Format-Unterschiede (184 vs 0184) werden ignoriert
+        try:
+            nr_int = int(str(nr).strip())
+            new_lines = [l for l in lines if not (l.strip().isdigit() and int(l.strip()) == nr_int)]
+        except ValueError:
+            new_lines = [l for l in lines if l.strip() != str(nr)]
         if len(new_lines) == len(lines):
             return
 
