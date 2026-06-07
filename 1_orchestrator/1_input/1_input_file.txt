@@ -187,7 +187,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 186,AFD,X,X,52,X,X,X,,
 187,Junge Union,X,X,51,X,X,X,X,X
 188,Bürokratie,X,X,49,X,X,X,,
-189,Hauptschule,X,X,48,X,,X,,
+189,Hauptschule,X,X,48,X,X,X,,
 190,Realschule,X,X,47,X,,X,,
 191,Gymnasium,X,X,50,X,,X,,
 192,Waldorfschule,X,X,47,X,,X,,
