@@ -26,7 +26,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 25,Der Berliner Techno-Hipster,X,X,49,X,,X,,
 26,Der „Vanlife“-Aussteiger,X,X,48,X,,X,,
 27,Der Elektroauto-Missionar,X,X,52,X,X,X,X,X
-28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,X,X,
+28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,X,X,X
 29,Der Blockwart-Nachbar,X,X,48,X,X,X,,
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,X,,
 31,Der DB-Wutbürger,X,X,47,X,X,X,,
@@ -50,11 +50,11 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 49,Der Fahrradweg-Sheriff,X,X,55,X,X,X,,
 50,Die Über-Versicherung für alles,X,X,53,X,X,X,,
 51,Die Pfandflaschen-Jagd,X,X,48,X,X,X,,
-52,Die Ruhe im Speisewagen,X,X,47,,,X,,
-53,Der Umzugs-Helfer-Stress,X,X,48,,,X,,
-54,Die Parkplatz-Suche,X,X,47,,,X,,
-55,Der Versicherungs-Check,X,X,49,,,X,,
-56,Die deutsche Gründlichkeit,X,X,53,,,X,,
+52,Die Ruhe im Speisewagen,X,X,47,X,,X,,
+53,Der Umzugs-Helfer-Stress,X,X,48,X,,X,,
+54,Die Parkplatz-Suche,X,X,47,X,,X,,
+55,Der Versicherungs-Check,X,X,49,X,,X,,
+56,Die deutsche Gründlichkeit,X,X,53,X,,X,,
 57,Der Kaffee-Snob,X,X,52,,,X,,
 58,Die Fensterputz-Eskalation,X,X,53,,,X,,
 59,Der Vereinsausflug,X,X,51,,,X,,
@@ -116,7 +116,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 115,Bierleiche,X,X,53,,,X,,
 116,Pilates,X,X,51,,,X,,
 117,Mein Nervensystem,X,X,56,,,X,,
-118,Longevity Trend,X,X,49,X,X,X,X,
+118,Longevity Trend,X,X,49,X,X,X,X,X
 119,Verschwörungstheoretiker,X,X,52,,,X,,
 120,Bitcoin Maxi,X,X,53,,,X,,
 121,Gendern,X,X,55,X,X,X,,
@@ -158,15 +158,15 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 157,Veganes Steak,X,X,55,,,X,,
 158,Papierstrohhalm,X,X,49,,,X,,
 159,Pornosüchtiger,X,X,51,X,X,X,,
-160,Unfallgaffer,X,X,50,X,X,X,X,
+160,Unfallgaffer,X,X,50,X,X,X,X,X
 161,Botox Frau,X,X,46,X,X,X,,
 162,Botox Mann,X,X,52,X,X,X,,
 163,Alternative Lifestyle,X,X,57,X,X,X,X,X
 164,Silikonbrüste,X,X,46,X,X,X,,
 165,Face Lifting,X,X,46,,,X,,
 166,Schlauchboot Lippen,X,X,55,,,X,,
-167,Fake Louis Vuitton Tasche,X,X,48,X,X,X,X,
-168,TikTok Süchtig,X,X,52,X,X,X,X,
+167,Fake Louis Vuitton Tasche,X,X,48,X,X,X,X,X
+168,TikTok Süchtig,X,X,52,X,X,X,X,X
 169,Insta Süchtig,X,X,42,X,X,X,,
 170,Hipster,X,X,49,X,X,X,,
 171,Jutebeutel,X,X,54,X,X,X,,
@@ -182,16 +182,16 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 181,Klimakleber,X,X,54,X,,X,,
 182,CDU,X,X,49,X,X,X,,
 183,SPD,X,X,54,X,X,X,X,X
-184,FDP,X,X,45,X,X,X,X,
+184,FDP,X,X,45,X,X,X,X,X
 185,Die Grünen,X,X,52,X,X,X,X,X
 186,AFD,X,X,52,X,X,X,,
-187,Junge Union,X,X,51,X,X,X,X,
+187,Junge Union,X,X,51,X,X,X,X,X
 188,Bürokratie,X,X,49,X,X,X,,
-189,Hauptschule,X,X,48,,,X,,
-190,Realschule,X,X,47,,,X,,
-191,Gymnasium,X,X,50,,,X,,
-192,Waldorfschule,X,X,47,,,X,,
-193,Privatschule,X,X,46,,,X,,
+189,Hauptschule,X,X,48,X,,X,,
+190,Realschule,X,X,47,X,,X,,
+191,Gymnasium,X,X,50,X,,X,,
+192,Waldorfschule,X,X,47,X,,X,,
+193,Privatschule,X,X,46,X,,X,,
 194,Gesamtschule,X,X,50,,,X,,
 195,Sonderschule,X,X,51,,,X,,
 196,Berufsschule,X,X,50,,,X,,
@@ -292,7 +292,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 291,Stadtbilddebatte,X,X,49,,,X,,
 292,DSDS-Fan,X,X,58,X,X,X,X,X
 293,Alles Toxisch,X,X,59,X,X,X,X,X
-294,people pleaser,X,X,55,X,X,X,X,
+294,people pleaser,X,X,55,X,X,X,X,X
 295,Basic Bee,X,X,57,X,X,X,,
 296,Frühstück ans Bett,X,X,57,,,X,,
 297,Friedrich Merz,X,X,55,X,X,X,X,X
