@@ -191,7 +191,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 190,Realschule,X,X,47,X,X,X,,
 191,Gymnasium,X,X,50,X,X,X,,
 192,Waldorfschule,X,X,47,X,X,X,,
-193,Privatschule,X,X,46,X,,X,,
+193,Privatschule,X,X,46,X,X,X,,
 194,Gesamtschule,X,X,50,,,X,,
 195,Sonderschule,X,X,51,,,X,,
 196,Berufsschule,X,X,50,,,X,,
