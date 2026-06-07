@@ -51,7 +51,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 50,Die Über-Versicherung für alles,X,X,53,X,X,X,,
 51,Die Pfandflaschen-Jagd,X,X,48,X,X,X,,
 52,Die Ruhe im Speisewagen,X,X,47,X,X,X,,
-53,Der Umzugs-Helfer-Stress,X,X,48,X,,X,,
+53,Der Umzugs-Helfer-Stress,X,X,48,X,X,X,,
 54,Die Parkplatz-Suche,X,X,47,X,,X,,
 55,Der Versicherungs-Check,X,X,49,X,,X,,
 56,Die deutsche Gründlichkeit,X,X,53,X,,X,,
