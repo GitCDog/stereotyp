@@ -286,7 +286,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 285,Datenschutz,X,X,47,,,X,,
 286,Heizkosten,X,X,47,,,X,,
 287,Spritpreise,X,X,52,,,X,,
-288,Deutsche Bahn,X,X,47,X,,X,,
+288,Deutsche Bahn,X,X,47,X,X,X,,
 289,Ja ja,X,X,46,X,,X,,
 290,Weihnachtsmarktpreise,X,X,44,,,X,,
 291,Stadtbilddebatte,X,X,49,X,,X,,
