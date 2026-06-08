@@ -289,7 +289,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 288,Deutsche Bahn,X,X,47,X,X,X,,
 289,Ja ja,X,X,46,X,X,X,,
 290,Weihnachtsmarktpreise,X,X,44,,,X,,
-291,Stadtbilddebatte,X,X,49,X,,X,,
+291,Stadtbilddebatte,X,X,49,X,X,X,,
 292,DSDS-Fan,X,X,58,X,X,X,X,X
 293,Alles Toxisch,X,X,59,X,X,X,X,X
 294,people pleaser,X,X,55,X,X,X,X,X
