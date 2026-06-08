@@ -56,7 +56,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 55,Der Versicherungs-Check,X,X,49,X,X,X,,
 56,Die deutsche Gründlichkeit,X,X,53,X,,X,,
 57,Der Kaffee-Snob,X,X,52,X,X,X,,
-58,Die Fensterputz-Eskalation,X,X,53,X,,X,,
+58,Die Fensterputz-Eskalation,X,X,53,X,X,X,,
 59,Der Vereinsausflug,X,X,51,X,,X,,
 60,Die Handtuch-Mafia,X,X,53,X,,X,,
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,,X,,
