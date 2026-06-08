@@ -259,7 +259,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 258,Sozialstaat,X,X,48,,,X,,
 259,Ausländer willkommen,X,X,46,,,X,,
 260,Hartz IV,X,X,43,,,X,,
-261,Spritpreise,X,X,50,X,,X,,
+261,Spritpreise,X,X,50,X,X,X,,
 262,Steuern überall,X,X,48,,,X,,
 263,GEZ,X,X,48,,,X,,
 264,Arbeitsamt,X,X,48,,,X,,
