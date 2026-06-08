@@ -94,7 +94,7 @@ for row in data:
     title_text = TITLES.get(int(nr), stereo).replace('"', '&quot;')
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
-                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()">🏷</span></td>
+                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell">{block(row.get('status_story',''))}</td>
                     <td class="status-cell">{block(row.get('status_caption',''))}</td>
                     <td class="status-cell">{block(row.get('status_audio',''))}</td>
@@ -389,10 +389,10 @@ html = f'''<!DOCTYPE html>
         }}
         #title-tooltip {{
             display: none; position: fixed; z-index: 9999;
-            background: #2a1a4a; color: #f0e0ff;
-            border: 1px solid #7c4dcc; border-radius: 8px;
-            padding: 10px 14px; max-width: 360px;
-            font-size: 14px; font-weight: 600; line-height: 1.4;
+            background: #1a1a1a; color: #f0f0f0;
+            border: 1px solid #444; border-radius: 8px;
+            padding: 12px 16px; max-width: 420px;
+            font-size: 17px; font-weight: 700; line-height: 1.4;
             box-shadow: 0 6px 24px rgba(0,0,0,0.45);
             pointer-events: none;
         }}
