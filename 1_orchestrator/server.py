@@ -24,6 +24,39 @@ REPO_ROOT = Path(__file__).parent.parent
 REIHENFOLGE_REL = "1_orchestrator/1_input/0_reihenfolge.txt"
 
 
+TITLES_FILE = Path(__file__).parent / "generate_gpt_prompt_titled.py"
+
+
+def generate_title(stereotyp: str, story_text: str) -> str:
+    """Generiert provokanten Fragetitel via Claude CLI."""
+    prompt = (
+        f'Erstelle einen provokanten, viralen Fragetitel für diesen Instagram-Reel über das deutsche Stereotyp '
+        f'"{stereotyp}". Der Titel soll: als Frage formuliert sein, max. 60 Zeichen, '
+        f'neugierig machen, keine Anführungszeichen enthalten. '
+        f'Antworte NUR mit dem Titel, nichts sonst.\n\nStory: {story_text[:300]}'
+    )
+    no_window = subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0
+    result = subprocess.run(
+        ["claude", "-p", prompt],
+        capture_output=True, text=True, encoding="utf-8",
+        creationflags=no_window, timeout=30
+    )
+    title = result.stdout.strip().strip('"').strip("'")
+    return title if title else stereotyp
+
+
+def save_title_to_dict(nr: int, title: str):
+    """Fügt neuen Titel in TITLES-Dict von generate_gpt_prompt_titled.py ein."""
+    content = TITLES_FILE.read_text(encoding="utf-8")
+    if f"\n    {nr}:" in content:
+        return  # bereits vorhanden
+    escaped = title.replace('"', '\\"')
+    new_entry = f'    {nr}: "{escaped}",\n'
+    # Vor der schliessenden } des TITLES-Dicts einfügen
+    content = content.replace("\n}\n\n\ndef _nr_str", f"\n{new_entry}}}\n\n\ndef _nr_str")
+    TITLES_FILE.write_text(content, encoding="utf-8")
+
+
 def git_push_reihenfolge():
     """Committet und pusht 0_reihenfolge.txt nach GitHub."""
     no_window = subprocess.CREATE_NO_WINDOW
@@ -336,6 +369,21 @@ def create_story():
                 args += ["--stichworte", stichworte]
             run_script(args)
             log.append(f"✅ Story-Text gespeichert")
+
+            # Provokanten Titel generieren und in TITLES-Dict speichern
+            set_task("running", f"Titel für #{new_nr} generieren...", 45, log=list(log))
+            try:
+                story_file = next(
+                    (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
+                     if p.name not in {"00_sammelsurium.txt", "gpt_prompts.txt"}),
+                    None
+                )
+                story_text = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
+                title = generate_title(stereotyp, story_text)
+                save_title_to_dict(int(new_nr), title)
+                log.append(f"🏷 Titel: \"{title}\"")
+            except Exception as e:
+                log.append(f"⚠️ Titel-Generierung fehlgeschlagen: {e}")
 
             log.append(f"⏳ Caption via Claude generieren...")
             set_task("running", f"Caption für #{new_nr} generieren...", 65, log=list(log))
