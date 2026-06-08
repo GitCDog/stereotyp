@@ -3,6 +3,9 @@
 
 import csv
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from generate_gpt_prompt_titled import TITLES
 
 with open("1_input/1_input_file.txt", encoding="utf-8") as f:
     data = [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
@@ -88,9 +91,10 @@ for row in data:
         row_cls = ""
     rq_pos    = reihenfolge_pos.get(nr, reihenfolge_pos.get(str(int(nr)) if nr.isdigit() else nr, None))
 
+    title_text = TITLES.get(int(nr), stereo).replace('"', '&quot;')
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
-                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span></td>
+                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()">🏷</span></td>
                     <td class="status-cell">{block(row.get('status_story',''))}</td>
                     <td class="status-cell">{block(row.get('status_caption',''))}</td>
                     <td class="status-cell">{block(row.get('status_audio',''))}</td>
@@ -382,6 +386,15 @@ html = f'''<!DOCTYPE html>
             font-size: 13px; line-height: 1.55;
             box-shadow: 0 6px 24px rgba(0,0,0,0.45);
             white-space: pre-wrap; pointer-events: none;
+        }}
+        #title-tooltip {{
+            display: none; position: fixed; z-index: 9999;
+            background: #2a1a4a; color: #f0e0ff;
+            border: 1px solid #7c4dcc; border-radius: 8px;
+            padding: 10px 14px; max-width: 360px;
+            font-size: 14px; font-weight: 600; line-height: 1.4;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+            pointer-events: none;
         }}
         .queue-modal {{
             display: none; position: fixed; top: 0; left: 0;
@@ -1032,6 +1045,10 @@ html = f'''<!DOCTYPE html>
     _tooltip.id = 'story-tooltip';
     document.body.appendChild(_tooltip);
 
+    const _titleTooltip = document.createElement('div');
+    _titleTooltip.id = 'title-tooltip';
+    document.body.appendChild(_titleTooltip);
+
     async function showStory(eye) {{
         const nr = eye.getAttribute('data-nr');
         if (!_storyCache[nr]) {{
@@ -1057,6 +1074,27 @@ html = f'''<!DOCTYPE html>
         if (y + _tooltip.offsetHeight > window.innerHeight) y = e.clientY - _tooltip.offsetHeight - gap;
         _tooltip.style.left = x + 'px';
         _tooltip.style.top  = y + 'px';
+    }}
+
+    function showTitle(eye) {{
+        _titleTooltip.textContent = eye.getAttribute('data-title');
+        _titleTooltip.style.display = 'block';
+        document.addEventListener('mousemove', _moveTitleTooltip);
+    }}
+
+    function hideTitle() {{
+        _titleTooltip.style.display = 'none';
+        document.removeEventListener('mousemove', _moveTitleTooltip);
+    }}
+
+    function _moveTitleTooltip(e) {{
+        const gap = 14;
+        let x = e.clientX + gap;
+        let y = e.clientY + gap;
+        if (x + 380 > window.innerWidth) x = e.clientX - 380 - gap;
+        if (y + _titleTooltip.offsetHeight > window.innerHeight) y = e.clientY - _titleTooltip.offsetHeight - gap;
+        _titleTooltip.style.left = x + 'px';
+        _titleTooltip.style.top  = y + 'px';
     }}
 
     async function togglePost(btn) {{
