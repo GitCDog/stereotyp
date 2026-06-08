@@ -23,7 +23,9 @@ from pathlib import Path
 
 import requests
 
+import re
 import input_reader as ir
+from generate_gpt_prompt_titled import TITLES, find_story_file
 
 EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data")
 INPUT_FILE        = "1_input/1_input_file.txt"
@@ -55,7 +57,26 @@ def nr_str(nr: str) -> str:
     return f"{int(nr):04d}"
 
 
-def load_prompt(nr: str) -> str | None:
+def build_prompt(nr: str, stereotyp: str) -> str | None:
+    nr_int = int(nr)
+    title = TITLES.get(nr_int, stereotyp)
+    story_file = find_story_file(nr)
+    if not story_file:
+        return None
+    text = re.sub(r"\s+", " ", story_file.read_text(encoding="utf-8").strip())
+    return (
+        f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
+        f'und nehme nicht so viel text in das bild rein, '
+        f'Titel "{title}". Story: "{text}"'
+    )
+
+
+def load_prompt(nr: str, stereotyp: str = "") -> str | None:
+    # Primär: direkt aus TITLES + Story-Text bauen (immer aktuell)
+    prompt = build_prompt(nr, stereotyp)
+    if prompt:
+        return prompt
+    # Fallback: gpt_prompts.txt
     if not PROMPTS_FILE.exists():
         return None
     nr_int = int(nr)
@@ -250,9 +271,9 @@ def process_story(page, nr: str, logger) -> bool:
         logger.info(f"[O] #{nr} hat bereits ein Bild – überspringe")
         return True
 
-    prompt = load_prompt(nr)
+    prompt = load_prompt(nr, stereo)
     if not prompt:
-        logger.error(f"[-] Kein Prompt für #{nr} in gpt_prompts.txt")
+        logger.error(f"[-] Kein Prompt für #{nr} (Story-Datei fehlt)")
         return False
 
     stereo = row.get("stereotyp", "")
