@@ -35,7 +35,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 34,Der Feierabendbier-Verteidiger,X,X,51,X,X,X,,
 35,Der Wiesn-Tourist,X,X,53,X,X,X,,
 36,Der Sparkassen-Anleger,X,X,49,X,X,X,,
-37,Die Kehrwoche-Aufsicht,X,X,52,X,X,X,,X
+37,Die Kehrwoche-Aufsicht,X,X,52,X,X,X,X,X
 38,Der passiv-aggressive Treppenhaus-Zettel,X,X,58,X,X,X,,
 39,Das „Mahlzeit“-Rufen im Büroflur,X,X,53,X,X,X,,
 40,Die Angst vor „Durchzug“,X,X,49,X,X,X,,
