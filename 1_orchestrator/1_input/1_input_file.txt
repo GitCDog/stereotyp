@@ -59,7 +59,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 58,Die Fensterputz-Eskalation,X,X,53,X,X,X,,
 59,Der Vereinsausflug,X,X,51,X,X,X,,
 60,Die Handtuch-Mafia,X,X,53,X,X,X,,
-61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,,X,,
+61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,X,,
 62,Der „Wir fahren über Nacht“-Urlauber,X,X,48,,,X,,
 63,Der Behörden-Marathon,X,X,52,,,X,,
 64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,,,X,,
