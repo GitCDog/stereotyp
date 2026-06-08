@@ -271,12 +271,11 @@ def process_story(page, nr: str, logger) -> bool:
         logger.info(f"[O] #{nr} hat bereits ein Bild – überspringe")
         return True
 
+    stereo = row.get("stereotyp", "")
     prompt = load_prompt(nr, stereo)
     if not prompt:
         logger.error(f"[-] Kein Prompt für #{nr} (Story-Datei fehlt)")
         return False
-
-    stereo = row.get("stereotyp", "")
     out_path = OUTPUT_DIR / f"{nr_str(nr)}_pic.png"
 
     logger.info(f"")
