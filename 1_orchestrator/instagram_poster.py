@@ -522,9 +522,10 @@ class InstagramPoster:
             logger.info("[+] Heute bereits gepostet – überspringe.")
             return False
 
-        # Posting-Fenster abwarten (Schedule-Run; bei manuellem Dispatch mit STORY_NR sofort posten)
+        # Posting-Fenster abwarten (Schedule-Run; bei manuellem Dispatch sofort posten)
         story_nr = os.getenv("STORY_NR", "").strip() or None
-        if not self.dry_run and not story_nr:
+        force_post = os.getenv("FORCE_POST", "").strip()
+        if not self.dry_run and not story_nr and not force_post:
             self._wait_for_posting_window()
 
         rows = self.read_input_csv()
