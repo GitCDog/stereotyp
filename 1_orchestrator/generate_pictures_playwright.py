@@ -72,19 +72,7 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
 
 
 def load_prompt(nr: str, stereotyp: str = "") -> str | None:
-    # Primär: direkt aus TITLES + Story-Text bauen (immer aktuell)
-    prompt = build_prompt(nr, stereotyp)
-    if prompt:
-        return prompt
-    # Fallback: gpt_prompts.txt
-    if not PROMPTS_FILE.exists():
-        return None
-    nr_int = int(nr)
-    for line in PROMPTS_FILE.read_text(encoding="utf-8").split("\n"):
-        line = line.strip()
-        if line.startswith(f"{nr_int}. ") or line.startswith(f"{nr_int:04d}. "):
-            return line
-    return None
+    return build_prompt(nr, stereotyp)
 
 
 def dismiss_popups(page):

@@ -417,7 +417,7 @@ def create_story():
 
             set_task("running", "GPT-Prompt aktualisieren...", 88, log=list(log))
             onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
-            run_script(["generate_gpt_prompt.py", "--no-pic", "--out", onedrive_out])
+            run_script(["generate_gpt_prompt_titled.py"])
             log.append(f"📝 GPT-Prompt aktualisiert")
 
             log.append(f"📷 Bild muss noch manuell erstellt werden (GPT)")
@@ -650,7 +650,7 @@ def refresh():
 
             set_task("running", "GPT-Prompts für fehlende Bilder schreiben...", 80, log=list(log))
             onedrive_out = r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt"
-            run_script(["generate_gpt_prompt.py", "--no-pic", "--out", onedrive_out])
+            run_script(["generate_gpt_prompt_titled.py"])
             log.append("📝 GPT Prompts aktualisiert")
 
             set_task("running", "Dashboard aktualisieren...", 90, log=list(log))
