@@ -969,9 +969,10 @@ def sofort_posten():
             log.append("✅ Caption fertig")
             set_task("running", f"Bild #{new_nr}: OpenAI...", 30, log=list(log))
 
-            # 5. Bild generieren (OpenAI API)
-            log.append("⏳ Bild via OpenAI gpt-image-1 generieren...")
-            run_script(["generate_pictures.py", new_nr])
+            # 5. Bild generieren (Playwright / ChatGPT)
+            log.append("⏳ Bild via Playwright (ChatGPT) generieren...")
+            set_task("running", f"Bild #{new_nr}: Playwright...", 30, log=list(log))
+            run_script(["generate_pictures_playwright.py", "--story", new_nr])
             pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
             if pic_path.exists():
                 log.append("✅ Bild erstellt")
