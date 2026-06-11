@@ -596,10 +596,23 @@ def instagram_post():
     if _task["status"] == "running":
         return jsonify({"error": "Task läuft bereits"}), 409
 
+    body = request.get_json(silent=True) or {}
+    story_val = str(body.get("story", "")).strip()
+
     def task():
         try:
             set_task("running", "Instagram Post...", 20)
-            run_script(["instagram_poster.py"])
+            env = os.environ.copy()
+            env["FORCE_POST"] = "1"
+            if story_val:
+                env["STORY_NR"] = story_val
+            proc = subprocess.Popen(
+                [sys.executable, "instagram_poster.py"],
+                cwd=Path(__file__).parent,
+                env=env,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            proc.wait()
             set_task("running", "Dashboard aktualisieren...", 95)
             refresh_dashboard()
             set_task("complete", "Fertig!", 100)
