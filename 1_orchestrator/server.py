@@ -974,10 +974,11 @@ def sofort_posten():
             set_task("running", f"Bild #{new_nr}: Playwright...", 30, log=list(log))
             run_script(["generate_pictures_playwright.py", "--story", new_nr])
             pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
-            if pic_path.exists():
-                log.append("✅ Bild erstellt")
-            else:
-                log.append("⚠️ Bild wurde nicht erstellt – Pipeline wird fortgesetzt")
+            if not pic_path.exists():
+                log.append("❌ Bild wurde nicht erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
+                set_task("error", f"#{new_nr}: Kein Bild erstellt – ChatGPT-Limit erreicht?", 0, log=list(log))
+                return
+            log.append("✅ Bild erstellt")
             set_task("running", f"Audio #{new_nr}: ElevenLabs...", 50, log=list(log))
 
             # 6. Audio generieren
