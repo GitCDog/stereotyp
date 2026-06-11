@@ -22,16 +22,16 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 21,Der Mallorca-Kegelclub,X,X,52,X,X,X,,
 22,Sandalen mit Socken,X,X,53,X,X,X,,
 23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,X,,
-24,Der Handtuch-Reservierer,X,X,47,,,X,,
-25,Der Berliner Techno-Hipster,X,X,49,,,X,,
-26,Der „Vanlife“-Aussteiger,X,X,48,,,X,,
+24,Der Handtuch-Reservierer,X,X,47,X,,X,,
+25,Der Berliner Techno-Hipster,X,X,49,X,,X,,
+26,Der „Vanlife“-Aussteiger,X,X,48,X,,X,,
 27,Der Elektroauto-Missionar,X,X,52,X,X,X,X,X
 28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,X,X,X
 29,Der Blockwart-Nachbar,X,X,48,X,X,X,,
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,X,,
 31,Der DB-Wutbürger,X,X,47,X,X,X,,
 32,Der Grillmeister,X,X,54,X,X,X,,
-33,Die Bio-Mami,X,X,58,,,X,,
+33,Die Bio-Mami,X,X,58,X,,X,,
 34,Der Feierabendbier-Verteidiger,X,X,51,X,X,X,,
 35,Der Wiesn-Tourist,X,X,53,X,X,X,,
 36,Der Sparkassen-Anleger,X,X,49,X,X,X,,
@@ -101,7 +101,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 100,Der „Eigentlich bin ich ja ganz anders“-Selbstbetrüger,X,X,56,,,X,,
 101,Talahon,X,X,51,X,X,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,X,,
-103,Bali Yoga Retreat,X,X,50,,,X,,
+103,Bali Yoga Retreat,X,X,50,X,X,X,,
 104,Vibe Coder,X,X,47,,,X,,
 105,Chaya in Frankfurt,X,X,52,X,X,X,X,X
 106,Betriebsrat,X,X,53,,,X,,
