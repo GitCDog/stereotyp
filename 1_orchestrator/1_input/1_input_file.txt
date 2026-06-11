@@ -31,7 +31,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,X,,
 31,Der DB-Wutbürger,X,X,47,X,X,X,,
 32,Der Grillmeister,X,X,54,X,X,X,,
-33,Die Bio-Mami,X,X,55,X,,X,,
+33,Die Bio-Mami,X,X,55,X,X,X,,
 34,Der Feierabendbier-Verteidiger,X,X,51,X,X,X,,
 35,Der Wiesn-Tourist,X,X,53,X,X,X,,
 36,Der Sparkassen-Anleger,X,X,49,X,X,X,,
