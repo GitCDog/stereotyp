@@ -18,13 +18,13 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 17,Das Auto als Heiligtum,X,X,51,X,X,X,,
 18,Mülltrennung als Extremsport,X,X,50,X,X,X,,
 19,"Kein Bargeld, keine Chance",X,X,X,,,X,,
-20,Die Vereinsmeierei,X,X,57,X,X,X,X,
+20,Die Vereinsmeierei,X,X,57,X,X,X,X,X
 21,Der Mallorca-Kegelclub,X,X,52,X,X,X,,
-22,Sandalen mit Socken,X,X,53,X,X,X,X,
+22,Sandalen mit Socken,X,X,53,X,X,X,X,X
 23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,X,,
-24,Der Handtuch-Reservierer,X,X,47,X,X,X,,
-25,Der Berliner Techno-Hipster,X,X,48,X,X,X,,
-26,Der „Vanlife“-Aussteiger,X,X,49,X,X,X,,
+24,Der Handtuch-Reservierer,X,X,47,X,,X,,
+25,Der Berliner Techno-Hipster,X,X,48,X,,X,,
+26,Der „Vanlife”-Aussteiger,X,X,49,X,,X,,
 27,Der Elektroauto-Missionar,X,X,52,X,X,X,X,X
 28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,X,X,X
 29,Der Blockwart-Nachbar,X,X,48,X,X,X,,
@@ -101,7 +101,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 100,Der „Eigentlich bin ich ja ganz anders“-Selbstbetrüger,X,X,56,,,X,,
 101,Talahon,X,X,51,X,X,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,X,,
-103,Bali Yoga Retreat,X,X,50,X,X,X,,
+103,Bali Yoga Retreat,X,X,50,X,,X,,
 104,Vibe Coder,X,X,47,,,X,,
 105,Chaya in Frankfurt,X,X,52,X,X,X,X,X
 106,Betriebsrat,X,X,53,,,X,,
@@ -192,11 +192,11 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 191,Gymnasium,X,X,50,X,X,X,,
 192,Waldorfschule,X,X,47,X,X,X,,
 193,Privatschule,X,X,46,X,X,X,,
-194,Gesamtschule,X,X,50,X,X,X,,
-195,Sonderschule,X,X,51,X,X,X,,
-196,Berufsschule,X,X,50,X,X,X,,
-197,Home Office,X,X,52,X,X,X,X,
-198,Schwarzarbeit,X,X,47,X,X,X,,
+194,Gesamtschule,X,X,50,X,,X,,
+195,Sonderschule,X,X,51,X,,X,,
+196,Berufsschule,X,X,50,X,,X,,
+197,Home Office,X,X,52,X,,X,X,
+198,Schwarzarbeit,X,X,47,,,X,,
 199,Baustelle,X,X,48,X,X,X,,
 200,Tankstelle,X,X,51,X,X,X,,
 201,Boxautomat,X,X,52,X,X,X,,
@@ -287,7 +287,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 286,Heizkosten,X,X,47,,,X,,
 287,Spritpreise,X,X,52,,,X,,
 288,Deutsche Bahn,X,X,47,X,X,X,,
-289,Ja ja,X,X,46,X,X,X,X,
+289,Ja ja,X,X,46,X,X,X,X,X
 290,Weihnachtsmarktpreise,X,X,44,,,X,,
 291,Stadtbilddebatte,X,X,49,X,X,X,,
 292,DSDS-Fan,X,X,58,X,X,X,X,X

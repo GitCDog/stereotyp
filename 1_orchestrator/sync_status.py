@@ -244,8 +244,13 @@ def sync():
         # Bild – auch in 0_used suchen
         pic_path = OUTPUT_DIR / f"{ns}_pic.png"
         pic_used = USED_DIR / f"{ns}_pic.png"
-        if (pic_path.exists() or pic_used.exists()) and row.get("status_pic") != "X":
+        pic_exists = pic_path.exists() or pic_used.exists()
+        if pic_exists and row.get("status_pic") != "X":
             ir.update_field(nr_val, "status_pic", "X", INPUT_FILE)
+            changes += 1
+        elif not pic_exists and row.get("status_pic") == "X" and row.get("status_video") != "X":
+            ir.update_field(nr_val, "status_pic", "", INPUT_FILE)
+            print(f"[!] status_pic zurückgesetzt für #{nr_val} (kein Bild gefunden)")
             changes += 1
 
         # Video – auch in 0_used suchen; Status korrigieren wenn Datei fehlt

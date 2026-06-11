@@ -614,9 +614,11 @@ class InstagramPoster:
                 else:
                     ir.update_field(nr, "youtube_post", "X", self.config["output"]["input_file"])
             except Exception as e:
-                logger.warning(f"[!] YouTube Upload fehlgeschlagen (Instagram-Post läuft weiter): {e}")
+                import traceback
+                logger.error(f"[!] YouTube Upload fehlgeschlagen: {e}")
+                logger.error(traceback.format_exc())
         else:
-            logger.info("[*] YouTube-Credentials nicht gesetzt – überspringe YouTube")
+            logger.warning("[!] YouTube-Credentials nicht gesetzt – YouTube wird übersprungen")
 
         # Instagram Post
         post_id = self.post_reel(video_url, caption)

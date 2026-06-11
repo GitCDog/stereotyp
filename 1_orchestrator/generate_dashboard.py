@@ -68,6 +68,10 @@ def block(status):
         return '<span class="blk blk-green"></span>'
     return '<span class="blk blk-yellow"></span>'
 
+def status_td(status):
+    cls = "status-cell cell-done" if status == "X" else "status-cell"
+    return f'<td class="{cls}">{block(status)}</td>'
+
 
 rows_html = ""
 for row in data:
@@ -95,13 +99,13 @@ for row in data:
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
                     <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
-                    <td class="status-cell">{block(row.get('status_story',''))}</td>
-                    <td class="status-cell">{block(row.get('status_caption',''))}</td>
-                    <td class="status-cell">{block(row.get('status_audio',''))}</td>
+                    {status_td(row.get('status_story',''))}
+                    {status_td(row.get('status_caption',''))}
+                    {status_td(row.get('status_audio',''))}
                     <td class="center">{sec}</td>
-                    <td class="status-cell">{block(row.get('status_pic',''))}</td>
-                    <td class="status-cell">{block(row.get('status_video',''))}</td>
-                    <td class="status-cell">{block(yt)}</td>
+                    {status_td(row.get('status_pic',''))}
+                    {status_td(row.get('status_video',''))}
+                    {status_td(yt)}
                     <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
                         <button class="queue-btn" data-nr="{nr}" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
@@ -277,10 +281,8 @@ html = f'''<!DOCTYPE html>
         tr.row-posted {{ background: #1a4d2e; color: #c8f5d8; }}
         tr.row-posted:hover {{ background: #245c38; }}
         tr.row-posted td {{ color: #c8f5d8; }}
-        tr.row-ready {{ background: #d4f5e2; }}
-        tr.row-ready:hover {{ background: #baefd1; }}
-        tr.row-incomplete {{ background: #fff8d6; }}
-        tr.row-incomplete:hover {{ background: #fff0a0; }}
+        td.cell-done {{ background: #d4f5e2; }}
+        tr.row-posted td.cell-done {{ background: transparent; }}
         .pie-section {{
             display: flex;
             align-items: center;
@@ -521,7 +523,7 @@ html = f'''<!DOCTYPE html>
             <button class="action-btn" id="audioPicBtn" onclick="runDirect('audio-pic')">🎵 generate_audio (alle Pics)</button>
             <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 generate_videos</button>
             <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 generate_pictures_playwright</button>
-            <button class="action-btn" id="postBtn"     onclick="runDirect('post')">📤 instagram_poster</button>
+            <button class="action-btn" id="postBtn"     onclick="showInput('post')">📤 instagram_poster</button>
         </div>
 
         <div class="pie-section">
@@ -705,7 +707,7 @@ html = f'''<!DOCTYPE html>
         'playwright': {{ btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 generate_pictures_playwright' }},
         'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           }},
-        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster'                      }},
+        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster',  inputHint: 'Story-Nummer(n) z.B. 20 oder 20,22 (leer = nächste aus Reihenfolge):' }},
     }};
 
     let _pendingAction = null;
@@ -722,7 +724,7 @@ html = f'''<!DOCTYPE html>
         }}
         _pendingAction = type;
         document.getElementById('actionLabel').textContent =
-            ACTIONS[type].label + ' – Nummer oder Bereich (leer = alle ausstehenden):';
+            ACTIONS[type].inputHint || (ACTIONS[type].label + ' – Nummer oder Bereich (leer = alle ausstehenden):');
         document.getElementById('actionInput').value = '';
         div.style.display = 'block';
         document.getElementById('actionInput').focus();

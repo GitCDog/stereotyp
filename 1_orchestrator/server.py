@@ -601,25 +601,50 @@ def instagram_post():
 
     def task():
         try:
-            set_task("running", "Instagram Post...", 20)
-            env = os.environ.copy()
-            env["FORCE_POST"] = "1"
-            if story_val:
-                env["STORY_NR"] = story_val
-            proc = subprocess.Popen(
-                [sys.executable, "instagram_poster.py"],
-                cwd=Path(__file__).parent,
-                env=env,
-                creationflags=subprocess.CREATE_NO_WINDOW,
-            )
-            proc.wait()
-            set_task("running", "Dashboard aktualisieren...", 95)
+            numbers = parse_range(story_val) if story_val else [None]
+            total = len(numbers)
+            set_task("running", f"0/{total} Posts fertig", 5, log=[])
+
+            for i, nr in enumerate(numbers):
+                pct = int((i / total) * 88) + 5
+                label = f"#{nr}" if nr else "nächste Story"
+                append_log(f"{'─'*50}")
+                append_log(f"▶ Poste {label} ({i+1}/{total})")
+                set_task("running", f"{i}/{total} fertig – poste {label}...", pct)
+
+                env = os.environ.copy()
+                env["FORCE_POST"] = "1"
+                if nr:
+                    env["STORY_NR"] = nr
+                elif "STORY_NR" in env:
+                    del env["STORY_NR"]
+
+                proc = subprocess.Popen(
+                    [sys.executable, "instagram_poster.py"],
+                    cwd=Path(__file__).parent,
+                    env=env,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    creationflags=subprocess.CREATE_NO_WINDOW,
+                )
+                for line in proc.stdout:
+                    line = line.rstrip()
+                    if line:
+                        append_log(line)
+                proc.wait()
+                if proc.returncode != 0:
+                    append_log(f"⚠️ Fehlercode {proc.returncode} bei {label}")
+
+            set_task("running", "Dashboard aktualisieren...", 97)
             refresh_dashboard()
-            set_task("complete", "Fertig!", 100)
+            set_task("complete", f"Fertig! {total} Post(s).", 100)
         except Exception as e:
             set_task("error", str(e), 0)
 
-    set_task("running", "Starte...", 5)
+    set_task("running", "Starte...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
 
