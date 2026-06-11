@@ -48,6 +48,8 @@
         .action-btn.running { opacity: 0.65; cursor: not-allowed; }
         .action-btn.disabled { background: #888; color: #ccc; cursor: not-allowed; }
         .action-btn.disabled:hover { background: #888; transform: none; }
+        .action-btn.btn-sofort { background: #d97706; }
+        .action-btn.btn-sofort:hover { background: #b45309; transform: scale(1.04); }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -408,6 +410,7 @@
             <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 generate_videos</button>
             <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 generate_pictures_playwright</button>
             <button class="action-btn" id="postBtn"     onclick="showInput('post')">📤 instagram_poster</button>
+            <button class="action-btn btn-sofort" id="sofortBtn" onclick="runDirect('sofort')">⚡ Sofort posten</button>
         </div>
 
         <div class="pie-section">
@@ -415,11 +418,11 @@
             <div class="pie-legend">
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#1a4d2e"></span>
-                    Gepostet: 46
+                    Gepostet: 51
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#22c55e"></span>
-                    Bereit zum Posten: 80
+                    Bereit zum Posten: 75
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#fbbf24"></span>
@@ -435,7 +438,7 @@
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">300</div></div>
             <div class="stat-box"><h3>Bild ✓</h3><div class="val">132</div></div>
             <div class="stat-box"><h3>Video ✓</h3><div class="val">126</div></div>
-            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">46</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">51</div></div>
         </div>
 
         <div class="progress-section">
@@ -477,21 +480,20 @@
         <div class="reihenfolge-card">
             <h3>
                 <span>📋 Posting-Reihenfolge</span>
-                <span id="rqCount" style="font-size:11px;color:#888;font-weight:400;">12 Stories</span>
+                <span id="rqCount" style="font-size:11px;color:#888;font-weight:400;">11 Stories</span>
             </h3>
             <table class="reihenfolge-table" id="reihenfolgeTable">
-                <tr><td class="rq-pos">1</td><td class="rq-nr">#26</td><td class="rq-name">Der „Vanlife”-Aussteiger</td></tr>
-<tr><td class="rq-pos">2</td><td class="rq-nr">#0186</td><td class="rq-name">AFD</td></tr>
-<tr><td class="rq-pos">3</td><td class="rq-nr">#18</td><td class="rq-name">Mülltrennung als Extremsport</td></tr>
-<tr><td class="rq-pos">4</td><td class="rq-nr">#21</td><td class="rq-name">Der Mallorca-Kegelclub</td></tr>
-<tr><td class="rq-pos">5</td><td class="rq-nr">#39</td><td class="rq-name">Das „Mahlzeit“-Rufen im Büroflur</td></tr>
-<tr><td class="rq-pos">6</td><td class="rq-nr">#36</td><td class="rq-name">Der Sparkassen-Anleger</td></tr>
-<tr><td class="rq-pos">7</td><td class="rq-nr">#295</td><td class="rq-name">Basic Bee</td></tr>
-<tr><td class="rq-pos">8</td><td class="rq-nr">#138</td><td class="rq-name">Wer zahlt beim Tinder Date</td></tr>
-<tr><td class="rq-pos">9</td><td class="rq-nr">#121</td><td class="rq-name">Gendern</td></tr>
-<tr><td class="rq-pos">10</td><td class="rq-nr">#79</td><td class="rq-name">Der „Früher war mehr Lametta“-Nostalgiker</td></tr>
-<tr><td class="rq-pos">11</td><td class="rq-nr">#81</td><td class="rq-name">Der Schnitzel-Größen-Check</td></tr>
-<tr><td class="rq-pos">12</td><td class="rq-nr">#49</td><td class="rq-name">Der Fahrradweg-Sheriff</td></tr>
+                <tr><td class="rq-pos">1</td><td class="rq-nr">#0186</td><td class="rq-name">AFD</td></tr>
+<tr><td class="rq-pos">2</td><td class="rq-nr">#18</td><td class="rq-name">Mülltrennung als Extremsport</td></tr>
+<tr><td class="rq-pos">3</td><td class="rq-nr">#21</td><td class="rq-name">Der Mallorca-Kegelclub</td></tr>
+<tr><td class="rq-pos">4</td><td class="rq-nr">#39</td><td class="rq-name">Das „Mahlzeit“-Rufen im Büroflur</td></tr>
+<tr><td class="rq-pos">5</td><td class="rq-nr">#36</td><td class="rq-name">Der Sparkassen-Anleger</td></tr>
+<tr><td class="rq-pos">6</td><td class="rq-nr">#295</td><td class="rq-name">Basic Bee</td></tr>
+<tr><td class="rq-pos">7</td><td class="rq-nr">#138</td><td class="rq-name">Wer zahlt beim Tinder Date</td></tr>
+<tr><td class="rq-pos">8</td><td class="rq-nr">#121</td><td class="rq-name">Gendern</td></tr>
+<tr><td class="rq-pos">9</td><td class="rq-nr">#79</td><td class="rq-name">Der „Früher war mehr Lametta“-Nostalgiker</td></tr>
+<tr><td class="rq-pos">10</td><td class="rq-nr">#81</td><td class="rq-name">Der Schnitzel-Größen-Check</td></tr>
+<tr><td class="rq-pos">11</td><td class="rq-nr">#49</td><td class="rq-name">Der Fahrradweg-Sheriff</td></tr>
 
             </table>
         </div>
@@ -799,7 +801,7 @@
                     </td>
                     <td class="center rq-col" data-nr="15"></td>
                 </tr>
-                <tr class="row-ready">
+                <tr class="row-posted">
                     <td class="num">16</td>
                     <td class="name">Direktheit <span class="eye-btn" data-nr="16" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="Zu direkt für dein zartes Ego?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -808,9 +810,9 @@
                     <td class="center">52</td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="16" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="16" onclick="togglePost(this)" >✓ Gepostet</button>
                         <button class="queue-btn" data-nr="16" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="16"></td>
@@ -845,7 +847,7 @@
                         <button class="insta-btn " data-nr="18" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="18" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="18"><span class="rq-badge">3</span></td>
+                    <td class="center rq-col" data-nr="18"><span class="rq-badge">2</span></td>
                 </tr>
                 <tr class="row-incomplete">
                     <td class="num">19</td>
@@ -863,7 +865,7 @@
                     </td>
                     <td class="center rq-col" data-nr="19"></td>
                 </tr>
-                <tr class="row-ready">
+                <tr class="row-posted">
                     <td class="num">20</td>
                     <td class="name">Die Vereinsmeierei <span class="eye-btn" data-nr="20" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="Ohne Verein kein Leben – wirklich?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -874,7 +876,7 @@
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="20" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="20" onclick="togglePost(this)" >✓ Gepostet</button>
                         <button class="queue-btn" data-nr="20" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="20"></td>
@@ -893,9 +895,9 @@
                         <button class="insta-btn " data-nr="21" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="21" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="21"><span class="rq-badge">4</span></td>
+                    <td class="center rq-col" data-nr="21"><span class="rq-badge">3</span></td>
                 </tr>
-                <tr class="row-ready">
+                <tr class="row-posted">
                     <td class="num">22</td>
                     <td class="name">Sandalen mit Socken <span class="eye-btn" data-nr="22" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="Sandalen mit Socken – schön oder nicht?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -906,7 +908,7 @@
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="22" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="22" onclick="togglePost(this)" >✓ Gepostet</button>
                         <button class="queue-btn" data-nr="22" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="22"></td>
@@ -973,7 +975,7 @@
                         <button class="insta-btn " data-nr="26" onclick="togglePost(this)" disabled>Post</button>
                         <button class="queue-btn" data-nr="26" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="26"><span class="rq-badge">1</span></td>
+                    <td class="center rq-col" data-nr="26"></td>
                 </tr>
                 <tr class="row-posted">
                     <td class="num">27</td>
@@ -1133,7 +1135,7 @@
                         <button class="insta-btn " data-nr="36" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="36" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="36"><span class="rq-badge">6</span></td>
+                    <td class="center rq-col" data-nr="36"><span class="rq-badge">5</span></td>
                 </tr>
                 <tr class="row-posted">
                     <td class="num">37</td>
@@ -1181,7 +1183,7 @@
                         <button class="insta-btn " data-nr="39" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="39" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="39"><span class="rq-badge">5</span></td>
+                    <td class="center rq-col" data-nr="39"><span class="rq-badge">4</span></td>
                 </tr>
                 <tr class="row-ready">
                     <td class="num">40</td>
@@ -1341,7 +1343,7 @@
                         <button class="insta-btn " data-nr="49" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="49" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="49"><span class="rq-badge">12</span></td>
+                    <td class="center rq-col" data-nr="49"><span class="rq-badge">11</span></td>
                 </tr>
                 <tr class="row-ready">
                     <td class="num">50</td>
@@ -1821,7 +1823,7 @@
                         <button class="insta-btn " data-nr="79" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="79" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="79"><span class="rq-badge">10</span></td>
+                    <td class="center rq-col" data-nr="79"><span class="rq-badge">9</span></td>
                 </tr>
                 <tr class="row-ready">
                     <td class="num">80</td>
@@ -1853,7 +1855,7 @@
                         <button class="insta-btn " data-nr="81" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="81" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="81"><span class="rq-badge">11</span></td>
+                    <td class="center rq-col" data-nr="81"><span class="rq-badge">10</span></td>
                 </tr>
                 <tr class="row-incomplete">
                     <td class="num">82</td>
@@ -2493,7 +2495,7 @@
                         <button class="insta-btn " data-nr="121" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="121" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="121"><span class="rq-badge">9</span></td>
+                    <td class="center rq-col" data-nr="121"><span class="rq-badge">8</span></td>
                 </tr>
                 <tr class="row-posted">
                     <td class="num">122</td>
@@ -2765,7 +2767,7 @@
                         <button class="insta-btn " data-nr="138" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="138" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="138"><span class="rq-badge">8</span></td>
+                    <td class="center rq-col" data-nr="138"><span class="rq-badge">7</span></td>
                 </tr>
                 <tr class="row-incomplete">
                     <td class="num">139</td>
@@ -3533,7 +3535,7 @@
                         <button class="insta-btn " data-nr="186" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="186" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="186"><span class="rq-badge">2</span></td>
+                    <td class="center rq-col" data-nr="186"><span class="rq-badge">1</span></td>
                 </tr>
                 <tr class="row-posted">
                     <td class="num">187</td>
@@ -3695,7 +3697,7 @@
                     </td>
                     <td class="center rq-col" data-nr="196"></td>
                 </tr>
-                <tr class="row-incomplete">
+                <tr class="row-posted">
                     <td class="num">197</td>
                     <td class="name">Home Office <span class="eye-btn" data-nr="197" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="Home Office – Segen oder Fluch?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -3706,7 +3708,7 @@
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="197" onclick="togglePost(this)" disabled>Post</button>
+                        <button class="insta-btn active" data-nr="197" onclick="togglePost(this)" disabled>✓ Gepostet</button>
                         <button class="queue-btn" data-nr="197" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="197"></td>
@@ -5167,7 +5169,7 @@
                     </td>
                     <td class="center rq-col" data-nr="288"></td>
                 </tr>
-                <tr class="row-ready">
+                <tr class="row-posted">
                     <td class="num">289</td>
                     <td class="name">Ja ja <span class="eye-btn" data-nr="289" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="'Ja ja' – Zustimmung oder Ablehnung?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -5178,7 +5180,7 @@
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="289" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="289" onclick="togglePost(this)" >✓ Gepostet</button>
                         <button class="queue-btn" data-nr="289" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
                     <td class="center rq-col" data-nr="289"></td>
@@ -5277,7 +5279,7 @@
                         <button class="insta-btn " data-nr="295" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="295" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                     </td>
-                    <td class="center rq-col" data-nr="295"><span class="rq-badge">7</span></td>
+                    <td class="center rq-col" data-nr="295"><span class="rq-badge">6</span></td>
                 </tr>
                 <tr class="row-ready">
                     <td class="num">296</td>
@@ -5371,8 +5373,8 @@
         if (!canvas) return;
         var ctx = canvas.getContext('2d');
         var data = [
-            { v: 46,     c: '#1a4d2e' },
-            { v: 80,      c: '#22c55e' },
+            { v: 51,     c: '#1a4d2e' },
+            { v: 75,      c: '#22c55e' },
             { v: 174, c: '#fbbf24' }
         ];
         var total = data.reduce(function(s, d) { return s + d.v; }, 0);
@@ -5404,6 +5406,7 @@
         'audio-pic': { btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      },
         'video':   { btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           },
         'post':    { btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster',  inputHint: 'Story-Nummer(n) z.B. 20 oder 20,22 (leer = nächste aus Reihenfolge):' },
+        'sofort':  { btn: 'sofortBtn', api: '/api/sofort-posten',        label: '⚡ Sofort posten' },
     };
 
     let _pendingAction = null;

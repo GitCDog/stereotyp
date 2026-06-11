@@ -856,6 +856,188 @@ def unmark_posted():
     return jsonify({"status": "ok"})
 
 
+# ── Sofort posten (Vollautomatisch aus story_jetzt.xlsx) ─────────────────────
+
+STORY_JETZT_XLSX = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\story_jetzt.xlsx")
+
+
+@app.route("/api/sofort-posten", methods=["POST"])
+def sofort_posten():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    def task():
+        try:
+            import openpyxl
+            import input_reader as ir
+            import traceback
+
+            if not STORY_JETZT_XLSX.exists():
+                set_task("error", f"Datei nicht gefunden: {STORY_JETZT_XLSX}", 0)
+                return
+
+            wb = openpyxl.load_workbook(str(STORY_JETZT_XLSX))
+            ws = wb.active
+            headers = [cell.value for cell in ws[1]]
+
+            def col(name):
+                return headers.index(name) + 1 if name in headers else None
+
+            stereotyp_col = col("stereotyp")
+            stichworte_col = col("stichworte")
+            status_col = col("status")
+
+            if stereotyp_col is None or status_col is None:
+                set_task("error", "story_jetzt.xlsx: Spalten 'stereotyp' und 'status' fehlen", 0)
+                return
+
+            pending_row_idx = None
+            for i, row in enumerate(ws.iter_rows(min_row=2, values_only=False), start=2):
+                if not row[status_col - 1].value:
+                    pending_row_idx = i
+                    break
+
+            if pending_row_idx is None:
+                set_task("complete", "Keine ausstehenden Einträge in story_jetzt.xlsx", 100,
+                         log=["✅ story_jetzt.xlsx: Alle Einträge erledigt"])
+                return
+
+            stereotyp = (ws.cell(pending_row_idx, stereotyp_col).value or "").strip()
+            stichworte = (ws.cell(pending_row_idx, stichworte_col).value or "").strip() if stichworte_col else ""
+
+            if not stereotyp:
+                set_task("error", f"Zeile {pending_row_idx}: Stereotyp ist leer", 0)
+                return
+
+            log = [f"📋 Stereotyp: {stereotyp}"]
+            if stichworte:
+                log.append(f"🔑 Stichworte: {stichworte}")
+            set_task("running", f"Pipeline für '{stereotyp}'...", 5, log=log)
+
+            # 1. In CSV eintragen
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+            with open(input_file, encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+
+            existing = next((r for r in rows if r.get("stereotyp", "").strip().lower() == stereotyp.lower()), None)
+            if existing:
+                new_nr = existing["nr"].strip()
+                log.append(f"ℹ️ #{new_nr} existiert bereits in CSV")
+            else:
+                max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
+                new_nr = str(max_nr + 1)
+                fieldnames = list(rows[0].keys())
+                new_row = {k: "" for k in fieldnames}
+                new_row["nr"] = new_nr
+                new_row["stereotyp"] = stereotyp
+                with open(input_file, "a", encoding="utf-8", newline="") as f:
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writerow(new_row)
+                log.append(f"📋 #{new_nr} '{stereotyp}' in CSV eingetragen")
+            set_task("running", f"Story #{new_nr} via Claude...", 10, log=list(log))
+
+            # 2. Story generieren
+            log.append("⏳ Story via Claude generieren...")
+            args = ["generate_stories.py", "--story", new_nr]
+            if stichworte:
+                args += ["--stichworte", stichworte]
+            run_script(args)
+            log.append("✅ Story-Text gespeichert")
+            set_task("running", f"Titel für #{new_nr}...", 18, log=list(log))
+
+            # 3. Titel generieren
+            try:
+                story_file = next(
+                    (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
+                     if p.name not in {"00_sammelsurium.txt", "gpt_prompts.txt"}),
+                    None
+                )
+                story_text_content = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
+                title = generate_title(stereotyp, story_text_content)
+                save_title_to_dict(int(new_nr), title)
+                log.append(f"🏷 Titel: \"{title}\"")
+            except Exception as e:
+                log.append(f"⚠️ Titel fehlgeschlagen: {e}")
+            set_task("running", f"Caption #{new_nr}...", 24, log=list(log))
+
+            # 4. Caption generieren
+            log.append("⏳ Caption generieren...")
+            caption_args = ["generate_captions.py", "--story", new_nr]
+            if stichworte:
+                caption_args += ["--stichworte", stichworte]
+            run_script(caption_args)
+            log.append("✅ Caption fertig")
+            set_task("running", f"Bild #{new_nr}: OpenAI...", 30, log=list(log))
+
+            # 5. Bild generieren (OpenAI API)
+            log.append("⏳ Bild via OpenAI gpt-image-1 generieren...")
+            run_script(["generate_pictures.py", new_nr])
+            pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
+            if pic_path.exists():
+                log.append("✅ Bild erstellt")
+            else:
+                log.append("⚠️ Bild wurde nicht erstellt – Pipeline wird fortgesetzt")
+            set_task("running", f"Audio #{new_nr}: ElevenLabs...", 50, log=list(log))
+
+            # 6. Audio generieren
+            log.append("⏳ Audio via ElevenLabs generieren...")
+            run_script(["generate_audio.py", "--story", new_nr])
+            log.append("✅ Audio fertig")
+            set_task("running", f"Video #{new_nr}: ffmpeg + Untertitel...", 62, log=list(log))
+
+            # 7. Video rendern
+            log.append("⏳ Video rendern (ffmpeg + Untertitel)...")
+            run_script(["generate_videos.py", "--story", new_nr, "--subtitles"])
+            log.append("✅ Video gerendert")
+            set_task("running", f"Poste #{new_nr} auf Instagram + YouTube...", 82, log=list(log))
+
+            # 8. Instagram + YouTube posten
+            log.append("─" * 40)
+            log.append(f"▶ Poste #{new_nr} auf Instagram + YouTube")
+            env = os.environ.copy()
+            env["FORCE_POST"] = "1"
+            env["STORY_NR"] = new_nr
+
+            proc = subprocess.Popen(
+                [sys.executable, "instagram_poster.py"],
+                cwd=Path(__file__).parent,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            for line in proc.stdout:
+                line = line.rstrip()
+                if line:
+                    log.append(line)
+            proc.wait()
+
+            if proc.returncode == 0:
+                log.append(f"✅ #{new_nr} gepostet!")
+                try:
+                    ws.cell(pending_row_idx, status_col).value = "X"
+                    wb.save(str(STORY_JETZT_XLSX))
+                    log.append("✅ story_jetzt.xlsx: Status=X gesetzt")
+                except Exception as e:
+                    log.append(f"⚠️ xlsx aktualisieren fehlgeschlagen: {e}")
+            else:
+                log.append(f"⚠️ Fehlercode {proc.returncode} beim Posten")
+
+            set_task("running", "Dashboard aktualisieren...", 97, log=list(log))
+            refresh_dashboard()
+            set_task("complete", f"#{new_nr} '{stereotyp}' vollständig gepostet!", 100, log=list(log))
+        except Exception as e:
+            import traceback
+            set_task("error", f"{e}\n{traceback.format_exc()}", 0)
+
+    set_task("running", "Starte Sofort-Posten...", 3, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
 if __name__ == "__main__":
     print("[+] Dashboard: http://localhost:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)

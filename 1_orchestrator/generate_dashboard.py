@@ -164,6 +164,8 @@ html = f'''<!DOCTYPE html>
         .action-btn.running {{ opacity: 0.65; cursor: not-allowed; }}
         .action-btn.disabled {{ background: #888; color: #ccc; cursor: not-allowed; }}
         .action-btn.disabled:hover {{ background: #888; transform: none; }}
+        .action-btn.btn-sofort {{ background: #d97706; }}
+        .action-btn.btn-sofort:hover {{ background: #b45309; transform: scale(1.04); }}
         .stats {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -524,6 +526,7 @@ html = f'''<!DOCTYPE html>
             <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 generate_videos</button>
             <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 generate_pictures_playwright</button>
             <button class="action-btn" id="postBtn"     onclick="showInput('post')">📤 instagram_poster</button>
+            <button class="action-btn btn-sofort" id="sofortBtn" onclick="runDirect('sofort')">⚡ Sofort posten</button>
         </div>
 
         <div class="pie-section">
@@ -708,6 +711,7 @@ html = f'''<!DOCTYPE html>
         'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           }},
         'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster',  inputHint: 'Story-Nummer(n) z.B. 20 oder 20,22 (leer = nächste aus Reihenfolge):' }},
+        'sofort':  {{ btn: 'sofortBtn', api: '/api/sofort-posten',        label: '⚡ Sofort posten' }},
     }};
 
     let _pendingAction = null;
