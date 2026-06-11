@@ -14,7 +14,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 13,Spargelzeit,X,X,56,X,X,X,X,X
 14,Abendbrot,X,X,53,X,X,X,X,X
 15,Die Ampel-Disziplin,X,X,52,X,X,X,X,X
-16,Direktheit,X,X,52,X,X,X,,X
+16,Direktheit,X,X,52,X,X,X,X,X
 17,Das Auto als Heiligtum,X,X,51,X,X,X,,
 18,Mülltrennung als Extremsport,X,X,50,X,X,X,,
 19,"Kein Bargeld, keine Chance",X,X,X,,,X,,
