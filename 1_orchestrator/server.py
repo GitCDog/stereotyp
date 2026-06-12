@@ -909,10 +909,11 @@ def sofort_posten():
                 set_task("error", f"Zeile {pending_row_idx}: Stereotyp ist leer", 0)
                 return
 
-            log = [f"📋 Stereotyp: {stereotyp}"]
-            if stichworte:
-                log.append(f"🔑 Stichworte: {stichworte}")
-            set_task("running", f"Pipeline für '{stereotyp}'...", 5, log=log)
+            set_task("running", f"Starte Pipeline für: {stereotyp}", 5, log=[
+                f"📋 Stereotyp: {stereotyp}",
+                *([ f"🔑 Stichworte: {stichworte}"] if stichworte else []),
+                "─" * 40,
+            ])
 
             # 1. In CSV eintragen
             input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
@@ -922,7 +923,7 @@ def sofort_posten():
             existing = next((r for r in rows if r.get("stereotyp", "").strip().lower() == stereotyp.lower()), None)
             if existing:
                 new_nr = existing["nr"].strip()
-                log.append(f"ℹ️ #{new_nr} existiert bereits in CSV")
+                append_log(f"ℹ️  [1/8] CSV: #{new_nr} bereits vorhanden")
             else:
                 max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
                 new_nr = str(max_nr + 1)
@@ -933,19 +934,20 @@ def sofort_posten():
                 with open(input_file, "a", encoding="utf-8", newline="") as f:
                     writer = csv.DictWriter(f, fieldnames=fieldnames)
                     writer.writerow(new_row)
-                log.append(f"📋 #{new_nr} '{stereotyp}' in CSV eingetragen")
-            set_task("running", f"Story #{new_nr} via Claude...", 10, log=list(log))
+                append_log(f"✅ [1/8] CSV: #{new_nr} eingetragen")
 
             # 2. Story generieren
-            log.append("⏳ Story via Claude generieren...")
+            set_task("running", f"[2/8] Story #{new_nr} via Claude...", 12)
+            append_log(f"⏳ [2/8] Story via Claude generieren...")
             args = ["generate_stories.py", "--story", new_nr]
             if stichworte:
                 args += ["--stichworte", stichworte]
             run_script(args)
-            log.append("✅ Story-Text gespeichert")
-            set_task("running", f"Titel für #{new_nr}...", 18, log=list(log))
+            append_log(f"✅ [2/8] Story-Text gespeichert")
 
             # 3. Titel generieren
+            set_task("running", f"[3/8] Titel für #{new_nr}...", 20)
+            append_log(f"⏳ [3/8] Provokanten Titel generieren...")
             try:
                 story_file = next(
                     (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
@@ -955,47 +957,46 @@ def sofort_posten():
                 story_text_content = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
                 title = generate_title(stereotyp, story_text_content)
                 save_title_to_dict(int(new_nr), title)
-                log.append(f"🏷 Titel: \"{title}\"")
+                append_log(f"✅ [3/8] Titel: \"{title}\"")
             except Exception as e:
-                log.append(f"⚠️ Titel fehlgeschlagen: {e}")
-            set_task("running", f"Caption #{new_nr}...", 24, log=list(log))
+                append_log(f"⚠️  [3/8] Titel fehlgeschlagen: {e}")
 
             # 4. Caption generieren
-            log.append("⏳ Caption generieren...")
+            set_task("running", f"[4/8] Caption #{new_nr}...", 27)
+            append_log(f"⏳ [4/8] Caption via Claude generieren...")
             caption_args = ["generate_captions.py", "--story", new_nr]
             if stichworte:
                 caption_args += ["--stichworte", stichworte]
             run_script(caption_args)
-            log.append("✅ Caption fertig")
-            set_task("running", f"Bild #{new_nr}: OpenAI...", 30, log=list(log))
+            append_log(f"✅ [4/8] Caption fertig")
 
             # 5. Bild generieren (Playwright / ChatGPT)
-            log.append("⏳ Bild via Playwright (ChatGPT) generieren...")
-            set_task("running", f"Bild #{new_nr}: Playwright...", 30, log=list(log))
+            set_task("running", f"[5/8] Bild #{new_nr} via Playwright – kann Minuten dauern...", 35)
+            append_log(f"⏳ [5/8] Bild via Playwright (ChatGPT) generieren...")
             run_script(["generate_pictures_playwright.py", "--story", new_nr])
             pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
             if not pic_path.exists():
-                log.append("❌ Bild wurde nicht erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
-                set_task("error", f"#{new_nr}: Kein Bild erstellt – ChatGPT-Limit erreicht?", 0, log=list(log))
+                append_log("❌ [5/8] Kein Bild erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
+                set_task("error", f"#{new_nr}: Kein Bild – ChatGPT-Limit erreicht?", 0)
                 return
-            log.append("✅ Bild erstellt")
-            set_task("running", f"Audio #{new_nr}: ElevenLabs...", 50, log=list(log))
+            append_log(f"✅ [5/8] Bild erstellt")
 
             # 6. Audio generieren
-            log.append("⏳ Audio via ElevenLabs generieren...")
+            set_task("running", f"[6/8] Audio #{new_nr} via ElevenLabs...", 50)
+            append_log(f"⏳ [6/8] Audio via ElevenLabs generieren...")
             run_script(["generate_audio.py", "--story", new_nr])
-            log.append("✅ Audio fertig")
-            set_task("running", f"Video #{new_nr}: ffmpeg + Untertitel...", 62, log=list(log))
+            append_log(f"✅ [6/8] Audio fertig")
 
             # 7. Video rendern
-            log.append("⏳ Video rendern (ffmpeg + Untertitel)...")
+            set_task("running", f"[7/8] Video #{new_nr} rendern (ffmpeg + Untertitel)...", 63)
+            append_log(f"⏳ [7/8] Video rendern mit Karaoke-Untertiteln...")
             run_script(["generate_videos.py", "--story", new_nr, "--subtitles"])
-            log.append("✅ Video gerendert")
-            set_task("running", f"Poste #{new_nr} auf Instagram + YouTube...", 82, log=list(log))
+            append_log(f"✅ [7/8] Video gerendert")
 
             # 8. Instagram + YouTube posten
-            log.append("─" * 40)
-            log.append(f"▶ Poste #{new_nr} auf Instagram + YouTube")
+            set_task("running", f"[8/8] Poste #{new_nr} auf Instagram + YouTube...", 80)
+            append_log("─" * 40)
+            append_log(f"⏳ [8/8] Poste auf Instagram + YouTube...")
             env = os.environ.copy()
             env["FORCE_POST"] = "1"
             env["STORY_NR"] = new_nr
@@ -1014,23 +1015,23 @@ def sofort_posten():
             for line in proc.stdout:
                 line = line.rstrip()
                 if line:
-                    log.append(line)
+                    append_log(line)
             proc.wait()
 
             if proc.returncode == 0:
-                log.append(f"✅ #{new_nr} gepostet!")
+                append_log(f"✅ [8/8] #{new_nr} auf Instagram + YouTube gepostet!")
                 try:
                     ws.cell(pending_row_idx, status_col).value = "X"
                     wb.save(str(STORY_JETZT_XLSX))
-                    log.append("✅ story_jetzt.xlsx: Status=X gesetzt")
+                    append_log("✅ story_jetzt.xlsx: Status=X gesetzt")
                 except Exception as e:
-                    log.append(f"⚠️ xlsx aktualisieren fehlgeschlagen: {e}")
+                    append_log(f"⚠️  xlsx aktualisieren fehlgeschlagen: {e}")
             else:
-                log.append(f"⚠️ Fehlercode {proc.returncode} beim Posten")
+                append_log(f"⚠️  [8/8] Fehlercode {proc.returncode} beim Posten")
 
-            set_task("running", "Dashboard aktualisieren...", 97, log=list(log))
+            set_task("running", "Dashboard aktualisieren...", 97)
             refresh_dashboard()
-            set_task("complete", f"#{new_nr} '{stereotyp}' vollständig gepostet!", 100, log=list(log))
+            set_task("complete", f"#{new_nr} '{stereotyp}' vollständig gepostet!", 100)
         except Exception as e:
             import traceback
             set_task("error", f"{e}\n{traceback.format_exc()}", 0)
