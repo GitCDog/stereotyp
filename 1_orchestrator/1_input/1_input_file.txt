@@ -299,3 +299,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 298,Bürgergeld,X,X,63,X,X,X,X,X
 299,Die Linke,X,X,58,X,X,X,X,X
 300,Ferrari Luce,X,X,67,,X,X,X,X
+301,Eastpack-Rucksack,X,X,65,X,X,X,,
