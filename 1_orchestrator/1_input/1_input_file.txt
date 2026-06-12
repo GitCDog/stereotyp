@@ -300,3 +300,19 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 299,Die Linke,X,X,58,X,X,X,X,X
 300,Ferrari Luce,X,X,67,,X,X,X,X
 301,Eastpack-Rucksack,X,X,65,X,X,X,X,X
+302,Virtue Signaling,X,,,,,X,,
+303,Nagel Tips,X,,,,,X,,
+304,Dönerbude,X,,,,,X,,
+305,Döner mit alles und scharf,X,,,,,X,,
+306,Body Shaming,X,,,,,X,,
+307,Ja Schatz,X,,,,,X,,
+308,"Schatz, lass uns das analysieren",X,,,,,X,,
+309,Birkenstocks,X,,,,,X,,
+310,Barber Shop,X,,,,,X,,
+311,Dreads,X,,,,,X,,
+312,Waxing,X,,,,,X,,
+313,Sugaring,X,,,,,X,,
+314,Lasern,X,,,,,X,,
+315,Türkeireise,X,,,,,X,,
+316,Türkeireise inkl. Haartransplantation,X,,,,,X,,
+317,Socken und Boxer neben dem Bett,X,,,,,X,,

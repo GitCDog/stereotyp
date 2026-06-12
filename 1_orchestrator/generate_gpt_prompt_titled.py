@@ -317,6 +317,22 @@ TITLES = {
     295: "Basic Bee – peinlich oder ehrlich?",
     297: "Merz als Bundeskanzler – wirklich?",
     301: "Kennt ihr das – ohne Eastpak warst du in den 90ern nobody?",
+    302: "Wer rettet die Welt – oder nur sein Image?",
+    303: "Wachsen Frauen mit Nagel Tips wirklich über sich hinaus?",
+    304: "Warum ist die Dönerbude Deutschlands heiligste Institution?",
+    305: "Ist das wirklich das beste Essen nach Mitternacht?",
+    306: "Warum darf jeder deinen Körper kommentieren außer du?",
+    307: "Kennt ihr den echten Grund für „Ja Schatz" in Deutschland?",
+    308: "Kennst du den Satz, der jede Emotion sofort killt?",
+    309: "Warum trägt halb Deutschland dieselben hässlichen Sandalen?",
+    310: "Warum rasiert sich der Deutsche für 25€ im Barber Shop?",
+    311: "Dürfen Deutsche eigentlich Dreads tragen?",
+    312: "Warum zahlen Deutsche für absichtlichen Schmerz?",
+    313: "Warum reißen sich Deutsche freiwillig Haare mit Kuchenzutaten?",
+    314: "Bist du der Laser-Alman oder bleibst du beim Epilieren?",
+    315: "Warum bucht der Deutsche Urlaub nur um den Pool zu sichern?",
+    316: "Warum fliegen Deutsche zum Haare kleben nach Istanbul?",
+    317: "Wer kennt diesen Socken-Friedhof neben dem Bett?",
 }
 
 
