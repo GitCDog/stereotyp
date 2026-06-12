@@ -322,7 +322,7 @@ TITLES = {
     304: "Warum ist die Dönerbude Deutschlands heiligste Institution?",
     305: "Ist das wirklich das beste Essen nach Mitternacht?",
     306: "Warum darf jeder deinen Körper kommentieren außer du?",
-    307: "Kennt ihr den echten Grund für „Ja Schatz" in Deutschland?",
+    307: "Kennt ihr den echten Grund für 'Ja Schatz' in Deutschland?",
     308: "Kennst du den Satz, der jede Emotion sofort killt?",
     309: "Warum trägt halb Deutschland dieselben hässlichen Sandalen?",
     310: "Warum rasiert sich der Deutsche für 25€ im Barber Shop?",
