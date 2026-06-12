@@ -137,6 +137,36 @@ def run_script(args: list[str]) -> int:
     return proc.returncode
 
 
+def run_script_logged(args: list[str]) -> int:
+    """Wie run_script, aber stdout/stderr wird live per append_log weitergegeben."""
+    global _current_proc
+    if _abort_flag.is_set():
+        return -1
+    proc = subprocess.Popen(
+        [sys.executable] + args,
+        cwd=Path(__file__).parent,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        creationflags=subprocess.CREATE_NO_WINDOW,
+    )
+    with _proc_lock:
+        _current_proc = proc
+    try:
+        for line in proc.stdout:
+            line = line.rstrip()
+            if line:
+                append_log(line)
+        proc.wait()
+    finally:
+        with _proc_lock:
+            if _current_proc is proc:
+                _current_proc = None
+    return proc.returncode
+
+
 def refresh_dashboard():
     run_script(["sync_status.py"])
     run_script(["generate_dashboard.py"])
@@ -942,7 +972,7 @@ def sofort_posten():
             args = ["generate_stories.py", "--story", new_nr]
             if stichworte:
                 args += ["--stichworte", stichworte]
-            run_script(args)
+            run_script_logged(args)
             append_log(f"✅ [2/8] Story-Text gespeichert")
 
             # 3. Titel generieren
@@ -967,13 +997,13 @@ def sofort_posten():
             caption_args = ["generate_captions.py", "--story", new_nr]
             if stichworte:
                 caption_args += ["--stichworte", stichworte]
-            run_script(caption_args)
+            run_script_logged(caption_args)
             append_log(f"✅ [4/8] Caption fertig")
 
             # 5. Bild generieren (Playwright / ChatGPT)
             set_task("running", f"[5/8] Bild #{new_nr} via Playwright – kann Minuten dauern...", 35)
             append_log(f"⏳ [5/8] Bild via Playwright (ChatGPT) generieren...")
-            run_script(["generate_pictures_playwright.py", "--story", new_nr])
+            run_script_logged(["generate_pictures_playwright.py", "--story", new_nr])
             pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
             if not pic_path.exists():
                 append_log("❌ [5/8] Kein Bild erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
@@ -984,13 +1014,13 @@ def sofort_posten():
             # 6. Audio generieren
             set_task("running", f"[6/8] Audio #{new_nr} via ElevenLabs...", 50)
             append_log(f"⏳ [6/8] Audio via ElevenLabs generieren...")
-            run_script(["generate_audio.py", "--story", new_nr])
+            run_script_logged(["generate_audio.py", "--story", new_nr])
             append_log(f"✅ [6/8] Audio fertig")
 
             # 7. Video rendern
             set_task("running", f"[7/8] Video #{new_nr} rendern (ffmpeg + Untertitel)...", 63)
             append_log(f"⏳ [7/8] Video rendern mit Karaoke-Untertiteln...")
-            run_script(["generate_videos.py", "--story", new_nr, "--subtitles"])
+            run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles"])
             append_log(f"✅ [7/8] Video gerendert")
 
             # 8. Instagram + YouTube posten
