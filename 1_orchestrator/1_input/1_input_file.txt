@@ -111,7 +111,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 110,Katzenmami,X,X,53,X,X,X,X,X
 111,Mops,X,X,55,X,X,X,,
 112,Klimaaktivist,X,X,55,X,X,X,,
-113,DSGVO,X,X,47,X,,X,,
+113,DSGVO,X,X,47,X,X,X,,
 114,Pattaya Urlaub,X,X,50,X,,X,,
 115,Bierleiche,X,X,53,,,X,,
 116,Pilates,X,X,51,,,X,,
