@@ -19,7 +19,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 18,Mülltrennung als Extremsport,X,X,50,X,X,X,X,
 19,"Kein Bargeld, keine Chance",X,X,X,,,X,,
 20,Die Vereinsmeierei,X,X,57,X,X,X,X,X
-21,Der Mallorca-Kegelclub,X,X,52,X,X,X,,
+21,Der Mallorca-Kegelclub,X,X,52,X,X,X,X,
 22,Sandalen mit Socken,X,X,53,X,X,X,X,X
 23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,X,,
 24,Der Handtuch-Reservierer,X,X,47,X,X,X,,
