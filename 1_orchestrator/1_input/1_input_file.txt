@@ -136,7 +136,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 135,Tinder Girl,X,X,50,,,X,,
 136,Tinder Guy,X,X,51,,,X,,
 137,Tinder Date sieht anders aus,X,X,49,,,X,,
-138,Wer zahlt beim Tinder Date,X,X,48,X,X,X,,
+138,Wer zahlt beim Tinder Date,X,X,48,X,X,X,X,
 139,GNTM Fan,X,X,48,,,X,,
 140,Gym Girl,X,X,51,,,X,,
 141,Gym Guy,X,X,49,,,X,,
