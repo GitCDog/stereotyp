@@ -119,7 +119,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 118,Longevity Trend,X,X,49,X,X,X,X,X
 119,Verschwörungstheoretiker,X,X,52,,,X,,
 120,Bitcoin Maxi,X,X,53,,,X,,
-121,Gendern,X,X,55,X,X,X,,
+121,Gendern,X,X,55,X,X,X,X,
 122,Das Arschgeweih,X,X,57,X,X,X,X,X
 123,Das Augenbrauenpiercing,X,X,57,,,X,,
 124,Chaya sagt mach kein Auge,X,X,51,,,X,,
