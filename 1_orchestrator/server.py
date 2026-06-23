@@ -908,17 +908,17 @@ def reset_video():
         mp4.unlink()
         msgs.append(f"🗑 {mp4.name} gelöscht")
 
-    # Audio zurück nach output/
+    # Audio zurück nach output/ (bleibt erhalten, status_audio=X bleibt)
     for mp3 in used_dir.glob(f"{nr_str}*.mp3"):
         dst = output_dir / mp3.name
-        shutil.move(str(mp3), str(dst))
-        msgs.append(f"↩ {mp3.name} → output/")
+        if not dst.exists():
+            shutil.move(str(mp3), str(dst))
+        msgs.append(f"Audio zurueck: {mp3.name}")
 
-    # Bild zurück nach output/
-    for pic in used_dir.glob(f"{nr_str}_pic.*"):
-        dst = output_dir / pic.name
-        shutil.move(str(pic), str(dst))
-        msgs.append(f"↩ {pic.name} → output/")
+    # Bild löschen (muss neu bereitgestellt werden – verhindert sync_status=X mit falschem Bild)
+    for pic in list(output_dir.glob(f"{nr_str}_pic.*")) + list(used_dir.glob(f"{nr_str}_pic.*")):
+        pic.unlink()
+        msgs.append(f"Bild geloescht: {pic.name}")
 
     # CSV zurücksetzen
     f = "1_input/1_input_file.txt"
