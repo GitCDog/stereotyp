@@ -915,10 +915,12 @@ def reset_video():
             shutil.move(str(mp3), str(dst))
         msgs.append(f"Audio zurueck: {mp3.name}")
 
-    # Bild löschen (muss neu bereitgestellt werden – verhindert sync_status=X mit falschem Bild)
-    for pic in list(output_dir.glob(f"{nr_str}_pic.*")) + list(used_dir.glob(f"{nr_str}_pic.*")):
-        pic.unlink()
-        msgs.append(f"Bild geloescht: {pic.name}")
+    # Bild zurück nach output/ (NIEMALS löschen)
+    for pic in used_dir.glob(f"{nr_str}_pic.*"):
+        dst = output_dir / pic.name
+        if not dst.exists():
+            shutil.move(str(pic), str(dst))
+        msgs.append(f"Bild zurueck: {pic.name}")
 
     # CSV zurücksetzen
     f = "1_input/1_input_file.txt"

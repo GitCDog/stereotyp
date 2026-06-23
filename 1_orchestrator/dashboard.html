@@ -424,15 +424,15 @@
             <div class="pie-legend">
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#1a4d2e"></span>
-                    Gepostet: 63
+                    Gepostet: 62
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#22c55e"></span>
-                    Bereit zum Posten: 79
+                    Bereit zum Posten: 81
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#fbbf24"></span>
-                    Unvollständig: 175
+                    Unvollständig: 174
                 </div>
             </div>
         </div>
@@ -443,8 +443,8 @@
             <div class="stat-box"><h3>Caption ✓</h3><div class="val">317</div></div>
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">317</div></div>
             <div class="stat-box"><h3>Bild ✓</h3><div class="val">141</div></div>
-            <div class="stat-box"><h3>Video ✓</h3><div class="val">142</div></div>
-            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">63</div></div>
+            <div class="stat-box"><h3>Video ✓</h3><div class="val">143</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">62</div></div>
         </div>
 
         <div class="progress-section">
@@ -3891,7 +3891,7 @@
                     </td>
                     <td class="center rq-col" data-nr="196"></td>
                 </tr>
-                <tr class="row-posted">
+                <tr class="row-ready">
                     <td class="num">197</td>
                     <td class="name">Home Office <span class="eye-btn" data-nr="197" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="Home Office – Segen oder Fluch?" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -3899,10 +3899,10 @@
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center">52</td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn active" data-nr="197" onclick="togglePost(this)" disabled>✓ Gepostet</button>
+                        <button class="insta-btn " data-nr="197" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="197" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                         <button class="reset-btn" data-nr="197" onclick="resetVideo(this)" title="Video zurücksetzen (neu generieren)">🔄</button>
                     </td>
@@ -4512,7 +4512,7 @@
                     <td class="center">45</td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
-                    <td class="status-cell"><span class="blk blk-yellow"></span></td>
+                    <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
                     <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn " data-nr="233" onclick="togglePost(this)" >Post</button>
                         <button class="queue-btn" data-nr="233" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
@@ -5960,9 +5960,9 @@
         if (!canvas) return;
         var ctx = canvas.getContext('2d');
         var data = [
-            { v: 63,     c: '#1a4d2e' },
-            { v: 79,      c: '#22c55e' },
-            { v: 175, c: '#fbbf24' }
+            { v: 62,     c: '#1a4d2e' },
+            { v: 81,      c: '#22c55e' },
+            { v: 174, c: '#fbbf24' }
         ];
         var total = data.reduce(function(s, d) { return s + d.v; }, 0);
         if (total === 0) return;
