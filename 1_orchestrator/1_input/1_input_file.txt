@@ -231,7 +231,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 230,Smart Home,X,X,43,X,X,X,,
 231,rasierte Arme,X,X,51,X,X,X,,
 232,Augenkontakt beim Anstoßen,X,X,50,X,X,X,,
-233,Sitzfussballer,X,X,45,X,X,X,,
+233,Sitzfussballer,X,X,45,X,X,X,X,
 234,deutsche Küche,X,X,49,X,X,X,,
 235,Negerkuss,X,X,49,,,X,,
 236,Faxgerät,X,X,45,,,X,,
