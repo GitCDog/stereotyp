@@ -155,7 +155,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,X,X,X
 155,20 Kaffee am Tag,X,X,50,X,X,X,,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,X,X,X,,
-157,Veganes Steak,X,X,55,X,,X,,
+157,Veganes Steak,X,X,55,X,X,X,,
 158,Papierstrohhalm,X,X,49,X,,X,,
 159,Pornosüchtiger,X,X,51,X,X,X,,
 160,Unfallgaffer,X,X,50,X,X,X,X,X
