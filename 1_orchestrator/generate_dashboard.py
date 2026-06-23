@@ -109,6 +109,7 @@ for row in data:
                     <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
                         <button class="queue-btn" data-nr="{nr}" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
+                        <button class="reset-btn" data-nr="{nr}" onclick="resetVideo(this)" title="Video zurücksetzen (neu generieren)">🔄</button>
                     </td>
                     <td class="center rq-col" data-nr="{nr}">{f'<span class="rq-badge">{rq_pos}</span>' if rq_pos else ''}</td>
                 </tr>
@@ -369,6 +370,12 @@ html = f'''<!DOCTYPE html>
             padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px;
             font-size: 13px; width: 100%;
         }}
+        .reset-btn {{
+            padding: 2px 6px; font-size: 13px; cursor: pointer;
+            border: 1px solid #ccc; border-radius: 4px; background: #fff;
+            margin-left: 2px;
+        }}
+        .reset-btn:hover {{ background: #fff3cd; border-color: #ffc107; }}
         .queue-btn {{
             background: #f0f0f0; border: 1px solid #ddd; padding: 3px 8px;
             border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;
@@ -1152,6 +1159,32 @@ html = f'''<!DOCTYPE html>
         }} catch(e) {{
             btn.textContent = 'Fehler';
             setTimeout(() => {{ btn.textContent = 'Post'; btn.disabled = false; }}, 2000);
+        }}
+    }}
+
+    async function resetVideo(btn) {{
+        const nr = btn.getAttribute('data-nr');
+        if (!confirm(`Story #${{nr}} zurücksetzen?\\nMP4 wird gelöscht, Audio/Bild zurück nach output/, Status zurückgesetzt.`)) return;
+        btn.disabled = true;
+        btn.textContent = '⏳';
+        try {{
+            const resp = await fetch('/api/reset-video', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{nr}})
+            }});
+            const data = await resp.json();
+            if (resp.ok) {{
+                btn.textContent = '✅';
+                setTimeout(() => {{ btn.textContent = '🔄'; btn.disabled = false; }}, 2000);
+                (data.messages || []).forEach(m => console.log(m));
+            }} else {{
+                btn.textContent = '❌';
+                setTimeout(() => {{ btn.textContent = '🔄'; btn.disabled = false; }}, 2000);
+            }}
+        }} catch(e) {{
+            btn.textContent = '❌';
+            setTimeout(() => {{ btn.textContent = '🔄'; btn.disabled = false; }}, 2000);
         }}
     }}
 </script>

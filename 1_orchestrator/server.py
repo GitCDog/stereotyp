@@ -886,6 +886,50 @@ def unmark_posted():
     return jsonify({"status": "ok"})
 
 
+@app.route("/api/reset-video", methods=["POST"])
+def reset_video():
+    """Setzt eine Story zurück damit das Video neu generiert werden kann.
+    Löscht MP4, verschiebt Audio+Bild zurück nach output/, resettet Status-Felder."""
+    body = request.get_json(silent=True) or {}
+    nr = body.get("nr")
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+
+    import input_reader as ir
+    import shutil
+
+    nr_str = f"{int(str(nr).strip()):04d}"
+    output_dir = Path("output")
+    used_dir = Path("output/0_used")
+    msgs = []
+
+    # MP4 löschen
+    for mp4 in list(output_dir.glob(f"{nr_str}*.mp4")) + list(used_dir.glob(f"{nr_str}*.mp4")):
+        mp4.unlink()
+        msgs.append(f"🗑 {mp4.name} gelöscht")
+
+    # Audio zurück nach output/
+    for mp3 in used_dir.glob(f"{nr_str}*.mp3"):
+        dst = output_dir / mp3.name
+        shutil.move(str(mp3), str(dst))
+        msgs.append(f"↩ {mp3.name} → output/")
+
+    # Bild zurück nach output/
+    for pic in used_dir.glob(f"{nr_str}_pic.*"):
+        dst = output_dir / pic.name
+        shutil.move(str(pic), str(dst))
+        msgs.append(f"↩ {pic.name} → output/")
+
+    # CSV zurücksetzen
+    f = "1_input/1_input_file.txt"
+    for field in ("status_pic", "status_video", "insta_post", "youtube_post"):
+        ir.update_field(str(nr), field, "", f)
+    msgs.append("✅ status_pic, status_video, insta_post, youtube_post zurückgesetzt")
+
+    refresh_dashboard()
+    return jsonify({"status": "ok", "messages": msgs})
+
+
 # ── Sofort posten (Vollautomatisch aus story_jetzt.xlsx) ─────────────────────
 
 STORY_JETZT_XLSX = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\story_jetzt.xlsx")
