@@ -334,6 +334,7 @@ TITLES = {
     316: "Warum fliegen Deutsche zum Haare kleben nach Istanbul?",
     317: "Wer kennt diesen Socken-Friedhof neben dem Bett?",
     318: "Darf der ZDF einfach lügen?",
+    319: "Warum heißt jeder fitte Deutsche Christiano Ronaldo?",
 }
 
 

@@ -87,7 +87,7 @@ def generate_story(stereotyp: str, stichworte: list[str] | None = None) -> str:
         capture_output=True,
         text=True,
         encoding="utf-8",
-        timeout=120,
+        timeout=300,
     )
     if result.returncode != 0:
         raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip()}")

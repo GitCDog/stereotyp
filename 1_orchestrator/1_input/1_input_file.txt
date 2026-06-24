@@ -317,3 +317,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 316,Türkeireise inkl. Haartransplantation,X,X,42,,,X,,
 317,Socken und Boxer neben dem Bett,X,X,44,,,X,,
 318,"Elon verklagt ZDF, zurecht!",X,X,58,X,X,X,X,X
+319,Christiano Ronaldo,X,,,,,X,,
