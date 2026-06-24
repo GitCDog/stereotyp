@@ -333,6 +333,7 @@ TITLES = {
     315: "Warum bucht der Deutsche Urlaub nur um den Pool zu sichern?",
     316: "Warum fliegen Deutsche zum Haare kleben nach Istanbul?",
     317: "Wer kennt diesen Socken-Friedhof neben dem Bett?",
+    318: "Darf der ZDF einfach lügen?",
 }
 
 
