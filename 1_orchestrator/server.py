@@ -1069,6 +1069,18 @@ def sofort_posten():
             run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles"])
             append_log(f"✅ [7/8] Video gerendert")
 
+            # Git sync: sicherstellen dass CSV-Push vor dem Post erfolgreich war
+            try:
+                repo_root = str(Path(__file__).parent.parent)
+                no_win = subprocess.CREATE_NO_WINDOW
+                subprocess.run(["git", "pull", "--rebase"], cwd=repo_root,
+                               capture_output=True, creationflags=no_win, timeout=30)
+                subprocess.run(["git", "push"], cwd=repo_root,
+                               capture_output=True, creationflags=no_win, timeout=30)
+                append_log("✅ CSV-Push synchronisiert")
+            except Exception as e:
+                append_log(f"⚠️  Git-Sync fehlgeschlagen (wird trotzdem gepostet): {e}")
+
             # 8. Instagram + YouTube posten
             set_task("running", f"[8/8] Poste #{new_nr} auf Instagram + YouTube...", 80)
             append_log("─" * 40)
