@@ -1106,7 +1106,12 @@ def sofort_posten():
                     append_log(line)
             proc.wait()
 
-            if proc.returncode == 0:
+            # Prüfe ob Post tatsächlich erfolgreich war (auch wenn returncode != 0)
+            import input_reader as ir
+            posted_row = ir.find_row(new_nr, "1_input/1_input_file.txt")
+            post_success = posted_row and posted_row.get("insta_post", "").strip() == "X"
+
+            if post_success:
                 append_log(f"✅ [8/8] #{new_nr} auf Instagram + YouTube gepostet!")
                 try:
                     ws.cell(pending_row_idx, status_col).value = "X"
@@ -1115,7 +1120,7 @@ def sofort_posten():
                 except Exception as e:
                     append_log(f"⚠️  xlsx aktualisieren fehlgeschlagen: {e}")
             else:
-                append_log(f"⚠️  [8/8] Fehlercode {proc.returncode} beim Posten")
+                append_log(f"⚠️  [8/8] Posten fehlgeschlagen (insta_post nicht gesetzt)")
 
             set_task("running", "Dashboard aktualisieren...", 97)
             refresh_dashboard()
