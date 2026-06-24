@@ -961,6 +961,7 @@ def sofort_posten():
 
             stereotyp_col = col("stereotyp")
             stichworte_col = col("stichworte")
+            titel_col = col("Titel")
             status_col = col("status")
 
             if stereotyp_col is None or status_col is None:
@@ -980,6 +981,7 @@ def sofort_posten():
 
             stereotyp = (ws.cell(pending_row_idx, stereotyp_col).value or "").strip()
             stichworte = (ws.cell(pending_row_idx, stichworte_col).value or "").strip() if stichworte_col else ""
+            xlsx_titel = (ws.cell(pending_row_idx, titel_col).value or "").strip() if titel_col else ""
 
             if not stereotyp:
                 set_task("error", f"Zeile {pending_row_idx}: Stereotyp ist leer", 0)
@@ -1021,19 +1023,27 @@ def sofort_posten():
             run_script_logged(args)
             append_log(f"✅ [2/8] Story-Text gespeichert")
 
-            # 3. Titel generieren
+            # 3. Titel – Excel-Titel hat Vorrang, dann TITLES-Dict, sonst neu generieren
             set_task("running", f"[3/8] Titel für #{new_nr}...", 20)
             append_log(f"⏳ [3/8] Provokanten Titel generieren...")
             try:
-                story_file = next(
-                    (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
-                     if p.name not in {"00_sammelsurium.txt", "gpt_prompts.txt"}),
-                    None
-                )
-                story_text_content = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
-                title = generate_title(stereotyp, story_text_content)
-                save_title_to_dict(int(new_nr), title)
-                append_log(f"✅ [3/8] Titel: \"{title}\"")
+                from generate_gpt_prompt_titled import TITLES as _titles
+                if xlsx_titel:
+                    # Titel aus Excel übernehmen
+                    save_title_to_dict(int(new_nr), xlsx_titel)
+                    append_log(f"✅ [3/8] Titel aus Excel: \"{xlsx_titel}\"")
+                elif int(new_nr) in _titles:
+                    append_log(f"✅ [3/8] Titel bereits vorhanden: \"{_titles[int(new_nr)]}\"")
+                else:
+                    story_file = next(
+                        (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
+                         if p.name not in {"00_sammelsurium.txt", "gpt_prompts.txt"}),
+                        None
+                    )
+                    story_text_content = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
+                    title = generate_title(stereotyp, story_text_content)
+                    save_title_to_dict(int(new_nr), title)
+                    append_log(f"✅ [3/8] Titel generiert: \"{title}\"")
             except Exception as e:
                 append_log(f"⚠️  [3/8] Titel fehlgeschlagen: {e}")
 
