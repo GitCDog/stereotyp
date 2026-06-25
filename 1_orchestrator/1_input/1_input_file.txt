@@ -197,7 +197,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 196,Berufsschule,X,X,50,X,X,X,,
 197,Home Office,X,X,52,X,X,X,,
 198,Schwarzarbeit,X,X,47,,,X,,
-199,Baustelle,X,X,48,X,X,X,,
+199,Baustelle,X,X,48,X,X,X,,X
 200,Tankstelle,X,X,51,X,X,X,,
 201,Boxautomat,X,X,52,X,X,X,X,X
 202,Autoscooter,X,X,48,,,X,,
