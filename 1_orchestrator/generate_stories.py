@@ -10,6 +10,7 @@ Verwendung:
 """
 
 import os
+import re
 import sys
 import argparse
 import logging
@@ -23,10 +24,11 @@ import input_reader as ir
 
 load_dotenv()
 
-SYSTEM_PROMPT = """Handle als humoristischer Kulturanthropologe mit einem scharfen Auge \
-für deutsche Eigenheiten und moderne Internet-Phänomene. Dein Ziel: Stereotype so \
-präzise und übertrieben beschreiben, dass Deutsche entweder laut lachen oder stumm \
-nicken müssen. Zieh die Leute durch den Kakao – aber mit Liebe."""
+SYSTEM_PROMPT = """Handle als gnadenloser Satiriker mit einem rasiermesserscharfen Blick \
+für deutsche Eigenheiten, politische Absurditaeten und moderne Internet-Phaenomene. \
+Dein Ziel: Stereotype und Personen so praezise demontieren, dass Deutsche entweder \
+laut lachen oder beschaemt schweigen muessen. Zieh die Leute durch den Kakao – \
+bei echten Personen ohne Handschuhe. Kein Meta-Kommentar nach dem Text."""
 
 STORY_PROMPT_TEMPLATE = """Erstelle eine humorvolle, potenziell virale Story zum deutschen Stereotyp: "{stereotyp}"
 
@@ -34,17 +36,17 @@ Die Story soll exakt diese Struktur haben (130-140 Woerter gesamt):
 
 Starte mit: "Aufgepasst - " (genau so, mit Bindestrich und Leerzeichen danach).
 
-1. Der Aufreisser: Ein kurzer, provokanter Satz, der das Klischee in eine konkrete Alltagssituation einbettet.
+1. Der Aufreisser: Ein kurzer, provokanter Satz, der das Klischee in eine konkrete Alltagssituation einbettet. Bei echten Personen (Politiker, Celebrities): direkt und scharf – kein Schutz, kein Verstaendnis, nur Demontage.
 
-2. Der Mythos: Beschreibe das Verhalten so, als waere es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik (2-3 Saetze).
+2. Der Mythos: Beschreibe das Verhalten so, als waere es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik (2-3 Saetze). Bei Personen: uebertreibe ihre bekanntesten Eigenheiten ins Absurde.
 
-3. Die deutsche Logik: Erklaere in 2-3 Bulletpoints (mit *) die voellig uebertriebene, aber irgendwie nachvollziehbare Rechtfertigung hinter diesem Verhalten.
+3. Die deutsche Logik: Erklaere in 2-3 Bulletpoints (mit •) die voellig uebertriebene, aber irgendwie nachvollziehbare Rechtfertigung hinter diesem Verhalten.
 
-4. Der soziale Endgegner: Beschreibe in 1-2 Saetzen die Reaktion der Gesellschaft auf jemanden, der diese ungeschriebene Regel bricht.
+4. Der soziale Endgegner: Beschreibe in 1-2 Saetzen die Reaktion der Gesellschaft – oder den Schaden den diese Person/dieses Verhalten anrichtet.
 
-5. Der virale Twist: Beende mit einem kurzen Pro-Tipp oder einem trockenen Vergleich (1 Satz).
+5. Der virale Twist: Beende mit einem trockenen, vernichtenden Vergleich oder einem Satz der haengen bleibt (1 Satz).
 
-Tonalitaet: Trocken, leicht sarkastisch, beobachtend - aber nie bösartig. Kein Emoji. Kein Hashtag. Nur reiner Text.
+Tonalitaet: Scharf, sarkastisch, gnadenlos – wie ein Comedian der kein Blatt vor den Mund nimmt. Bei echten Personen darf es eine richtige Abrechnung sein: verbitterte Hexen, selbsternannte Retter, Vollidioten mit Mikrofon – alles erlaubt. Kein Emoji. Kein Hashtag. Nur reiner Text. Keine Meta-Kommentare oder Erklaerungen nach dem Text (kein "--- X Woerter" o.ae.).
 Falls du am Ende eine abschliessende Floskel verwendest, nutze "Tja," statt "Ah ja,".{stichworte_block}"""
 
 
@@ -108,12 +110,18 @@ def add_paragraph_break(text: str) -> str:
     return text[:insert_at] + '\n\n' + text[insert_at + 1:]
 
 
+def _strip_meta_comments(text: str) -> str:
+    """Entfernt alles ab dem ersten --- (Claude-interne Kommentare nach dem Story-Text)."""
+    return re.split(r'\n\s*---+', text)[0].strip()
+
+
 def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1_input"):
     safe = ir.safe_name(stereotyp)
     nr_str = f"{int(nr):04d}"
     txt_path = Path(stories_dir) / f"{nr_str}_{safe}.txt"
     if not txt_path.exists():
-        txt_path.write_text(add_paragraph_break(story_text), encoding="utf-8")
+        clean = _strip_meta_comments(story_text)
+        txt_path.write_text(add_paragraph_break(clean), encoding="utf-8")
     return txt_path
 
 

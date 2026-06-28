@@ -93,6 +93,10 @@ Struktur (130–140 Wörter):
 
 Abschluss: `Tja,` statt `Ah ja,`
 
+**Tonalität:** Scharf, sarkastisch, gnadenlos — kein `nie bösartig`. Bei echten Personen (Politiker, Celebrities) darf es eine richtige Abrechnung sein: verbitterte Hexen, selbsternannte Retter, Vollidioten mit Mikrofon — alles erlaubt. Die Person demontieren, nicht schützen.
+
+**Kein Meta-Kommentar** nach dem Text (kein `--- X Wörter`, kein `Keywords eingebaut` o.ä.) — nur der Story-Text selbst.
+
 ---
 
 ## Neue Stories hinzufügen

@@ -80,7 +80,9 @@ def process_onedrive(rows: list[dict]):
         if not nr:
             continue
         nr_str = f"{int(nr):04d}"
-        dest = OUTPUT_DIR / f"{nr_str}_pic{img.suffix.lower()}"
+        row = next((r for r in rows if r["nr"].strip() == str(int(nr))), None)
+        safe = ir.safe_name(row["stereotyp"]) if (ir and row) else "unknown"
+        dest = OUTPUT_DIR / f"{nr_str}_pic_{safe}{img.suffix.lower()}"
         shutil.copy2(img, dest)
         img.unlink()
         if ir:

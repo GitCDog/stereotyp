@@ -130,7 +130,7 @@ class InstagramPoster:
 
         # Lokale Suche
         safe = ir.safe_name(row.get("stereotyp", "").strip())
-        if (output_dir / f"{ns}_{safe}.mp4").exists():
+        if (output_dir / f"{ns}_vid_{safe}.mp4").exists():
             return True
         if any(output_dir.glob(f"{ns}_*.mp4")):
             return True
@@ -181,7 +181,7 @@ class InstagramPoster:
         """Lade Video zu Cloudinary und gib URL zurück."""
         import input_reader as ir
         if nr and stereotyp:
-            public_id = f"{_nr_str(nr)}_{ir.safe_name(stereotyp)}"
+            public_id = f"{_nr_str(nr)}_vid_{ir.safe_name(stereotyp)}"
         else:
             public_id = video_path.stem
         logger.info(f"[*] Cloudinary Upload: {video_path.name} → {public_id}...")
@@ -546,7 +546,7 @@ class InstagramPoster:
         safe = ir.safe_name(stereotyp)
         ns = _nr_str(nr)
         output_dir = Path(self.config["output"]["output_dir"])
-        video_path = output_dir / f"{ns}_{safe}.mp4"
+        video_path = output_dir / f"{ns}_vid_{safe}.mp4"
 
         if not video_path.exists():
             for p in output_dir.glob(f"{ns}_*.mp4"):
@@ -557,7 +557,7 @@ class InstagramPoster:
         if video_path.exists():
             # Lokal vorhanden → hochladen
             video_url = self.upload_to_cloudinary(video_path, nr=nr, stereotyp=stereotyp)
-            public_id = f"stereotypen/{_nr_str(nr)}_{ir.safe_name(stereotyp)}"
+            public_id = f"stereotypen/{_nr_str(nr)}_vid_{ir.safe_name(stereotyp)}"
         else:
             # Kein lokales Video → auf Cloudinary suchen (GitHub Actions)
             logger.info(f"[*] Kein lokales Video – suche auf Cloudinary...")

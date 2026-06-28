@@ -90,15 +90,22 @@ def archive_used_files(rows: list) -> int:
 
         # Bild, MP3 archivieren sobald Video erstellt
         if row.get("status_video") == "X":
-            for filename in [f"{ns}_pic.png", f"{ns}_mp3.mp3"]:
-                src = OUTPUT_DIR / filename
-                if src.exists():
-                    try:
-                        shutil.move(str(src), str(USED_DIR / filename))
-                        print(f"[>] Archiviert: {filename}")
-                        moved += 1
-                    except Exception as e:
-                        print(f"[!] Konnte {filename} nicht verschieben: {e}")
+            # Bild via glob (neue Konvention: {ns}_pic_{name}.png)
+            for pic in list(OUTPUT_DIR.glob(f"{ns}_pic*.png")) + list(OUTPUT_DIR.glob(f"{ns}_pic*.jpg")):
+                try:
+                    shutil.move(str(pic), str(USED_DIR / pic.name))
+                    print(f"[>] Archiviert: {pic.name}")
+                    moved += 1
+                except Exception as e:
+                    print(f"[!] Konnte {pic.name} nicht verschieben: {e}")
+            mp3_file = OUTPUT_DIR / f"{ns}_mp3.mp3"
+            if mp3_file.exists():
+                try:
+                    shutil.move(str(mp3_file), str(USED_DIR / mp3_file.name))
+                    print(f"[>] Archiviert: {mp3_file.name}")
+                    moved += 1
+                except Exception as e:
+                    print(f"[!] Konnte {mp3_file.name} nicht verschieben: {e}")
 
         # Video erst archivieren wenn gepostet + Cloudinary löschen
         if row.get("insta_post") == "X":
@@ -195,7 +202,37 @@ def check_sammelsurium() -> int:
     return added
 
 
+def delete_zero_files():
+    """Löscht Dateien mit '_0' am Ende des Namens (vor Suffix) und setzt CSV-Status zurück."""
+    rows = ir.read_rows(INPUT_FILE)
+    nr_map = {_nr_str(r["nr"]): r for r in rows}
+
+    for f in list(OUTPUT_DIR.glob("*_0.*")) + list(USED_DIR.glob("*_0.*")):
+        if not (f.stem.endswith("_0")):
+            continue
+        print(f"[*] _0-Datei gefunden: {f.name} – lösche...")
+        ns = f.name[:4]
+        row = nr_map.get(ns)
+        if row:
+            nr_val = row["nr"].strip()
+            stem = f.stem  # z.B. "0042_pic_Name_0" or "0042_vid_Name_0"
+            if "_pic" in stem:
+                ir.update_field(nr_val, "status_pic", "", INPUT_FILE)
+                print(f"[>] status_pic zurückgesetzt für #{nr_val}")
+            elif "_vid" in stem or "_mp4" in stem or f.suffix == ".mp4":
+                for field in ("status_video", "insta_post", "youtube_post"):
+                    ir.update_field(nr_val, field, "", INPUT_FILE)
+                print(f"[>] status_video/insta_post/youtube_post zurückgesetzt für #{nr_val}")
+            elif "_mp3" in stem or f.suffix == ".mp3":
+                ir.update_field(nr_val, "status_audio", "", INPUT_FILE)
+                print(f"[>] status_audio zurückgesetzt für #{nr_val}")
+        f.unlink()
+        print(f"[+] Gelöscht: {f.name}")
+
+
 def sync():
+    delete_zero_files()
+
     new_from_sammelsurium = check_sammelsurium()
     if new_from_sammelsurium:
         print(f"[+] Sammelsurium: {new_from_sammelsurium} neue Stories übernommen")
@@ -241,10 +278,13 @@ def sync():
             ir.update_field(nr_val, "seconds", str(dur), INPUT_FILE)
             changes += 1
 
-        # Bild – auch in 0_used suchen
-        pic_path = OUTPUT_DIR / f"{ns}_pic.png"
-        pic_used = USED_DIR / f"{ns}_pic.png"
-        pic_exists = pic_path.exists() or pic_used.exists()
+        # Bild – auch in 0_used suchen (neue Konvention: {ns}_pic_{name}.ext)
+        pic_exists = (
+            any(OUTPUT_DIR.glob(f"{ns}_pic*.png")) or
+            any(OUTPUT_DIR.glob(f"{ns}_pic*.jpg")) or
+            any(USED_DIR.glob(f"{ns}_pic*.png")) or
+            any(USED_DIR.glob(f"{ns}_pic*.jpg"))
+        )
         if pic_exists and row.get("status_pic") != "X":
             ir.update_field(nr_val, "status_pic", "X", INPUT_FILE)
             changes += 1

@@ -916,7 +916,7 @@ def reset_video():
         msgs.append(f"Audio zurueck: {mp3.name}")
 
     # Bild zurück nach output/ (NIEMALS löschen)
-    for pic in used_dir.glob(f"{nr_str}_pic.*"):
+    for pic in list(used_dir.glob(f"{nr_str}_pic*.*")):
         dst = output_dir / pic.name
         if not dst.exists():
             shutil.move(str(pic), str(dst))
@@ -1057,27 +1057,64 @@ def sofort_posten():
             append_log(f"✅ [4/8] Caption fertig")
 
             # 5. Bild generieren (Playwright / ChatGPT)
-            set_task("running", f"[5/8] Bild #{new_nr} via Playwright – kann Minuten dauern...", 35)
-            append_log(f"⏳ [5/8] Bild via Playwright (ChatGPT) generieren...")
-            run_script_logged(["generate_pictures_playwright.py", "--story", new_nr])
-            pic_path = Path(__file__).parent / "output" / f"{int(new_nr):04d}_pic.png"
-            if not pic_path.exists():
-                append_log("❌ [5/8] Kein Bild erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
-                set_task("error", f"#{new_nr}: Kein Bild – ChatGPT-Limit erreicht?", 0)
-                return
-            append_log(f"✅ [5/8] Bild erstellt")
+            _row_check = ir.find_row(new_nr, input_file)
+            if _row_check and _row_check.get("status_pic") == "X":
+                append_log(f"✅ [5/8] Bild bereits vorhanden – überspringe")
+            else:
+                set_task("running", f"[5/8] Bild #{new_nr} via Playwright – kann Minuten dauern...", 35)
+                append_log(f"⏳ [5/8] Bild via Playwright (ChatGPT) generieren...")
+                run_script_logged(["generate_pictures_playwright.py", "--story", new_nr])
+                ns = f"{int(new_nr):04d}"
+                out_dir = Path(__file__).parent / "output"
+                pic_path_found = any(out_dir.glob(f"{ns}_pic*.png")) or any(out_dir.glob(f"{ns}_pic*.jpg"))
+                pic_used_found = any((out_dir / "0_used").glob(f"{ns}_pic*.png")) or any((out_dir / "0_used").glob(f"{ns}_pic*.jpg"))
+                if not pic_path_found and not pic_used_found:
+                    append_log("❌ [5/8] Kein Bild erstellt – Pipeline abgebrochen (ChatGPT-Limit?)")
+                    set_task("error", f"#{new_nr}: Kein Bild – ChatGPT-Limit erreicht?", 0)
+                    return
+                append_log(f"✅ [5/8] Bild erstellt")
 
             # 6. Audio generieren
-            set_task("running", f"[6/8] Audio #{new_nr} via ElevenLabs...", 50)
-            append_log(f"⏳ [6/8] Audio via ElevenLabs generieren...")
-            run_script_logged(["generate_audio.py", "--story", new_nr])
-            append_log(f"✅ [6/8] Audio fertig")
+            _row_check = ir.find_row(new_nr, input_file)
+            if _row_check and _row_check.get("status_audio") == "X":
+                append_log(f"✅ [6/8] Audio bereits vorhanden – überspringe")
+            else:
+                set_task("running", f"[6/8] Audio #{new_nr} via ElevenLabs...", 50)
+                append_log(f"⏳ [6/8] Audio via ElevenLabs generieren...")
+                run_script_logged(["generate_audio.py", "--story", new_nr])
+                append_log(f"✅ [6/8] Audio fertig")
+
+            # 6.5 Bild auf Stereotyp-Passung prüfen (nur wenn Video noch nicht existiert)
+            _row_check = ir.find_row(new_nr, input_file)
+            if not (_row_check and _row_check.get("status_video") == "X"):
+                set_task("running", f"[6.5/8] Bild auf Stereotyp-Passung prüfen...", 58)
+                append_log(f"⏳ [6.5/8] Claude prüft ob Bild zum Stereotyp passt...")
+                check_proc = subprocess.run(
+                    [sys.executable, "check_image_match.py", "--story", new_nr],
+                    capture_output=True, text=True, encoding="utf-8", errors="replace",
+                    cwd=str(Path(__file__).parent)
+                )
+                check_reason = check_proc.stdout.strip() or check_proc.stderr.strip()
+                if check_proc.returncode == 0:
+                    append_log(f"✅ [6.5/8] Bild passt zum Stereotyp: {check_reason}")
+                elif check_proc.returncode == 2:
+                    append_log(f"❌ [6.5/8] Bild passt NICHT zum Stereotyp!")
+                    append_log(f"   Grund: {check_reason}")
+                    append_log(f"   ➡ Bitte Bild ersetzen und erneut 'Sofort Posten' starten.")
+                    set_task("error", f"#{new_nr}: Bild passt nicht zum Stereotyp – bitte prüfen & ersetzen", 0)
+                    return
+                else:
+                    append_log(f"⚠️  [6.5/8] Bildprüfung nicht möglich: {check_reason} – weiter")
 
             # 7. Video rendern
-            set_task("running", f"[7/8] Video #{new_nr} rendern (ffmpeg + Untertitel)...", 63)
-            append_log(f"⏳ [7/8] Video rendern mit Karaoke-Untertiteln...")
-            run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles"])
-            append_log(f"✅ [7/8] Video gerendert")
+            _row_check = ir.find_row(new_nr, input_file)
+            if _row_check and _row_check.get("status_video") == "X":
+                append_log(f"✅ [7/8] Video bereits vorhanden – überspringe")
+            else:
+                set_task("running", f"[7/8] Video #{new_nr} rendern (ffmpeg + Untertitel)...", 63)
+                append_log(f"⏳ [7/8] Video rendern mit Karaoke-Untertiteln...")
+                run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles"])
+                append_log(f"✅ [7/8] Video gerendert")
 
             # Git sync: sicherstellen dass CSV-Push vor dem Post erfolgreich war
             try:

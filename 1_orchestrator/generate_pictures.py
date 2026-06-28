@@ -132,7 +132,8 @@ Style references: cinematic illustration, graphic novel realism, film still, noi
 Strict vertical 9:16 composition, optimized for Instagram Reels."""
 
 
-def generate_image(api_key: str, prompt: str, nr: int, images_dir: str, logger: logging.Logger) -> bool:
+def generate_image(api_key: str, prompt: str, nr: int, images_dir: str, logger: logging.Logger,
+                   stereotyp: str = "") -> bool:
     """Generiere Bild via OpenAI gpt-image-1 und speichere es."""
     url = "https://api.openai.com/v1/images/generations"
     headers = {
@@ -168,7 +169,8 @@ def generate_image(api_key: str, prompt: str, nr: int, images_dir: str, logger: 
         return False
 
     Path(images_dir).mkdir(parents=True, exist_ok=True)
-    out_path = Path(images_dir) / f"{int(nr):04d}_pic.png"
+    safe = ir.safe_name(stereotyp) if stereotyp else "unknown"
+    out_path = Path(images_dir) / f"{int(nr):04d}_pic_{safe}.png"
     out_path.write_bytes(img_data)
     logger.info(f"[+] Bild gespeichert: {out_path} ({len(img_data):,} Bytes)")
     return True
@@ -209,7 +211,7 @@ def process_story_image(nr: int, config: dict, logger: logging.Logger, openai_ke
 
     prompt = build_image_prompt(stereotyp, scene)
     logger.info(f"[*] Image-Prompt gebaut ({len(prompt)} Zeichen)")
-    success = generate_image(openai_key, prompt, nr, images_dir, logger)
+    success = generate_image(openai_key, prompt, nr, images_dir, logger, stereotyp=stereotyp)
 
     if success:
         ir.update_field(nr, "status_pic", "X", input_file)

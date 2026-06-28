@@ -108,7 +108,6 @@ def type_prompt(page, editor, prompt: str):
     """Fügt Prompt in das Eingabefeld ein."""
     editor.click()
     page.wait_for_timeout(300)
-    # Via JS einfügen (funktioniert für contenteditable und textarea)
     page.evaluate("""(text) => {
         const el = document.activeElement;
         if (!el) return;
@@ -119,7 +118,6 @@ def type_prompt(page, editor, prompt: str):
             setter.call(el, text);
             el.dispatchEvent(new Event('input', { bubbles: true }));
         } else {
-            // contenteditable
             el.focus();
             document.execCommand('selectAll', false, null);
             document.execCommand('delete', false, null);
@@ -130,94 +128,103 @@ def type_prompt(page, editor, prompt: str):
 
 
 def send_prompt(page):
-    """Sendet den Prompt (Send-Button oder Enter)."""
+    """Sendet den Prompt. Wartet bis Send-Button enabled ist, sonst Enter."""
+    btn = page.locator('[data-testid="send-button"]')
     try:
-        btn = page.locator('[data-testid="send-button"]')
         btn.wait_for(state="visible", timeout=5000)
-        btn.wait_for(state="enabled", timeout=5000)
-        btn.click()
+        # Warte bis Button enabled (Text wurde korrekt erkannt)
+        for _ in range(20):
+            if btn.is_enabled():
+                break
+            page.wait_for_timeout(300)
+        if btn.is_enabled():
+            btn.click()
+        else:
+            # Fallback: Enter-Taste
+            page.keyboard.press("Enter")
     except Exception:
         page.keyboard.press("Enter")
 
 
+def _extract_file_id(src: str) -> str:
+    """Extrahiert file_id aus ChatGPT estuary-URLs; fallback: volle URL."""
+    m = re.search(r'id=(file_[^&]+)', src)
+    return m.group(1) if m else src
+
+
 def get_image_snapshot(page) -> set:
-    """Alle aktuell sichtbaren Bild-URLs als Set (vor dem Prompt)."""
+    """Scrollt den ChatGPT-Nachrichten-Container nach unten um lazy-Bilder zu laden,
+    dann gibt alle file_ids (bzw. URLs) als Set zurück."""
+    # ChatGPT hat einen eigenen Scroll-Container, nicht window/body
+    page.evaluate("""() => {
+        const container = document.querySelector(
+            'div[class*="overflow-y-auto"], main, [role="main"], .flex-col.overflow-y-auto'
+        );
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        } else {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    }""")
+    page.wait_for_timeout(8000)
+
     srcs = page.evaluate("""() =>
         Array.from(document.querySelectorAll('img[src]'))
             .map(img => img.src)
             .filter(src => src.length > 40 && !src.endsWith('.svg'))
     """)
-    return set(srcs or [])
+    return {_extract_file_id(s) for s in (srcs or [])}
 
 
-def find_image_for_existing_prompt(page, prompt_key: str) -> str | None:
-    """Prüft ob dieser Prompt bereits beantwortet wurde (Bild im Chat vorhanden)."""
-    return page.evaluate("""(key) => {
-        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button'];
-        const messages = Array.from(document.querySelectorAll('[data-message-author-role]'));
-        for (let i = 0; i < messages.length - 1; i++) {
-            if (messages[i].getAttribute('data-message-author-role') !== 'user') continue;
-            if (!messages[i].textContent.includes(key)) continue;
-            const reply = messages[i + 1];
-            if (!reply || reply.getAttribute('data-message-author-role') !== 'assistant') continue;
-            const imgs = Array.from(reply.querySelectorAll('img[src]')).reverse();
-            for (const img of imgs) {
-                const src = img.src || '';
-                if (!src || src.endsWith('.svg')) continue;
-                if (skip.some(s => src.toLowerCase().includes(s))) continue;
-                const w = img.naturalWidth || img.width || 0;
-                const h = img.naturalHeight || img.height || 0;
-                if (w > 100 || h > 100) return src;
-                if (src.startsWith('blob:') || src.includes('oaiusercontent') ||
-                    src.includes('oaidalleapiprodscus') || src.includes('openai')) return src;
-            }
-        }
-        return null;
-    }""", prompt_key)
-
-
-def find_new_image(page, snapshot: set) -> str | None:
-    """Findet ein Bild das NACH dem Snapshot neu auf der Seite erschienen ist."""
-    return page.evaluate("""(known) => {
-        const knownSet = new Set(known);
-        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button'];
-        const imgs = Array.from(document.querySelectorAll('img[src]')).reverse();
+def find_bottom_image(page) -> str | None:
+    """Nimmt das unterste generierte Bild im DOM – das ist immer die aktuellste Antwort."""
+    return page.evaluate("""() => {
+        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button', 'auth0'];
+        const imgs = Array.from(document.querySelectorAll('img[src]'));
+        // Nach DOM-Position sortieren: unterste zuerst
+        imgs.sort((a, b) => {
+            const ay = a.getBoundingClientRect().top + window.scrollY;
+            const by = b.getBoundingClientRect().top + window.scrollY;
+            return by - ay;
+        });
         for (const img of imgs) {
             const src = img.src || '';
             if (!src || src.endsWith('.svg')) continue;
             if (skip.some(s => src.toLowerCase().includes(s))) continue;
-            if (knownSet.has(src)) continue;
-            // Breiter: jedes neue Bild das groß genug ist
             const w = img.naturalWidth || img.width || 0;
             const h = img.naturalHeight || img.height || 0;
             if (w > 200 || h > 200) return src;
-            // Fallback: bekannte OpenAI-Domains
-            if (src.startsWith('blob:')) return src;
-            if (src.includes('oaidalleapiprodscus')) return src;
-            if (src.includes('oaiusercontent')) return src;
-            if (src.includes('openai')) return src;
+            if (src.startsWith('blob:') || src.includes('chatgpt.com/backend') ||
+                src.includes('oaiusercontent') || src.includes('oaidalleapiprodscus')) return src;
         }
         return null;
-    }""", list(snapshot))
+    }""")
 
 
 def wait_for_new_image(page, logger, snapshot: set, timeout_sec: int = 180) -> str | None:
-    """Pollt alle 10 Sekunden bis ein NEUES Bild (nicht im Snapshot) erscheint."""
-    logger.info("[*] Warte auf neues Bild...")
+    """Wartet bis ein neues Bild ganz unten erscheint (unterste DOM-Position, nicht im Snapshot)."""
+    logger.info("[*] Warte auf neues Bild (unterste Position)...")
     page.wait_for_timeout(5000)
 
     deadline = time.time() + timeout_sec
     elapsed = 5
     while time.time() < deadline:
-        src = find_new_image(page, snapshot)
-        if src:
+        # Zum Ende scrollen damit das neueste Bild sichtbar/geladen ist
+        page.evaluate("""() => {
+            const c = document.querySelector('div[class*="overflow-y-auto"], main, [role="main"]');
+            if (c) c.scrollTop = c.scrollHeight;
+            else window.scrollTo(0, document.body.scrollHeight);
+        }""")
+        page.wait_for_timeout(500)
+
+        src = find_bottom_image(page)
+        if src and _extract_file_id(src) not in snapshot:
             logger.info(f"[*] Neues Bild gefunden nach ~{elapsed}s")
             return src
         logger.info(f"    ... generiert noch ({elapsed}s vergangen, max {timeout_sec}s)")
-        page.wait_for_timeout(10000)
+        page.wait_for_timeout(9500)
         elapsed += 10
 
-    # Debug: alle aktuellen img-Quellen loggen
     all_srcs = page.evaluate("""() =>
         Array.from(document.querySelectorAll('img[src]'))
             .map(img => img.src + ' [' + (img.naturalWidth||0) + 'x' + (img.naturalHeight||0) + ']')
@@ -264,7 +271,7 @@ def process_story(page, nr: str, logger) -> bool:
     if not prompt:
         logger.error(f"[-] Kein Prompt für #{nr} (Story-Datei fehlt)")
         return False
-    out_path = OUTPUT_DIR / f"{nr_str(nr)}_pic.png"
+    out_path = OUTPUT_DIR / f"{nr_str(nr)}_pic_{ir.safe_name(stereo)}.png"
 
     logger.info(f"")
     logger.info(f"{'='*60}")
@@ -272,7 +279,7 @@ def process_story(page, nr: str, logger) -> bool:
     logger.info(f"{'='*60}")
     logger.info(f"[*] Prompt: {prompt[:100]}...")
 
-    # Zur ChatGPT-Seite navigieren
+    # Zur ChatGPT-Konversation navigieren
     if CHATGPT_IMAGE_URL not in page.url:
         page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
         page.wait_for_timeout(3000)
@@ -285,21 +292,13 @@ def process_story(page, nr: str, logger) -> bool:
         logger.error("[-] Eingabefeld nicht gefunden – bitte Edge öffnen und ChatGPT laden")
         return False
 
-    # Warten bis lazy-geladene Bilder sichtbar sind, dann Snapshot
-    page.wait_for_timeout(8000)
+    # Snapshot: alle aktuellen Bilder merken
     snapshot = get_image_snapshot(page)
-    logger.info(f"[*] Snapshot: {len(snapshot)} Bilder sichtbar")
+    logger.info(f"[*] Snapshot: {len(snapshot)} Bild-IDs gespeichert")
 
-    # Prüfen ob Prompt bereits im Chat beantwortet wurde (kein neuer Prompt nötig)
-    prompt_key = prompt[prompt.index(". ") + 2:][:60] if ". " in prompt else prompt[:60]
-    existing_src = find_image_for_existing_prompt(page, prompt_key)
-    if existing_src:
-        logger.info(f"[*] Prompt bereits beantwortet – lade vorhandenes Bild direkt")
-        src = existing_src
-    else:
-        type_prompt(page, editor, prompt)
-        send_prompt(page)
-        src = wait_for_new_image(page, logger, snapshot)
+    type_prompt(page, editor, prompt)
+    send_prompt(page)
+    src = wait_for_new_image(page, logger, snapshot)
 
     if not src:
         logger.error("[-] Kein Bild erhalten")

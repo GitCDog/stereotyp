@@ -620,7 +620,10 @@ html = f'''<!DOCTYPE html>
         <div class="log-box" id="logBox">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                 <strong id="logTitle">Verarbeitung...</strong>
-                <button id="abortBtn" onclick="abortTask()" style="background:#dc3545;color:white;border:none;padding:5px 14px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">⏹ Abbrechen</button>
+                <div style="display:flex;gap:6px;">
+                    <button id="closeLogBtn" onclick="closeLog()" style="display:none;background:#6c757d;color:white;border:none;padding:5px 14px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">✕ Schließen</button>
+                    <button id="abortBtn" onclick="abortTask()" style="background:#dc3545;color:white;border:none;padding:5px 14px;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">⏹ Abbrechen</button>
+                </div>
             </div>
             <div class="log-progress">
                 <div class="log-fill" id="logFill" style="width:0%">0%</div>
@@ -788,6 +791,15 @@ html = f'''<!DOCTYPE html>
     function resetBtn(btn, label) {{
         if (btn) {{ btn.classList.remove('running'); btn.disabled = false; }}
         document.getElementById('logBox').classList.remove('visible');
+        document.getElementById('closeLogBtn').style.display = 'none';
+        document.getElementById('abortBtn').style.display = '';
+        _activeBtn = null;
+    }}
+
+    function closeLog() {{
+        document.getElementById('logBox').classList.remove('visible');
+        document.getElementById('closeLogBtn').style.display = 'none';
+        document.getElementById('abortBtn').style.display = '';
         _activeBtn = null;
     }}
 
@@ -811,6 +823,8 @@ html = f'''<!DOCTYPE html>
                 if (data.status === 'complete' || data.status === 'error' || data.status === 'idle') {{
                     clearInterval(_pollInterval);
                     _pollInterval = null;
+                    if (btn) {{ btn.classList.remove('running'); btn.disabled = false; }}
+                    _activeBtn = null;
                     if (data.status === 'complete' && _isRefresh) {{
                         _isRefresh = false;
                         resetBtn(btn, label);
@@ -819,7 +833,14 @@ html = f'''<!DOCTYPE html>
                         setLog(100, 'Fertig! Lade Dashboard neu...');
                         setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
                     }} else {{
-                        resetBtn(btn, label);
+                        // error oder idle: Log sichtbar lassen, Schließen-Button zeigen
+                        const abortBtn = document.getElementById('abortBtn');
+                        abortBtn.disabled = true;
+                        abortBtn.style.display = 'none';
+                        const closeBtn = document.getElementById('closeLogBtn');
+                        closeBtn.style.display = '';
+                        const statusIcon = data.status === 'error' ? '❌' : '⏹';
+                        document.getElementById('logTitle').textContent = statusIcon + ' ' + label + ' – abgebrochen';
                     }}
                 }} else {{
                     pct = Math.min(pct + 10, 90);
@@ -852,7 +873,8 @@ html = f'''<!DOCTYPE html>
             await fetch('/api/abort', {{ method: 'POST' }});
         }} catch(e) {{}}
         if (_pollInterval) {{ clearInterval(_pollInterval); _pollInterval = null; }}
-        resetBtn(_activeBtn, '');
+        // Log sichtbar lassen – pollProgress wird es mit idle/error Status abholen
+        // resetBtn wird durch pollProgress aufgerufen
     }}
 
     async function doRefresh() {{

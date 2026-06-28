@@ -335,6 +335,8 @@ TITLES = {
     317: "Wer kennt diesen Socken-Friedhof neben dem Bett?",
     318: "Darf der ZDF einfach lügen?",
     319: "Ist er schon zu alt?",
+    320: "Nur in Deutschland – Ventilator statt Klimaanlage",
+    321: "Würde Heidi unser Land kaputt machen?",
 }
 
 
