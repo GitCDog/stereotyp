@@ -76,10 +76,12 @@ def upload_to_cloudinary(video_path: Path, logger: logging.Logger):
 
 def find_image(nr, images_dir: str) -> Path | None:
     ns = _nr_str(nr)
+    base = Path(images_dir)
+    # Neue Konvention: {ns}_pic_{name}.ext — via glob
     for ext in ("png", "jpg", "jpeg"):
-        p = Path(images_dir) / f"{ns}_pic.{ext}"
-        if p.exists():
-            return p
+        matches = list(base.glob(f"{ns}_pic*.{ext}"))
+        if matches:
+            return matches[0]
     return None
 
 
@@ -226,7 +228,7 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
 
     # Output-Pfad
     safe = ir.safe_name(stereotyp)
-    output_path = Path(output_dir) / f"{_nr_str(nr)}_{safe}.mp4"
+    output_path = Path(output_dir) / f"{_nr_str(nr)}_vid_{safe}.mp4"
 
     # Untertitel generieren (optional)
     ass_path = None
@@ -321,7 +323,17 @@ def git_push_csv(input_file: str, logger: logging.Logger):
             ["git", "commit", "-m", "fix: status_video aktualisiert nach Videogenerierung"],
             cwd=str(repo_root), check=True
         )
-        subprocess.run(["git", "push"], cwd=str(repo_root), check=True)
+        # Stash unstaged changes so rebase doesn't fail on dirty working tree
+        stash_result = subprocess.run(
+            ["git", "stash"], cwd=str(repo_root), capture_output=True, text=True
+        )
+        stashed = "No local changes" not in stash_result.stdout
+        try:
+            subprocess.run(["git", "pull", "--rebase"], cwd=str(repo_root), check=True)
+            subprocess.run(["git", "push"], cwd=str(repo_root), check=True)
+        finally:
+            if stashed:
+                subprocess.run(["git", "stash", "pop"], cwd=str(repo_root), capture_output=True)
         logger.info("[+] CSV-Änderungen auf GitHub gepusht")
     except subprocess.CalledProcessError as e:
         logger.warning(f"[!] Git Push fehlgeschlagen: {e}")
