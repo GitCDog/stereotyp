@@ -321,3 +321,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 320,Ventilator statt Klimaanlage in Deutschland,X,X,54,X,X,X,X,X
 321,Heidi Reichninnek,X,X,45,X,X,X,X,X
 322,Dachgeschosswohnung,X,X,54,X,X,X,X,X
+323,Selbständigkeit,X,X,65,X,X,X,,
