@@ -580,9 +580,10 @@ class InstagramPoster:
             logger.info("=" * 60)
             return True
 
-        # YouTube Short (optional – nur wenn Credentials vorhanden)
+        # YouTube Short (optional – nur wenn Credentials vorhanden und noch nicht gepostet)
         youtube_video_id = None
-        if all(os.getenv(k) for k in ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")):
+        already_on_yt = str(row.get("youtube_post", "")).strip() == "X"
+        if not already_on_yt and all(os.getenv(k) for k in ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")):
             try:
                 import json as _json
                 from youtube_poster import upload_short
