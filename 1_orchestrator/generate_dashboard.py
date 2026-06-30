@@ -7,8 +7,32 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 from generate_gpt_prompt_titled import TITLES
 
+import os, re as _re
+from dotenv import load_dotenv
+load_dotenv()
+
 with open("1_input/1_input_file.txt", encoding="utf-8") as f:
     data = [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
+
+# Cloudinary-Scan: welche Story-Nummern haben ein Video?
+try:
+    import cloudinary.api
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.getenv("CLOUDINARY_API_KEY"),
+        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    )
+    _cloud_res = cloudinary.api.resources(
+        type="upload", resource_type="video",
+        prefix="stereotypen/", max_results=500
+    )
+    cloudinary_nrs = {
+        _re.match(r'stereotypen/0*(\d+)', v["public_id"]).group(1)
+        for v in _cloud_res.get("resources", [])
+        if _re.match(r'stereotypen/0*(\d+)', v["public_id"])
+    }
+except Exception:
+    cloudinary_nrs = set()
 
 total = len(data)
 story_done  = sum(1 for r in data if r.get("status_story")  == "X")
@@ -96,15 +120,27 @@ for row in data:
     rq_pos    = reihenfolge_pos.get(nr, reihenfolge_pos.get(str(int(nr)) if nr.isdigit() else nr, None))
 
     title_text = TITLES.get(int(nr), stereo).replace('"', '&quot;')
+    try:
+        name_green = bool(stereo and sec and sec.strip() and int(sec.strip()) > 0)
+    except (ValueError, TypeError):
+        name_green = False
+    name_cls   = "name cell-lightgreen" if name_green else "name"
+    sec_cls    = "center cell-lightgreen" if name_green else "center"
+    on_cloud   = nr in cloudinary_nrs or (nr.lstrip("0") or "0") in cloudinary_nrs
+    if vid_done:
+        cloud_td = f'<td class="status-cell {"cell-done" if on_cloud else ""}">{"<span class=\"blk blk-green\"></span>" if on_cloud else "<span class=\"blk blk-yellow\"></span>"}</td>'
+    else:
+        cloud_td = '<td class="status-cell"></td>'
     rows_html += f"""                <tr{row_cls}>
                     <td class="num">{nr}</td>
-                    <td class="name">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
+                    <td class="{name_cls}">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     {status_td(row.get('status_story',''))}
                     {status_td(row.get('status_caption',''))}
                     {status_td(row.get('status_audio',''))}
-                    <td class="center">{sec}</td>
+                    <td class="{sec_cls}">{sec}</td>
                     {status_td(row.get('status_pic',''))}
                     {status_td(row.get('status_video',''))}
+                    {cloud_td}
                     {status_td(yt)}
                     <td class="center" style="white-space:nowrap;">
                         <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
@@ -286,6 +322,8 @@ html = f'''<!DOCTYPE html>
         tr.row-posted td {{ color: #c8f5d8; }}
         td.cell-done {{ background: #d4f5e2; }}
         tr.row-posted td.cell-done {{ background: transparent; }}
+        td.cell-lightgreen {{ background: #d4f5e2; }}
+        tr.row-posted td.cell-lightgreen {{ background: transparent; }}
         .pie-section {{
             display: flex;
             align-items: center;
@@ -670,6 +708,7 @@ html = f'''<!DOCTYPE html>
                         <th>Sek.</th>
                         <th title="Bild">Bild</th>
                         <th title="Video">Video</th>
+                        <th title="Cloudinary Upload">Cloud</th>
                         <th title="YouTube Short">YT</th>
                         <th title="Instagram">Post</th>
                         <th title="Posting-Reihenfolge">Reihenf.</th>
