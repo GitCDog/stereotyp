@@ -128,7 +128,8 @@ for row in data:
     sec_cls    = "center cell-lightgreen" if name_green else "center"
     on_cloud   = nr in cloudinary_nrs or (nr.lstrip("0") or "0") in cloudinary_nrs
     if vid_done:
-        cloud_td = f'<td class="status-cell {"cell-done" if on_cloud else ""}">{"<span class=\"blk blk-green\"></span>" if on_cloud else "<span class=\"blk blk-yellow\"></span>"}</td>'
+        cloud_ok = on_cloud or (insta == "X")
+        cloud_td = f'<td class="status-cell {"cell-done" if cloud_ok else ""}">{"<span class=\'blk blk-green\'></span>" if cloud_ok else "<span class=\'blk blk-yellow\'></span>"}</td>'
     else:
         cloud_td = '<td class="status-cell"></td>'
     rows_html += f"""                <tr{row_cls}>
