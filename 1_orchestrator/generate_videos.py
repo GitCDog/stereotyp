@@ -61,17 +61,14 @@ def setup_cloudinary():
 
 
 def upload_to_cloudinary(video_path: Path, logger: logging.Logger):
-    try:
-        result = cloudinary.uploader.upload(
-            str(video_path),
-            resource_type="video",
-            folder="stereotypen",
-            public_id=video_path.stem,
-            overwrite=True,
-        )
-        logger.info(f"[+] Cloudinary Upload: {result['secure_url']}")
-    except Exception as e:
-        logger.warning(f"[!] Cloudinary Upload fehlgeschlagen: {e}")
+    result = cloudinary.uploader.upload(
+        str(video_path),
+        resource_type="video",
+        folder="stereotypen",
+        public_id=video_path.stem,
+        overwrite=True,
+    )
+    logger.info(f"[+] Cloudinary Upload: {result['secure_url']}")
 
 
 def find_image(nr, images_dir: str) -> Path | None:
