@@ -69,7 +69,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 68,Die „Nur gucken“-Shopping-Tour,X,X,54,,,X,,
 69,Der „Das ist deutsche Wertarbeit“-Sager,X,X,55,,,X,,
 70,Der Kleingarten-Vorstand,X,X,50,,,X,,
-71,Das Fax-Gerät im Amt,X,X,50,,,X,,
+71,Das Fax-Gerät im Amt,X,X,50,X,,X,,
 72,„Schatzi“-Paare im Partnerlook,X,X,54,,,X,,
 73,Der Laubbläser-Fanatiker,X,X,50,,,X,,
 74,Die Landlust-Idylle-Leserin,X,X,54,,,X,,
@@ -234,7 +234,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 233,Sitzfussballer,X,X,45,X,X,X,X,X
 234,deutsche Küche,X,X,49,X,X,X,,
 235,Negerkuss,X,X,49,X,X,X,,
-236,Faxgerät,X,X,45,X,X,X,,
+236,Faxgerät,X,X,45,X,,X,,
 237,Ruhetag,X,X,46,,,X,,
 238,Heimwerker nach 22 Uhr,X,X,52,,,X,,
 239,Reinheitsgebot,X,X,51,,,X,,
