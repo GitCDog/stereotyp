@@ -102,7 +102,7 @@ for row in data:
         name_green = False
     name_cls   = "name cell-lightgreen" if name_green else "name"
     sec_cls    = "center cell-lightgreen" if name_green else "center"
-    cloud_ok   = row.get("status_cloudinary", "") == "X"
+    cloud_ok   = row.get("status_cloudinary", "") == "X" or insta == "X"
     if vid_done:
         cloud_td = f'<td class="status-cell {"cell-done" if cloud_ok else ""}">{"<span class=\'blk blk-green\'></span>" if cloud_ok else "<span class=\'blk blk-yellow\'></span>"}</td>'
     else:
