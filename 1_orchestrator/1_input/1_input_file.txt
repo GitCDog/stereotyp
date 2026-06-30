@@ -41,7 +41,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 40,Die Angst vor „Durchzug“,X,X,49,X,X,X,X,,
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,X,X,,
 42,„Tja“ – Die universelle Antwort,X,X,58,X,X,,X,X,X
-43,Der Schilderwald-Verteidiger,X,X,53,X,X,,X,,
+43,Der Schilderwald-Verteidiger,X,X,53,X,X,X,X,,
 44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,X,X,,
 45,Der Baumarkt-Samstag,X,X,47,X,X,X,X,,
 46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,,,,X,,
@@ -69,7 +69,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 68,Die „Nur gucken“-Shopping-Tour,X,X,54,,,,X,,
 69,Der „Das ist deutsche Wertarbeit“-Sager,X,X,55,,,,X,,
 70,Der Kleingarten-Vorstand,X,X,50,,,,X,,
-71,Das Fax-Gerät im Amt,X,X,50,X,,,X,,
+71,Das Fax-Gerät im Amt,X,X,50,,,,X,,
 72,„Schatzi“-Paare im Partnerlook,X,X,54,,,,X,,
 73,Der Laubbläser-Fanatiker,X,X,50,,,,X,,
 74,Die Landlust-Idylle-Leserin,X,X,54,,,,X,,
