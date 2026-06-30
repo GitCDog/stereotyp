@@ -81,15 +81,32 @@ def process_onedrive(rows: list[dict]):
             continue
         nr_str = f"{int(nr):04d}"
         row = next((r for r in rows if r["nr"].strip() == str(int(nr))), None)
-        safe = ir.safe_name(row["stereotyp"]) if (ir and row) else "unknown"
+        if not row:
+            continue
+        safe = ir.safe_name(row["stereotyp"]) if ir else "unknown"
+        stereotyp = row["stereotyp"].strip()
         dest = OUTPUT_DIR / f"{nr_str}_pic_{safe}{img.suffix.lower()}"
         shutil.copy2(img, dest)
+
+        # Bildprüfung: passt das Bild zum Stereotyp?
+        check = subprocess.run(
+            [PYTHON, "check_image_match.py", "--story", nr],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            cwd=SCRIPT_DIR
+        )
+        if check.returncode == 2:
+            reason = check.stdout.strip() or check.stderr.strip()
+            print(f"[!] Bild für #{nr} ({stereotyp}) passt NICHT – wird nicht importiert: {reason}")
+            dest.unlink(missing_ok=True)
+            continue
+
         img.unlink()
         if ir:
             try:
                 ir.update_field(nr, "status_pic", "X", str(INPUT_FILE))
             except Exception:
                 pass
+        print(f"[+] Bild für #{nr} ({stereotyp}) importiert und geprüft ✓")
         changed = True
 
     if changed:
