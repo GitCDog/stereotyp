@@ -132,8 +132,8 @@ for row in data:
     else:
         cloud_td = '<td class="status-cell"></td>'
     rows_html += f"""                <tr{row_cls}>
-                    <td class="num">{nr}</td>
-                    <td class="{name_cls}">{stereo} <span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
+                    <td class="num{' cell-lightgreen' if name_green else ''}">{nr}</td>
+                    <td class="{name_cls}">{stereo}<span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     {status_td(row.get('status_story',''))}
                     {status_td(row.get('status_caption',''))}
                     {status_td(row.get('status_audio',''))}
