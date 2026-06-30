@@ -337,6 +337,8 @@ TITLES = {
     319: "Ist er schon zu alt?",
     320: "Nur in Deutschland – Ventilator statt Klimaanlage",
     321: "Würde Heidi unser Land kaputt machen?",
+    322: "Und, wie läufts in der Dachgeschosswohnung?",
+    323: "Lohnt sich die Selbständigkeit in D überhaupt?",
 }
 
 
