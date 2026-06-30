@@ -7,32 +7,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 from generate_gpt_prompt_titled import TITLES
 
-import os, re as _re
-from dotenv import load_dotenv
-load_dotenv()
-
 with open("1_input/1_input_file.txt", encoding="utf-8") as f:
     data = [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
-
-# Cloudinary-Scan: welche Story-Nummern haben ein Video?
-try:
-    import cloudinary.api
-    cloudinary.config(
-        cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.getenv("CLOUDINARY_API_KEY"),
-        api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    )
-    _cloud_res = cloudinary.api.resources(
-        type="upload", resource_type="video",
-        prefix="stereotypen/", max_results=500
-    )
-    cloudinary_nrs = {
-        _re.match(r'stereotypen/0*(\d+)', v["public_id"]).group(1)
-        for v in _cloud_res.get("resources", [])
-        if _re.match(r'stereotypen/0*(\d+)', v["public_id"])
-    }
-except Exception:
-    cloudinary_nrs = set()
 
 total = len(data)
 story_done  = sum(1 for r in data if r.get("status_story")  == "X")
@@ -126,9 +102,8 @@ for row in data:
         name_green = False
     name_cls   = "name cell-lightgreen" if name_green else "name"
     sec_cls    = "center cell-lightgreen" if name_green else "center"
-    on_cloud   = nr in cloudinary_nrs or (nr.lstrip("0") or "0") in cloudinary_nrs
+    cloud_ok   = row.get("status_cloudinary", "") == "X"
     if vid_done:
-        cloud_ok = on_cloud or (insta == "X")
         cloud_td = f'<td class="status-cell {"cell-done" if cloud_ok else ""}">{"<span class=\'blk blk-green\'></span>" if cloud_ok else "<span class=\'blk blk-yellow\'></span>"}</td>'
     else:
         cloud_td = '<td class="status-cell"></td>'

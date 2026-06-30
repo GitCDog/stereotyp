@@ -327,6 +327,7 @@ class InstagramPoster:
         else:
             import input_reader as ir
             ir.update_field(nr, "insta_post", "X", self.config["output"]["input_file"])
+            ir.update_field(nr, "status_cloudinary", "", self.config["output"]["input_file"])
 
         self._log_posted_video(row, post_id)
 
@@ -382,6 +383,7 @@ class InstagramPoster:
             for r in rows:
                 if r.get("nr", "").strip() == str(nr):
                     r["insta_post"] = "X"
+                    r["status_cloudinary"] = ""
                     break
             output = io.StringIO()
             fieldnames = list(rows[0].keys())

@@ -284,6 +284,7 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
 
     # Cloudinary Upload
     upload_to_cloudinary(output_path, logger)
+    ir.update_field(nr, "status_cloudinary", "X", input_file)
 
     # Bild, Audio, Video → output/0_used/
     used_dir = Path(output_dir) / "0_used"
