@@ -200,7 +200,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 199,Baustelle,X,X,48,X,X,X,X,X
 200,Tankstelle,X,X,51,X,X,X,,
 201,Boxautomat,X,X,52,X,X,X,X,X
-202,Autoscooter,X,X,48,,,X,,
+202,Autoscooter,X,X,48,X,X,X,,
 203,Bierzelt,X,X,50,,,X,,
 204,Bauchladen JGA,X,X,54,,,X,,
 205,Sonntagsgarten,X,X,48,,,X,,
@@ -233,8 +233,8 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 232,Augenkontakt beim Anstoßen,X,X,50,X,X,X,,
 233,Sitzfussballer,X,X,45,X,X,X,X,X
 234,deutsche Küche,X,X,49,X,X,X,,
-235,Negerkuss,X,X,49,,,X,,
-236,Faxgerät,X,X,45,,,X,,
+235,Negerkuss,X,X,49,X,,X,,
+236,Faxgerät,X,X,45,X,,X,,
 237,Ruhetag,X,X,46,,,X,,
 238,Heimwerker nach 22 Uhr,X,X,52,,,X,,
 239,Reinheitsgebot,X,X,51,,,X,,
