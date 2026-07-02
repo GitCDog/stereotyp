@@ -233,7 +233,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 232,Augenkontakt beim Anstoßen,X,X,50,X,X,X,X,,
 233,Sitzfussballer,X,X,45,X,X,,X,X,X
 234,deutsche Küche,X,X,49,X,X,X,X,,
-235,Negerkuss,X,X,49,X,X,X,X,,
+235,Negerkuss,X,X,49,X,X,,X,X,
 236,Faxgerät,X,X,45,X,X,X,X,,
 237,Ruhetag,X,X,46,,,,X,,
 238,Heimwerker nach 22 Uhr,X,X,52,,,,X,,
