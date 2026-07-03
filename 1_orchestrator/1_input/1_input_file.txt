@@ -192,7 +192,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 191,Gymnasium,X,X,50,X,X,,X,X,
 192,Waldorfschule,X,X,47,X,X,,X,X,X
 193,Privatschule,X,X,46,X,X,,X,X,X
-194,Gesamtschule,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781256621/stereotypen/0194_Gesamtschule.mp4,X,,
+194,Gesamtschule,X,X,50,X,X,,X,X,
 195,Sonderschule,X,X,51,X,X,,X,X,
 196,Berufsschule,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781256828/stereotypen/0196_Berufsschule.mp4,X,,
 197,Home Office,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782226135/stereotypen/0197_Home%20Office.mp4,X,,
