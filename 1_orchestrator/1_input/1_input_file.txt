@@ -62,7 +62,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,X,X,,
 62,Der „Wir fahren über Nacht“-Urlauber,X,X,48,X,X,X,X,,
 63,Der Behörden-Marathon,X,X,52,X,X,X,X,,
-64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,X,,,X,,
+64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,X,X,X,X,,
 65,Der Tatort-Experte,X,X,48,X,,,X,,
 66,Der Sonntags-Spaziergänger,X,X,52,X,,,X,,
 67,Der Hobby-Meteorologe (Regenradar-Check),X,X,52,,,,X,,
