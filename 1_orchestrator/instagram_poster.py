@@ -523,11 +523,6 @@ class InstagramPoster:
         logger.info("STEREOTYPEN – INSTAGRAM POSTER")
         logger.info("=" * 60)
 
-        # Maximal ein Post pro Tag (FORCE_POST=1 überspringt die Sperre)
-        if not self.dry_run and not os.getenv("FORCE_POST") and self.already_posted_today():
-            logger.info("[+] Heute bereits gepostet – überspringe.")
-            return False
-
         # Posting-Fenster abwarten nur bei GitHub Actions Scheduled Run
         story_nr = os.getenv("STORY_NR", "").strip() or None
         force_post = os.getenv("FORCE_POST", "").strip()
