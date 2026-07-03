@@ -298,7 +298,7 @@ def sync():
         if mp4_files and row.get("status_video") != "X":
             ir.update_field(nr_val, "status_video", "X", INPUT_FILE)
             changes += 1
-        elif not mp4_files and row.get("status_video") == "X" and row.get("insta_post") != "X":
+        elif not mp4_files and row.get("status_video") == "X" and row.get("insta_post") != "X" and row.get("status_cloudinary") != "X":
             ir.update_field(nr_val, "status_video", "", INPUT_FILE)
             print(f"[!] status_video zurückgesetzt für #{nr_val} (kein MP4 gefunden)")
             changes += 1
