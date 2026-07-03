@@ -128,6 +128,10 @@ class InstagramPoster:
         ns = _nr_str(nr)
         output_dir = Path(self.config["output"]["output_dir"])
 
+        # CSV-Eintrag: URL direkt verfügbar (kein API-Call)
+        if row.get("status_cloudinary", "").strip().startswith("http"):
+            return True
+
         # Lokale Suche
         safe = ir.safe_name(row.get("stereotyp", "").strip())
         if (output_dir / f"{ns}_vid_{safe}.mp4").exists():
@@ -135,7 +139,7 @@ class InstagramPoster:
         if any(output_dir.glob(f"{ns}_*.mp4")):
             return True
 
-        # Cloudinary-Suche
+        # Fallback: Cloudinary API
         url, _ = self.find_on_cloudinary(nr)
         return url is not None
 
