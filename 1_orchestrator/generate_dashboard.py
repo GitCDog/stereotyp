@@ -104,7 +104,9 @@ for row in data:
     sec_cls    = "center cell-lightgreen" if name_green else "center"
     cloud_ok   = row.get("status_cloudinary", "") == "X" or insta == "X"
     if vid_done:
-        cloud_td = f'<td class="status-cell {"cell-done" if cloud_ok else ""}">{"<span class=\'blk blk-green\'></span>" if cloud_ok else "<span class=\'blk blk-yellow\'></span>"}</td>'
+        cloud_cls = "cell-done" if cloud_ok else ""
+        cloud_blk = "<span class='blk blk-green'></span>" if cloud_ok else "<span class='blk blk-yellow'></span>"
+        cloud_td = f'<td class="status-cell {cloud_cls}">{cloud_blk}</td>'
     else:
         cloud_td = '<td class="status-cell"></td>'
     rows_html += f"""                <tr{row_cls}>
