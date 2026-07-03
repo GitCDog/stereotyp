@@ -524,10 +524,11 @@ class InstagramPoster:
             logger.info("[+] Heute bereits gepostet – überspringe.")
             return False
 
-        # Posting-Fenster abwarten (Schedule-Run; bei manuellem Dispatch sofort posten)
+        # Posting-Fenster abwarten nur bei GitHub Actions Scheduled Run
         story_nr = os.getenv("STORY_NR", "").strip() or None
         force_post = os.getenv("FORCE_POST", "").strip()
-        if not self.dry_run and not story_nr and not force_post:
+        is_scheduled_run = os.getenv("GITHUB_ACTIONS") == "true" and not story_nr and not force_post
+        if not self.dry_run and is_scheduled_run:
             self._wait_for_posting_window()
 
         rows = self.read_input_csv()
