@@ -116,7 +116,7 @@ def archive_used_files(rows: list) -> int:
                     moved += 1
                 except Exception as e:
                     print(f"[!] Konnte {mp4.name} nicht verschieben: {e}")
-            if row.get("status_cloudinary") == "X":
+            if row.get("status_cloudinary", "").strip():
                 delete_cloudinary_video(ns)
 
     return moved
@@ -299,7 +299,7 @@ def sync():
         if mp4_files and row.get("status_video") != "X":
             ir.update_field(nr_val, "status_video", "X", INPUT_FILE)
             changes += 1
-        elif not mp4_files and row.get("status_video") == "X" and row.get("insta_post") != "X" and row.get("status_cloudinary") != "X":
+        elif not mp4_files and row.get("status_video") == "X" and row.get("insta_post") != "X" and not row.get("status_cloudinary", "").strip():
             ir.update_field(nr_val, "status_video", "", INPUT_FILE)
             print(f"[!] status_video zurückgesetzt für #{nr_val} (kein MP4 gefunden)")
             changes += 1

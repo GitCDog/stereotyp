@@ -561,12 +561,24 @@ class InstagramPoster:
             video_url = self.upload_to_cloudinary(video_path, nr=nr, stereotyp=stereotyp)
             public_id = f"stereotypen/{_nr_str(nr)}_vid_{ir.safe_name(stereotyp)}"
         else:
-            # Kein lokales Video → auf Cloudinary suchen (GitHub Actions)
-            logger.info(f"[*] Kein lokales Video – suche auf Cloudinary...")
-            video_url, public_id = self.find_on_cloudinary(nr)
-            if not video_url:
-                logger.error(f"[-] Video für #{nr} weder lokal noch auf Cloudinary gefunden")
-                return False
+            # URL aus CSV lesen (kein API-Call nötig)
+            csv_url = str(row.get("status_cloudinary", "")).strip()
+            if csv_url.startswith("http"):
+                video_url = csv_url
+                # public_id aus URL: nach /upload/v123/ → stereotypen/name (ohne Extension)
+                after_upload = csv_url.split("/upload/", 1)[-1].split("?")[0]
+                parts = after_upload.split("/")[1:]  # version überspringen
+                if parts:
+                    parts[-1] = parts[-1].rsplit(".", 1)[0]  # .mp4 entfernen
+                public_id = "/".join(parts)
+                logger.info(f"[*] Cloudinary-URL aus CSV: {video_url}")
+            else:
+                # Fallback: auf Cloudinary suchen (API-Call)
+                logger.info(f"[*] Kein lokales Video und keine URL in CSV – suche auf Cloudinary...")
+                video_url, public_id = self.find_on_cloudinary(nr)
+                if not video_url:
+                    logger.error(f"[-] Video für #{nr} weder lokal noch auf Cloudinary gefunden")
+                    return False
 
         # Caption
         caption = self.build_caption(row)
