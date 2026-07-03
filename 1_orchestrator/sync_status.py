@@ -107,7 +107,7 @@ def archive_used_files(rows: list) -> int:
                 except Exception as e:
                     print(f"[!] Konnte {mp3_file.name} nicht verschieben: {e}")
 
-        # Video erst archivieren wenn gepostet + Cloudinary löschen
+        # Video erst archivieren wenn gepostet + Cloudinary löschen (nur wenn noch dort)
         if row.get("insta_post") == "X":
             for mp4 in OUTPUT_DIR.glob(f"{ns}_*.mp4"):
                 try:
@@ -116,7 +116,8 @@ def archive_used_files(rows: list) -> int:
                     moved += 1
                 except Exception as e:
                     print(f"[!] Konnte {mp4.name} nicht verschieben: {e}")
-            delete_cloudinary_video(ns)
+            if row.get("status_cloudinary") == "X":
+                delete_cloudinary_video(ns)
 
     return moved
 
