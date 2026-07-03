@@ -54,9 +54,9 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 53,Der Umzugs-Helfer-Stress,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831841/stereotypen/0053_Der%20Umzugs-Helfer-Stress.mp4,X,,
 54,Die Parkplatz-Suche,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831926/stereotypen/0054_Die%20Parkplatz-Suche.mp4,X,,
 55,Der Versicherungs-Check,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780832029/stereotypen/0055_Der%20Versicherungs-Check.mp4,X,,
-56,Die deutsche Gründlichkeit,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780922030/stereotypen/0056_Die%20deutsche%20Gr%C3%BCndlichkeit.mp4,X,,
+56,Die deutsche Gründlichkeit,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086824/stereotypen/0056_vid_Die%20deutsche%20Gr%C3%BCndlichkeit.mp4,X,,
 57,Der Kaffee-Snob,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920025/stereotypen/0057_Der%20Kaffee-Snob.mp4,X,,
-58,Die Fensterputz-Eskalation,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920130/stereotypen/0058_Die%20Fensterputz-Eskalation.mp4,X,,
+58,Die Fensterputz-Eskalation,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086912/stereotypen/0058_vid_Die%20Fensterputz-Eskalation.mp4,X,,
 59,Der Vereinsausflug,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920233/stereotypen/0059_Der%20Vereinsausflug.mp4,X,,
 60,Die Handtuch-Mafia,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920342/stereotypen/0060_Die%20Handtuch-Mafia.mp4,X,,
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920461/stereotypen/0061_Der%20%E2%80%9EDas%20ist%20doch%20noch%20gut%E2%80%9C-Sparer.mp4,X,,
@@ -100,7 +100,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 99,Der „Ich kenn da jemanden“-Netzwerker,X,X,54,,,,X,,
 100,Der „Eigentlich bin ich ja ganz anders“-Selbstbetrüger,X,X,56,,,,X,,
 101,Talahon,X,X,51,X,X,,X,X,X
-102,Wehrdienstverweigerer,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541289/stereotypen/0102_Wehrdienstverweigerer.mp4,X,,
+102,Wehrdienstverweigerer,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087005/stereotypen/0102_vid_Wehrdienstverweigerer.mp4,X,,
 103,Bali Yoga Retreat,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255625/stereotypen/0103_Bali%20Yoga%20Retreat.mp4,X,,
 104,Vibe Coder,X,X,47,,,,X,,
 105,Chaya in Frankfurt,X,X,52,X,X,,X,X,X
@@ -131,7 +131,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 130,Des deutschen liebstes Kind,X,X,47,,,,X,,
 131,Shisha Boys,X,X,54,,,,X,,
 132,Das Du anbieten,X,X,51,,,,X,,
-133,OnlyFans Girl,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541621/stereotypen/0133_OnlyFans%20Girl.mp4,X,,
+133,OnlyFans Girl,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087070/stereotypen/0133_vid_OnlyFans%20Girl.mp4,X,,
 134,Stringtanga 2nd Hand Ebay,X,X,56,,,,X,,
 135,Tinder Girl,X,X,50,,,,X,,
 136,Tinder Guy,X,X,51,,,,X,,
@@ -149,33 +149,33 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 148,DJ Fan Guy,X,X,46,X,X,,X,X,X
 149,Kiffer,X,X,49,,,,X,,
 150,Deutschrapper,X,X,49,,,,X,,
-151,Bootsschuhe,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541693/stereotypen/0151_Bootsschuhe.mp4,X,,
+151,Bootsschuhe,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087137/stereotypen/0151_vid_Bootsschuhe.mp4,X,,
 152,Zu alt für Skaterklamotten,X,X,52,X,X,,X,X,X
 153,Mama und Tochter in Disko,X,X,55,X,X,,X,X,X
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,,X,X,X
-155,20 Kaffee am Tag,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541776/stereotypen/0155_20%20Kaffee%20am%20Tag.mp4,X,,
+155,20 Kaffee am Tag,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087224/stereotypen/0155_vid_20%20Kaffee%20am%20Tag.mp4,X,,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222676/stereotypen/0156_Tussi%20mit%20vielen%20kleinen%20Tattoos.mp4,X,,
 157,Veganes Steak,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222840/stereotypen/0157_Veganes%20Steak.mp4,X,,
 158,Papierstrohhalm,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222991/stereotypen/0158_Papierstrohhalm.mp4,X,,
-159,Pornosüchtiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779788930/stereotypen/0159_Pornos%C3%BCchtiger.mp4,X,,
-160,Unfallgaffer,X,X,50,X,X,,X,X,X
-161,Botox Frau,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779789221/stereotypen/0161_Botox%20Frau.mp4,X,,
-162,Botox Mann,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779789372/stereotypen/0162_Botox%20Mann.mp4,X,,
+159,Pornosüchtiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087309/stereotypen/0159_vid_Pornos%C3%BCchtiger.mp4,X,,
+160,Unfallgaffer,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087412/stereotypen/0160_vid_Unfallgaffer.mp4,X,X,
+161,Botox Frau,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087527/stereotypen/0161_vid_Botox%20Frau.mp4,X,,
+162,Botox Mann,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087650/stereotypen/0162_vid_Botox%20Mann.mp4,X,,
 163,Alternative Lifestyle,X,X,57,X,X,,X,X,X
-164,Silikonbrüste,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779538182/stereotypen/0164_Silikonbr%C3%BCste.mp4,X,,
+164,Silikonbrüste,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087750/stereotypen/0164_vid_Silikonbr%C3%BCste.mp4,X,,
 165,Face Lifting,X,X,46,,,,X,,
 166,Schlauchboot Lippen,X,X,55,,,,X,,
 167,Fake Louis Vuitton Tasche,X,X,48,X,X,,X,X,X
 168,TikTok Süchtig,X,X,52,X,X,,X,X,X
-169,Insta Süchtig,X,X,42,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779791508/stereotypen/0169_Insta%20S%C3%BCchtig.mp4,X,,
-170,Hipster,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779791642/stereotypen/0170_Hipster.mp4,X,,
-171,Jutebeutel,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779791784/stereotypen/0171_Jutebeutel.mp4,X,,
-172,Rocker,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779791936/stereotypen/0172_Rocker.mp4,X,,
-173,Biker Gruss,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879035/stereotypen/0173_Biker%20Gruss.mp4,X,,
+169,Insta Süchtig,X,X,42,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087864/stereotypen/0169_vid_Insta%20S%C3%BCchtig.mp4,X,,
+170,Hipster,X,X,49,X,,,X,,
+171,Jutebeutel,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088593/stereotypen/0171_vid_Jutebeutel.mp4,X,,
+172,Rocker,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088692/stereotypen/0172_vid_Rocker.mp4,X,,
+173,Biker Gruss,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088805/stereotypen/0173_vid_Biker%20Gruss.mp4,X,,
 174,Silberlöffel im Mund,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879175/stereotypen/0174_Silberl%C3%B6ffel%20im%20Mund.mp4,X,,
 175,Gammler,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879325/stereotypen/0175_Gammler.mp4,X,,
-176,GEZ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879461/stereotypen/0176_GEZ.mp4,X,,
-177,Technomädchen,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879601/stereotypen/0177_Technom%C3%A4dchen.mp4,X,,
+176,GEZ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088927/stereotypen/0176_vid_GEZ.mp4,X,,
+177,Technomädchen,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089062/stereotypen/0177_vid_Technom%C3%A4dchen.mp4,X,,
 178,Technojunge,X,X,49,,,,X,,
 179,Love Parade,X,X,53,,,,X,,
 180,Buffaloschuhe,X,X,49,,,,X,,
@@ -198,7 +198,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 197,Home Office,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782226135/stereotypen/0197_Home%20Office.mp4,X,,
 198,Schwarzarbeit,X,X,47,,,,X,,
 199,Baustelle,X,X,48,X,X,,X,X,X
-200,Tankstelle,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779542034/stereotypen/0200_Tankstelle.mp4,X,,
+200,Tankstelle,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089186/stereotypen/0200_vid_Tankstelle.mp4,X,,
 201,Boxautomat,X,X,52,X,X,,X,X,X
 202,Autoscooter,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782850980/stereotypen/0202_vid_Autoscooter.mp4,X,,
 203,Bierzelt,X,X,50,,,,X,,
@@ -232,7 +232,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 231,rasierte Arme,X,X,51,X,X,,X,X,
 232,Augenkontakt beim Anstoßen,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779792332/stereotypen/0232_Augenkontakt%20beim%20Ansto%C3%9Fen.mp4,X,,
 233,Sitzfussballer,X,X,45,X,X,,X,X,X
-234,deutsche Küche,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779792895/stereotypen/0234_deutsche%20K%C3%BCche.mp4,X,,
+234,deutsche Küche,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089306/stereotypen/0234_vid_deutsche%20K%C3%BCche.mp4,X,,
 235,Negerkuss,X,X,49,X,X,,X,X,
 236,Faxgerät,X,X,45,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782852819/stereotypen/0236_vid_Faxger%C3%A4t.mp4,X,,
 237,Ruhetag,X,X,46,,,,X,,
