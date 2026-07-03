@@ -47,7 +47,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,,,,X,,
 47,Der „Haben wir das schriftlich“-Kollege,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541020/stereotypen/0047_Der%20%E2%80%9EHaben%20wir%20das%20schriftlich-Kollege.mp4,X,,
 48,Die Sonntagsruhe-Polizei,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540218/stereotypen/0048_Die%20Sonntagsruhe-Polizei.mp4,X,,
-49,Der Fahrradweg-Sheriff,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540375/stereotypen/0049_Der%20Fahrradweg-Sheriff.mp4,X,,
+49,Der Fahrradweg-Sheriff,X,X,55,X,X,,X,X,
 50,Die Über-Versicherung für alles,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540515/stereotypen/0050_Die%20%C3%9Cber-Versicherung%20f%C3%BCr%20alles.mp4,X,,
 51,Die Pfandflaschen-Jagd,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540657/stereotypen/0051_Der%20%E2%80%9EIch%20hab%27s%20passend-Zahler.mp4,X,,
 52,Die Ruhe im Speisewagen,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831752/stereotypen/0052_Die%20Ruhe%20im%20Speisewagen.mp4,X,,
