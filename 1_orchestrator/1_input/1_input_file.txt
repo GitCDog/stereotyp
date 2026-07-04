@@ -198,7 +198,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 197,Home Office,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782226135/stereotypen/0197_Home%20Office.mp4,X,,
 198,Schwarzarbeit,X,X,47,,,,X,,
 199,Baustelle,X,X,48,X,X,,X,X,X
-200,Tankstelle,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089186/stereotypen/0200_vid_Tankstelle.mp4,X,,
+200,Tankstelle,X,X,51,X,X,,X,X,
 201,Boxautomat,X,X,52,X,X,,X,X,X
 202,Autoscooter,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782850980/stereotypen/0202_vid_Autoscooter.mp4,X,,
 203,Bierzelt,X,X,50,,,,X,,
