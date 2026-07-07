@@ -200,7 +200,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 199,Baustelle,X,X,48,X,X,,X,X,X
 200,Tankstelle,X,X,51,X,X,,X,X,
 201,Boxautomat,X,X,52,X,X,,X,X,X
-202,Autoscooter,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782850980/stereotypen/0202_vid_Autoscooter.mp4,X,,
+202,Autoscooter,X,X,48,X,X,,X,X,
 203,Bierzelt,X,X,50,,,,X,,
 204,Bauchladen JGA,X,X,54,,,,X,,
 205,Sonntagsgarten,X,X,48,,,,X,,
