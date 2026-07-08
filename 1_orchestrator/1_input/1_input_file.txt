@@ -69,7 +69,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 68,Die „Nur gucken“-Shopping-Tour,X,X,54,,,,X,,
 69,Der „Das ist deutsche Wertarbeit“-Sager,X,X,55,,,,X,,
 70,Der Kleingarten-Vorstand,X,X,50,,,,X,,
-71,Das Fax-Gerät im Amt,X,X,50,X,,,X,,
+71,Das Fax-Gerät im Amt,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783502819/stereotypen/0071_vid_Das%20Fax-Ger%C3%A4t%20im%20Amt.mp4,X,,
 72,„Schatzi“-Paare im Partnerlook,X,X,54,,,,X,,
 73,Der Laubbläser-Fanatiker,X,X,50,,,,X,,
 74,Die Landlust-Idylle-Leserin,X,X,54,,,,X,,
