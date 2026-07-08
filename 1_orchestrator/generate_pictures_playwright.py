@@ -380,16 +380,21 @@ def main():
 
     with sync_playwright() as pw:
         logger.info("[*] Starte Edge mit echtem Profil via Playwright...")
-        context = pw.chromium.launch_persistent_context(
-            user_data_dir=str(EDGE_PROFILE),
-            channel="msedge",
-            headless=False,
-            args=["--profile-directory=Default", "--no-first-run"],
-        )
+        try:
+            context = pw.chromium.launch_persistent_context(
+                user_data_dir=str(EDGE_PROFILE),
+                executable_path=r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+                headless=False,
+                args=["--profile-directory=Default", "--no-first-run"],
+            )
+        except Exception as e:
+            logger.error(f"[-] Edge konnte nicht gestartet werden: {e}")
+            sys.exit(1)
         logger.info("[*] Edge gestartet")
 
         # Zur ChatGPT-Konversation navigieren
         page = context.pages[0] if context.pages else context.new_page()
+        logger.info(f"[*] Navigiere zu ChatGPT...")
         page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
         page.wait_for_timeout(4000)
         logger.info(f"[*] ChatGPT geladen: {page.url[:60]}")
