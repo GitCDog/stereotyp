@@ -106,14 +106,35 @@ def find_input(page):
 
 
 def type_prompt(page, editor, prompt: str):
-    """Fügt Prompt via Clipboard-Paste ein (zuverlässiger als execCommand)."""
-    pyperclip.copy(prompt)
+    """Fügt Prompt ins ChatGPT-Eingabefeld ein."""
     editor.click()
     page.wait_for_timeout(400)
-    page.keyboard.press("Control+a")
-    page.wait_for_timeout(100)
-    page.keyboard.press("Control+v")
-    page.wait_for_timeout(500)
+
+    # Ansatz 1: DataTransfer paste event (funktioniert mit React contenteditable)
+    inserted = page.evaluate("""(text) => {
+        const el = document.querySelector('#prompt-textarea') ||
+                   document.querySelector('div[contenteditable="true"]') ||
+                   document.activeElement;
+        if (!el) return false;
+        el.focus();
+        const dt = new DataTransfer();
+        dt.setData('text/plain', text);
+        el.dispatchEvent(new ClipboardEvent('paste', {
+            clipboardData: dt, bubbles: true, cancelable: true
+        }));
+        return el.innerText ? el.innerText.length > 0 : el.value ? el.value.length > 0 : false;
+    }""", prompt)
+    page.wait_for_timeout(400)
+
+    if not inserted:
+        # Ansatz 2: System-Clipboard + Ctrl+V
+        pyperclip.copy(prompt)
+        editor.click()
+        page.wait_for_timeout(300)
+        editor.press("Control+a")
+        page.wait_for_timeout(100)
+        editor.press("Control+v")
+        page.wait_for_timeout(500)
 
 
 def send_prompt(page):
