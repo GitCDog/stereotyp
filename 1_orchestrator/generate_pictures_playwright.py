@@ -327,16 +327,15 @@ def process_story(page, nr: str, logger) -> bool:
     return True
 
 
-EDGE_EXE      = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-CDP_PORT      = 9222
-DEBUG_PROFILE = Path(r"C:\Users\slawa\AppData\Local\Temp\edge_cdp_profile")
+EDGE_EXE  = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+CDP_PORT  = 9222
 
 
 def start_edge_with_debug(logger):
-    """Startet Edge mit separatem Profil + Debug-Port (kein Merge mit laufendem Edge)."""
+    """Startet Edge mit echtem Profil + Debug-Port."""
     import subprocess, urllib.request, urllib.error, psutil
 
-    # Prüfen ob Port bereits läuft (Edge schon mit CDP gestartet)
+    # CDP bereits aktiv? Direkt verbinden.
     try:
         urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
         logger.info(f"[+] CDP-Port {CDP_PORT} bereits aktiv – verbinde direkt")
@@ -344,27 +343,22 @@ def start_edge_with_debug(logger):
     except Exception:
         pass
 
-    # Alle Edge-Prozesse beenden und warten bis wirklich weg
+    # Edge beenden und warten bis alle Prozesse weg sind
     logger.info("[*] Beende laufende Edge-Prozesse...")
     subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
     for _ in range(15):
         time.sleep(1)
-        still_running = any(p.name().lower() == "msedge.exe"
-                            for p in psutil.process_iter(["name"]))
-        if not still_running:
+        if not any(p.name().lower() == "msedge.exe" for p in psutil.process_iter(["name"])):
             break
-    else:
-        logger.warning("[!] Edge-Prozesse laufen noch – starte trotzdem")
 
-    # Edge mit eigenem Temp-Profil starten → wird NICHT in bestehende Instanz gemergt
-    DEBUG_PROFILE.mkdir(parents=True, exist_ok=True)
+    # Edge mit echtem Profil + CDP neu starten (Session/Login bleibt erhalten)
     logger.info(f"[*] Starte Edge mit --remote-debugging-port={CDP_PORT}...")
     subprocess.Popen([
         EDGE_EXE,
         f"--remote-debugging-port={CDP_PORT}",
-        f"--user-data-dir={DEBUG_PROFILE}",
+        f"--user-data-dir={EDGE_PROFILE}",
+        "--profile-directory=Default",
         "--no-first-run",
-        "--no-default-browser-check",
         CHATGPT_IMAGE_URL,
     ])
 
