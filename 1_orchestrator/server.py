@@ -639,8 +639,8 @@ def generate_pictures_playwright():
             if not story_val:
                 set_task("error", "Story-Nummer oder Bereich angeben (z.B. 49 oder 49,50,51)", 0)
                 return
-            set_task("running", f"Playwright: Bilder für {story_val}...", 10)
-            run_script(["generate_pictures_playwright.py", "--story", story_val])
+            set_task("running", f"Playwright: Bilder für {story_val}...", 10, log=[])
+            run_script_logged(["generate_pictures_playwright.py", "--story", story_val])
             set_task("running", "Dashboard aktualisieren...", 95)
             refresh_dashboard()
             set_task("complete", f"Fertig! Bilder für {story_val} generiert.", 100)
