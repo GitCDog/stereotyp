@@ -110,35 +110,37 @@ def type_prompt(page, editor, prompt: str):
     """Fügt Prompt ins ChatGPT-Eingabefeld ein."""
     logger = logging.getLogger(__name__)
 
+    # Fenster in Vordergrund + Fokus sicherstellen
+    page.bring_to_front()
+    page.wait_for_timeout(300)
     editor.click()
     page.wait_for_timeout(500)
 
-    tag = editor.evaluate("el => el.tagName + ' ce=' + el.contentEditable + ' id=' + el.id")
+    tag = editor.evaluate("el => el.tagName + ' id=' + el.id + ' ce=' + el.contentEditable")
     logger.info(f"[*] Eingabefeld: {tag}")
 
-    # Ansatz 1: Clipboard-Paste (schnell + zuverlässig)
-    pyperclip.copy(prompt)
-    page.wait_for_timeout(200)
+    # Ansatz 1: keyboard.type mit Delay (zuverlässig bei CDP + fokussiertem Fenster)
     editor.press("Control+a")
     page.wait_for_timeout(100)
-    editor.press("Control+v")
-    page.wait_for_timeout(600)
+    page.keyboard.type(prompt, delay=20)
+    page.wait_for_timeout(400)
 
-    # Prüfen ob Text angekommen
     content = editor.evaluate("el => el.value || el.innerText || ''")
-    logger.info(f"[*] Feld-Inhalt nach paste: {len(content)} Zeichen")
+    logger.info(f"[*] Feld nach keyboard.type: {len(content)} Zeichen")
 
     if len(content) < 10:
-        logger.info("[*] Clipboard hat nicht funktioniert – versuche keyboard.type")
+        # Ansatz 2: Clipboard-Paste
+        logger.info("[*] keyboard.type fehlgeschlagen – versuche Clipboard")
+        pyperclip.copy(prompt)
+        page.bring_to_front()
         editor.click()
-        page.wait_for_timeout(300)
-        editor.press("Control+a")
-        editor.press("Delete")
-        page.wait_for_timeout(100)
-        page.keyboard.type(prompt, delay=15)
         page.wait_for_timeout(400)
+        editor.press("Control+a")
+        page.wait_for_timeout(100)
+        editor.press("Control+v")
+        page.wait_for_timeout(600)
         content2 = editor.evaluate("el => el.value || el.innerText || ''")
-        logger.info(f"[*] Feld-Inhalt nach keyboard.type: {len(content2)} Zeichen")
+        logger.info(f"[*] Feld nach clipboard: {len(content2)} Zeichen")
 
 
 def send_prompt(page):
