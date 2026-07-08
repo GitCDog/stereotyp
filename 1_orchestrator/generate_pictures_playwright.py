@@ -331,62 +331,22 @@ def process_story(page, nr: str, logger) -> bool:
     return True
 
 
-EDGE_EXE  = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-CDP_PORT  = 9222
-
-
-def start_edge_with_debug(logger):
-    """Startet Edge mit Debug-Port."""
-    import subprocess, urllib.request, urllib.error
-
-    # CDP bereits aktiv? Direkt verbinden.
-    try:
-        urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
-        logger.info(f"[+] CDP-Port {CDP_PORT} bereits aktiv – verbinde direkt")
-        return f"http://localhost:{CDP_PORT}"
-    except Exception:
-        pass
-
-    # Alle Edge-Prozesse beenden
+def kill_edge(logger):
+    """Beendet alle Edge-Prozesse und wartet bis sie weg sind."""
+    import subprocess, psutil
     logger.info("[*] Beende laufende Edge-Prozesse...")
     subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
-    time.sleep(3)
-
-    # Lock-Dateien löschen (verhindern CDP-Start nach force-kill)
+    for _ in range(15):
+        time.sleep(1)
+        if not any(p.name().lower() == "msedge.exe" for p in psutil.process_iter(["name"])):
+            break
+    # Lock-Dateien löschen
     for lock in ["SingletonLock", "SingletonSocket", "SingletonCookie"]:
         p = EDGE_PROFILE / lock
-        if p.exists():
-            try:
-                p.unlink()
-                logger.info(f"[*] Lock gelöscht: {lock}")
-            except Exception:
-                pass
-
-    # Edge mit Debug-Port starten (ohne --user-data-dir → Standard-Profil mit Session)
-    logger.info(f"[*] Starte Edge mit --remote-debugging-port={CDP_PORT}...")
-    subprocess.Popen([
-        EDGE_EXE,
-        f"--remote-debugging-port={CDP_PORT}",
-        "--profile-directory=Default",
-        "--no-first-run",
-        CHATGPT_IMAGE_URL,
-    ])
-
-    # Warten bis Debug-Port verfügbar
-    for i in range(20):
-        time.sleep(2)
         try:
-            urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
-            logger.info(f"[+] Edge-Debug-Port bereit (nach {(i+1)*2}s)")
-            break
+            p.unlink(missing_ok=True)
         except Exception:
-            logger.info(f"    ... warte auf Port ({(i+1)*2}s)")
-    else:
-        return None
-
-    time.sleep(3)  # Kurz warten damit ChatGPT laden kann
-
-    return f"http://localhost:{CDP_PORT}"
+            pass
 
 
 def main():
@@ -402,7 +362,6 @@ def main():
     from playwright.sync_api import sync_playwright
 
     nrs = parse_stories(args.story)
-    # Stories ohne Bild herausfiltern
     to_process = []
     for nr in nrs:
         row = ir.find_row(nr, INPUT_FILE)
@@ -416,36 +375,24 @@ def main():
         return
 
     logger.info(f"[*] {len(to_process)} Story/s: {', '.join(to_process)}")
-    logger.info(f"[*] Wartezeit zwischen Stories: {args.wait} Sekunden")
 
-    cdp_url = start_edge_with_debug(logger)
-    if cdp_url is None:
-        logger.error("[-] Edge konnte nicht gestartet werden.")
-        sys.exit(1)
+    kill_edge(logger)
 
     with sync_playwright() as pw:
-        browser = pw.chromium.connect_over_cdp(cdp_url)
-        logger.info("[*] Verbunden mit Edge-Browser")
+        logger.info("[*] Starte Edge mit echtem Profil via Playwright...")
+        context = pw.chromium.launch_persistent_context(
+            user_data_dir=str(EDGE_PROFILE),
+            channel="msedge",
+            headless=False,
+            args=["--profile-directory=Default", "--no-first-run"],
+        )
+        logger.info("[*] Edge gestartet")
 
-        # ChatGPT-Tab finden oder neuen Tab öffnen
-        context = browser.contexts[0] if browser.contexts else browser.new_context()
-        page = None
-        for p in context.pages:
-            if "chatgpt.com" in p.url:
-                page = p
-                logger.info(f"[*] ChatGPT-Tab gefunden: {p.url[:60]}")
-                break
-
-        if page is None:
-            page = context.new_page()
-            page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
-            page.wait_for_timeout(4000)
-            logger.info("[*] Neuen ChatGPT-Tab geöffnet")
-
-        # Zur Bild-Konversation navigieren falls nötig
-        if CHATGPT_IMAGE_URL not in page.url:
-            page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
-            page.wait_for_timeout(3000)
+        # Zur ChatGPT-Konversation navigieren
+        page = context.pages[0] if context.pages else context.new_page()
+        page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
+        page.wait_for_timeout(4000)
+        logger.info(f"[*] ChatGPT geladen: {page.url[:60]}")
 
         dismiss_popups(page)
 
