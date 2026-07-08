@@ -327,32 +327,49 @@ def process_story(page, nr: str, logger) -> bool:
     return True
 
 
-EDGE_EXE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-CDP_PORT  = 9222
+EDGE_EXE      = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+CDP_PORT      = 9222
+DEBUG_PROFILE = Path(r"C:\Users\slawa\AppData\Local\Temp\edge_cdp_profile")
 
 
 def start_edge_with_debug(logger):
-    """Beendet alle Edge-Prozesse, startet Edge mit Debug-Port, gibt Browser zurück."""
-    import subprocess, urllib.request, urllib.error
+    """Startet Edge mit separatem Profil + Debug-Port (kein Merge mit laufendem Edge)."""
+    import subprocess, urllib.request, urllib.error, psutil
 
-    # Alle Edge-Prozesse beenden
+    # Prüfen ob Port bereits läuft (Edge schon mit CDP gestartet)
+    try:
+        urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
+        logger.info(f"[+] CDP-Port {CDP_PORT} bereits aktiv – verbinde direkt")
+        return f"http://localhost:{CDP_PORT}"
+    except Exception:
+        pass
+
+    # Alle Edge-Prozesse beenden und warten bis wirklich weg
     logger.info("[*] Beende laufende Edge-Prozesse...")
-    subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"],
-                   capture_output=True)
-    time.sleep(3)
+    subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
+    for _ in range(15):
+        time.sleep(1)
+        still_running = any(p.name().lower() == "msedge.exe"
+                            for p in psutil.process_iter(["name"]))
+        if not still_running:
+            break
+    else:
+        logger.warning("[!] Edge-Prozesse laufen noch – starte trotzdem")
 
-    # Edge mit Debug-Port starten
+    # Edge mit eigenem Temp-Profil starten → wird NICHT in bestehende Instanz gemergt
+    DEBUG_PROFILE.mkdir(parents=True, exist_ok=True)
     logger.info(f"[*] Starte Edge mit --remote-debugging-port={CDP_PORT}...")
     subprocess.Popen([
         EDGE_EXE,
         f"--remote-debugging-port={CDP_PORT}",
-        "--profile-directory=Default",
+        f"--user-data-dir={DEBUG_PROFILE}",
         "--no-first-run",
+        "--no-default-browser-check",
         CHATGPT_IMAGE_URL,
     ])
 
     # Warten bis Debug-Port verfügbar
-    for i in range(20):
+    for i in range(30):
         time.sleep(2)
         try:
             urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
