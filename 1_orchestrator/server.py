@@ -57,26 +57,59 @@ def save_title_to_dict(nr: int, title: str):
     TITLES_FILE.write_text(content, encoding="utf-8")
 
 
-def git_push_reihenfolge():
-    """Committet und pusht 0_reihenfolge.txt nach GitHub."""
+CSV_REL = "1_orchestrator/1_input/1_input_file.txt"
+
+
+def _git_has_changes(*rel_paths: str) -> bool:
     no_window = subprocess.CREATE_NO_WINDOW
-    try:
-        diff = subprocess.run(
-            ["git", "diff", "--quiet", REIHENFOLGE_REL],
+    for p in rel_paths:
+        r = subprocess.run(
+            ["git", "diff", "--quiet", p],
             cwd=str(REPO_ROOT), capture_output=True, creationflags=no_window,
         )
-        if diff.returncode == 0:
-            return  # keine Änderung
-        subprocess.run(["git", "add", REIHENFOLGE_REL], cwd=str(REPO_ROOT),
-                       check=True, capture_output=True, creationflags=no_window)
-        subprocess.run(
-            ["git", "commit", "-m", "fix: Posting-Reihenfolge aktualisiert"],
-            cwd=str(REPO_ROOT), check=True, capture_output=True, creationflags=no_window,
+        if r.returncode != 0:
+            return True
+        r2 = subprocess.run(
+            ["git", "diff", "--cached", "--quiet", p],
+            cwd=str(REPO_ROOT), capture_output=True, creationflags=no_window,
         )
-        subprocess.run(["git", "push"], cwd=str(REPO_ROOT), check=True,
-                       capture_output=True, creationflags=no_window)
+        if r2.returncode != 0:
+            return True
+    return False
+
+
+def _git_commit_push(*rel_paths: str, message: str):
+    no_window = subprocess.CREATE_NO_WINDOW
+    for p in rel_paths:
+        subprocess.run(["git", "add", p], cwd=str(REPO_ROOT),
+                       check=True, capture_output=True, creationflags=no_window)
+    subprocess.run(
+        ["git", "commit", "-m", message],
+        cwd=str(REPO_ROOT), check=True, capture_output=True, creationflags=no_window,
+    )
+    subprocess.run(["git", "push"], cwd=str(REPO_ROOT), check=True,
+                   capture_output=True, creationflags=no_window)
+
+
+def git_push_reihenfolge():
+    """Committet und pusht 0_reihenfolge.txt nach GitHub."""
+    try:
+        if not _git_has_changes(REIHENFOLGE_REL):
+            return
+        _git_commit_push(REIHENFOLGE_REL, message="fix: Posting-Reihenfolge aktualisiert")
     except subprocess.CalledProcessError as e:
         print(f"[!] Git Push Reihenfolge fehlgeschlagen: {e}")
+
+
+def git_push_csv():
+    """Committet und pusht 1_input_file.txt nach GitHub, falls Änderungen vorhanden."""
+    try:
+        if not _git_has_changes(CSV_REL):
+            return
+        _git_commit_push(CSV_REL, message="fix: CSV nach Sync aktualisiert")
+        print("[+] CSV-Änderungen auf GitHub gepusht")
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Git Push CSV fehlgeschlagen: {e}")
 
 app = Flask(__name__)
 
@@ -724,6 +757,10 @@ def refresh():
             set_task("running", "Dashboard aktualisieren...", 90, log=list(log))
             refresh_dashboard()
             log.append("✅ Dashboard aktualisiert")
+
+            set_task("running", "CSV nach GitHub pushen...", 95, log=list(log))
+            git_push_csv()
+            log.append("📤 CSV auf GitHub synchronisiert")
 
             msg = f"Fertig! {new_from_sammelsurium} neue Stories extrahiert." if new_from_sammelsurium else "Fertig!"
             set_task("complete", msg, 100, log=list(log))
