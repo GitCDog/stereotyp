@@ -353,6 +353,16 @@ def start_edge_with_debug(logger):
         if not any(p.name().lower() == "msedge.exe" for p in psutil.process_iter(["name"])):
             break
 
+    # Lock-Dateien löschen damit Edge sauber neu startet
+    for lock in ["SingletonLock", "SingletonSocket", "SingletonCookie"]:
+        p = EDGE_PROFILE / lock
+        if p.exists():
+            try:
+                p.unlink()
+                logger.info(f"[*] Lock-Datei gelöscht: {lock}")
+            except Exception as e:
+                logger.warning(f"[!] Lock-Datei konnte nicht gelöscht werden: {lock}: {e}")
+
     # Edge mit echtem Profil + CDP neu starten (Session/Login bleibt erhalten)
     logger.info(f"[*] Starte Edge mit --remote-debugging-port={CDP_PORT}...")
     subprocess.Popen([
