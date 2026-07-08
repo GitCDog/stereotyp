@@ -116,27 +116,29 @@ def type_prompt(page, editor, prompt: str):
     tag = editor.evaluate("el => el.tagName + ' ce=' + el.contentEditable + ' id=' + el.id")
     logger.info(f"[*] Eingabefeld: {tag}")
 
-    # Ansatz 1: keyboard.type (zuverlässigste Playwright-Methode)
+    # Ansatz 1: Clipboard-Paste (schnell + zuverlässig)
+    pyperclip.copy(prompt)
+    page.wait_for_timeout(200)
     editor.press("Control+a")
     page.wait_for_timeout(100)
-    page.keyboard.type(prompt, delay=0)
-    page.wait_for_timeout(400)
+    editor.press("Control+v")
+    page.wait_for_timeout(600)
 
     # Prüfen ob Text angekommen
     content = editor.evaluate("el => el.value || el.innerText || ''")
-    logger.info(f"[*] Feld-Inhalt nach type: {len(content)} Zeichen")
+    logger.info(f"[*] Feld-Inhalt nach paste: {len(content)} Zeichen")
 
     if len(content) < 10:
-        logger.info("[*] keyboard.type hat nicht funktioniert – versuche Clipboard-Paste")
-        pyperclip.copy(prompt)
+        logger.info("[*] Clipboard hat nicht funktioniert – versuche keyboard.type")
         editor.click()
         page.wait_for_timeout(300)
         editor.press("Control+a")
+        editor.press("Delete")
         page.wait_for_timeout(100)
-        editor.press("Control+v")
-        page.wait_for_timeout(500)
+        page.keyboard.type(prompt, delay=15)
+        page.wait_for_timeout(400)
         content2 = editor.evaluate("el => el.value || el.innerText || ''")
-        logger.info(f"[*] Feld-Inhalt nach paste: {len(content2)} Zeichen")
+        logger.info(f"[*] Feld-Inhalt nach keyboard.type: {len(content2)} Zeichen")
 
 
 def send_prompt(page):
