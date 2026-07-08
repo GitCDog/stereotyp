@@ -22,6 +22,7 @@ import time
 from pathlib import Path
 
 import requests
+import pyperclip
 
 import re
 import input_reader as ir
@@ -105,26 +106,14 @@ def find_input(page):
 
 
 def type_prompt(page, editor, prompt: str):
-    """Fügt Prompt in das Eingabefeld ein."""
+    """Fügt Prompt via Clipboard-Paste ein (zuverlässiger als execCommand)."""
+    pyperclip.copy(prompt)
     editor.click()
-    page.wait_for_timeout(300)
-    page.evaluate("""(text) => {
-        const el = document.activeElement;
-        if (!el) return;
-        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-            const setter = Object.getOwnPropertyDescriptor(
-                window.HTMLTextAreaElement.prototype, 'value'
-            ).set;
-            setter.call(el, text);
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-        } else {
-            el.focus();
-            document.execCommand('selectAll', false, null);
-            document.execCommand('delete', false, null);
-            document.execCommand('insertText', false, text);
-        }
-    }""", prompt)
     page.wait_for_timeout(400)
+    page.keyboard.press("Control+a")
+    page.wait_for_timeout(100)
+    page.keyboard.press("Control+v")
+    page.wait_for_timeout(500)
 
 
 def send_prompt(page):
