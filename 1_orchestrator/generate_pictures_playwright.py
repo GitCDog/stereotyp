@@ -334,8 +334,8 @@ CDP_PORT  = 9222
 
 
 def start_edge_with_debug(logger):
-    """Startet Edge mit echtem Profil + Debug-Port."""
-    import subprocess, urllib.request, urllib.error, psutil
+    """Startet Edge mit Debug-Port."""
+    import subprocess, urllib.request, urllib.error
 
     # CDP bereits aktiv? Direkt verbinden.
     try:
@@ -345,37 +345,33 @@ def start_edge_with_debug(logger):
     except Exception:
         pass
 
-    # Edge beenden und warten bis alle Prozesse weg sind
+    # Alle Edge-Prozesse beenden
     logger.info("[*] Beende laufende Edge-Prozesse...")
     subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
-    for _ in range(15):
-        time.sleep(1)
-        if not any(p.name().lower() == "msedge.exe" for p in psutil.process_iter(["name"])):
-            break
+    time.sleep(3)
 
-    # Lock-Dateien löschen damit Edge sauber neu startet
+    # Lock-Dateien löschen (verhindern CDP-Start nach force-kill)
     for lock in ["SingletonLock", "SingletonSocket", "SingletonCookie"]:
         p = EDGE_PROFILE / lock
         if p.exists():
             try:
                 p.unlink()
-                logger.info(f"[*] Lock-Datei gelöscht: {lock}")
-            except Exception as e:
-                logger.warning(f"[!] Lock-Datei konnte nicht gelöscht werden: {lock}: {e}")
+                logger.info(f"[*] Lock gelöscht: {lock}")
+            except Exception:
+                pass
 
-    # Edge mit echtem Profil + CDP neu starten (Session/Login bleibt erhalten)
+    # Edge mit Debug-Port starten (ohne --user-data-dir → Standard-Profil mit Session)
     logger.info(f"[*] Starte Edge mit --remote-debugging-port={CDP_PORT}...")
     subprocess.Popen([
         EDGE_EXE,
         f"--remote-debugging-port={CDP_PORT}",
-        f"--user-data-dir={EDGE_PROFILE}",
         "--profile-directory=Default",
         "--no-first-run",
         CHATGPT_IMAGE_URL,
     ])
 
     # Warten bis Debug-Port verfügbar
-    for i in range(30):
+    for i in range(20):
         time.sleep(2)
         try:
             urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
