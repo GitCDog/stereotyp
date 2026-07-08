@@ -99,6 +99,7 @@ def find_input(page):
         loc = page.locator(sel).first
         try:
             loc.wait_for(state="visible", timeout=5000)
+            logging.getLogger(__name__).info(f"[*] Eingabefeld gefunden: {sel}")
             return loc
         except Exception:
             continue
@@ -107,27 +108,26 @@ def find_input(page):
 
 def type_prompt(page, editor, prompt: str):
     """Fügt Prompt ins ChatGPT-Eingabefeld ein."""
+    logger = logging.getLogger(__name__)
+
     editor.click()
+    page.wait_for_timeout(500)
+
+    tag = editor.evaluate("el => el.tagName + ' ce=' + el.contentEditable + ' id=' + el.id")
+    logger.info(f"[*] Eingabefeld: {tag}")
+
+    # Ansatz 1: keyboard.type (zuverlässigste Playwright-Methode)
+    editor.press("Control+a")
+    page.wait_for_timeout(100)
+    page.keyboard.type(prompt, delay=0)
     page.wait_for_timeout(400)
 
-    # Ansatz 1: DataTransfer paste event (funktioniert mit React contenteditable)
-    inserted = page.evaluate("""(text) => {
-        const el = document.querySelector('#prompt-textarea') ||
-                   document.querySelector('div[contenteditable="true"]') ||
-                   document.activeElement;
-        if (!el) return false;
-        el.focus();
-        const dt = new DataTransfer();
-        dt.setData('text/plain', text);
-        el.dispatchEvent(new ClipboardEvent('paste', {
-            clipboardData: dt, bubbles: true, cancelable: true
-        }));
-        return el.innerText ? el.innerText.length > 0 : el.value ? el.value.length > 0 : false;
-    }""", prompt)
-    page.wait_for_timeout(400)
+    # Prüfen ob Text angekommen
+    content = editor.evaluate("el => el.value || el.innerText || ''")
+    logger.info(f"[*] Feld-Inhalt nach type: {len(content)} Zeichen")
 
-    if not inserted:
-        # Ansatz 2: System-Clipboard + Ctrl+V
+    if len(content) < 10:
+        logger.info("[*] keyboard.type hat nicht funktioniert – versuche Clipboard-Paste")
         pyperclip.copy(prompt)
         editor.click()
         page.wait_for_timeout(300)
@@ -135,6 +135,8 @@ def type_prompt(page, editor, prompt: str):
         page.wait_for_timeout(100)
         editor.press("Control+v")
         page.wait_for_timeout(500)
+        content2 = editor.evaluate("el => el.value || el.innerText || ''")
+        logger.info(f"[*] Feld-Inhalt nach paste: {len(content2)} Zeichen")
 
 
 def send_prompt(page):
