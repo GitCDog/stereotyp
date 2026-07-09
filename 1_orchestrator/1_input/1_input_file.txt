@@ -230,7 +230,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 229,Hobby Horsing,X,X,50,X,X,,X,X,X
 230,Smart Home,X,X,43,X,X,,X,X,
 231,rasierte Arme,X,X,51,X,X,,X,X,
-232,Augenkontakt beim Anstoßen,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779792332/stereotypen/0232_Augenkontakt%20beim%20Ansto%C3%9Fen.mp4,X,,
+232,Augenkontakt beim Anstoßen,X,X,50,X,X,,X,X,
 233,Sitzfussballer,X,X,45,X,X,,X,X,X
 234,deutsche Küche,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089306/stereotypen/0234_vid_deutsche%20K%C3%BCche.mp4,X,,
 235,Negerkuss,X,X,49,X,X,,X,X,
