@@ -32,8 +32,10 @@ EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data
 INPUT_FILE        = "1_input/1_input_file.txt"
 OUTPUT_DIR        = Path("output")
 PROMPTS_FILE      = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
-CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a083e90-3238-83eb-ae9d-255dabbe121c"
+CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a50e880-1edc-83eb-a825-c018070052a2"
 DEFAULT_WAIT_SEC  = 30
+# Eigenes persistentes Verzeichnis – kein Konflikt mit Default-Profil / WebView2-lockfile
+CDP_USER_DATA = Path(r"C:\Users\slawa\AppData\Local\Temp\EdgeCDP")
 
 
 def setup_logging() -> logging.Logger:
@@ -68,6 +70,8 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
     return (
         f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
         f'und nehme nicht so viel text in das bild rein, '
+        f'verändere die szene und personen im vergleich zum vorherigen bild, '
+        f'stelle junge personen dar (20-35 jahre), '
         f'Titel "{title}". Story: "{text}"'
     )
 
@@ -110,56 +114,101 @@ def type_prompt(page, editor, prompt: str):
     """Fügt Prompt ins ChatGPT-Eingabefeld ein."""
     logger = logging.getLogger(__name__)
 
-    # Fenster in Vordergrund + Fokus sicherstellen
     page.bring_to_front()
-    page.wait_for_timeout(300)
-    editor.click()
     page.wait_for_timeout(500)
+    editor.click()
+    page.wait_for_timeout(300)
 
     tag = editor.evaluate("el => el.tagName + ' id=' + el.id + ' ce=' + el.contentEditable")
     logger.info(f"[*] Eingabefeld: {tag}")
 
-    # Ansatz 1: keyboard.type mit Delay (zuverlässig bei CDP + fokussiertem Fenster)
-    editor.press("Control+a")
-    page.wait_for_timeout(100)
-    page.keyboard.type(prompt, delay=20)
-    page.wait_for_timeout(400)
+    # Ansatz 1: execCommand (läuft in JS-Kontext, kein OS-Fensterfokus nötig)
+    result = page.evaluate("""(text) => {
+        const el = document.querySelector('#prompt-textarea') ||
+                   document.querySelector('[contenteditable="true"]');
+        if (!el) return 'no element';
+        el.focus();
+        document.execCommand('selectAll', false, null);
+        document.execCommand('delete', false, null);
+        const ok = document.execCommand('insertText', false, text);
+        const len = (el.innerText || el.value || '').length;
+        return 'ok=' + ok + ' len=' + len;
+    }""", prompt)
+    logger.info(f"[*] execCommand: {result}")
 
     content = editor.evaluate("el => el.value || el.innerText || ''")
-    logger.info(f"[*] Feld nach keyboard.type: {len(content)} Zeichen")
+    logger.info(f"[*] Feld nach execCommand: {len(content)} Zeichen")
+    if len(content) >= 10:
+        return
 
-    if len(content) < 10:
-        # Ansatz 2: Clipboard-Paste
-        logger.info("[*] keyboard.type fehlgeschlagen – versuche Clipboard")
-        pyperclip.copy(prompt)
-        page.bring_to_front()
-        editor.click()
-        page.wait_for_timeout(400)
-        editor.press("Control+a")
-        page.wait_for_timeout(100)
-        editor.press("Control+v")
-        page.wait_for_timeout(600)
-        content2 = editor.evaluate("el => el.value || el.innerText || ''")
-        logger.info(f"[*] Feld nach clipboard: {len(content2)} Zeichen")
+    # Ansatz 2: DataTransfer Paste-Event
+    logger.info("[*] execCommand fehlgeschlagen – versuche DataTransfer paste")
+    result2 = page.evaluate("""(text) => {
+        const el = document.querySelector('#prompt-textarea') ||
+                   document.querySelector('[contenteditable="true"]');
+        if (!el) return 'no element';
+        el.focus();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('delete', false, null);
+        const dt = new DataTransfer();
+        dt.setData('text/plain', text);
+        el.dispatchEvent(new ClipboardEvent('paste', {clipboardData: dt, bubbles: true, cancelable: true}));
+        return 'paste len=' + (el.innerText || el.value || '').length;
+    }""", prompt)
+    logger.info(f"[*] DataTransfer: {result2}")
+
+    content2 = editor.evaluate("el => el.value || el.innerText || ''")
+    logger.info(f"[*] Feld nach DataTransfer: {len(content2)} Zeichen")
+    if len(content2) >= 10:
+        return
+
+    # Ansatz 3: Systemclipboard + Ctrl+V
+    logger.info("[*] DataTransfer fehlgeschlagen – versuche Systemclipboard Ctrl+V")
+    pyperclip.copy(prompt)
+    editor.click()
+    page.wait_for_timeout(400)
+    editor.press("Control+a")
+    page.wait_for_timeout(100)
+    editor.press("Control+v")
+    page.wait_for_timeout(600)
+    content3 = editor.evaluate("el => el.value || el.innerText || ''")
+    logger.info(f"[*] Feld nach Clipboard: {len(content3)} Zeichen")
 
 
 def send_prompt(page):
-    """Sendet den Prompt. Wartet bis Send-Button enabled ist, sonst Enter."""
+    """Sendet den Prompt. Wartet bis Send-Button enabled ist, dann JS-Click oder Enter."""
+    logger = logging.getLogger(__name__)
     btn = page.locator('[data-testid="send-button"]')
     try:
         btn.wait_for(state="visible", timeout=5000)
-        # Warte bis Button enabled (Text wurde korrekt erkannt)
-        for _ in range(20):
+        for _ in range(30):
             if btn.is_enabled():
                 break
             page.wait_for_timeout(300)
         if btn.is_enabled():
+            logger.info("[*] Send-Button klicken")
             btn.click()
-        else:
-            # Fallback: Enter-Taste
-            page.keyboard.press("Enter")
-    except Exception:
-        page.keyboard.press("Enter")
+            return
+        logger.info("[*] Send-Button nicht enabled nach 9s")
+    except Exception as e:
+        logger.info(f"[*] Send-Button Fehler: {e}")
+
+    clicked = page.evaluate("""() => {
+        const btn = document.querySelector('[data-testid="send-button"]') ||
+                    document.querySelector('button[aria-label*="Send"]') ||
+                    document.querySelector('button[type="submit"]');
+        if (btn && !btn.disabled) { btn.click(); return true; }
+        return false;
+    }""")
+    if clicked:
+        logger.info("[*] Send via JS-Click")
+        return
+    logger.info("[*] Send via Enter")
+    page.keyboard.press("Enter")
 
 
 def _extract_file_id(src: str) -> str:
@@ -196,8 +245,26 @@ def find_bottom_image(page) -> str | None:
     """Nimmt das unterste generierte Bild im DOM – das ist immer die aktuellste Antwort."""
     return page.evaluate("""() => {
         const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button', 'auth0'];
+
+        function isGeneratedImg(src) {
+            if (!src || src.endsWith('.svg')) return false;
+            if (skip.some(s => src.toLowerCase().includes(s))) return false;
+            return true;
+        }
+
+        // Strategie 1: letzter Assistant-Message-Container (treffsicher, egal ob noch am Laden)
+        const msgs = document.querySelectorAll(
+            '[data-message-author-role="assistant"], article[data-testid*="conversation-turn"]'
+        );
+        if (msgs.length > 0) {
+            const lastMsg = msgs[msgs.length - 1];
+            for (const img of lastMsg.querySelectorAll('img[src]')) {
+                if (isGeneratedImg(img.src)) return img.src;
+            }
+        }
+
+        // Strategie 2: alle Bilder nach Position (Fallback)
         const imgs = Array.from(document.querySelectorAll('img[src]'));
-        // Nach DOM-Position sortieren: unterste zuerst
         imgs.sort((a, b) => {
             const ay = a.getBoundingClientRect().top + window.scrollY;
             const by = b.getBoundingClientRect().top + window.scrollY;
@@ -205,13 +272,13 @@ def find_bottom_image(page) -> str | None:
         });
         for (const img of imgs) {
             const src = img.src || '';
-            if (!src || src.endsWith('.svg')) continue;
-            if (skip.some(s => src.toLowerCase().includes(s))) continue;
+            if (!isGeneratedImg(src)) continue;
             const w = img.naturalWidth || img.width || 0;
             const h = img.naturalHeight || img.height || 0;
             if (w > 200 || h > 200) return src;
             if (src.startsWith('blob:') || src.includes('chatgpt.com/backend') ||
-                src.includes('oaiusercontent') || src.includes('oaidalleapiprodscus')) return src;
+                src.includes('oaiusercontent') || src.includes('oaidalleapiprodscus') ||
+                src.includes('files.oai') || src.includes('file-')) return src;
         }
         return null;
     }""")
@@ -235,8 +302,12 @@ def wait_for_new_image(page, logger, snapshot: set, timeout_sec: int = 180) -> s
 
         src = find_bottom_image(page)
         if src and _extract_file_id(src) not in snapshot:
-            logger.info(f"[*] Neues Bild gefunden nach ~{elapsed}s")
-            return src
+            # Kurz warten damit finale URL geladen ist (kein Placeholder)
+            page.wait_for_timeout(3000)
+            src2 = find_bottom_image(page)
+            final = src2 if src2 else src
+            logger.info(f"[*] Neues Bild gefunden nach ~{elapsed}s: {final[:80]}")
+            return final
         logger.info(f"    ... generiert noch ({elapsed}s vergangen, max {timeout_sec}s)")
         page.wait_for_timeout(9500)
         elapsed += 10
@@ -340,29 +411,45 @@ CDP_PORT = 9222
 def start_edge_with_debug(logger):
     import subprocess, urllib.request
     # CDP bereits aktiv?
-    try:
-        urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
-        logger.info(f"[+] CDP-Port bereits aktiv")
-        return f"http://localhost:{CDP_PORT}"
-    except Exception:
-        pass
-    # Edge beenden
+    for host in ["127.0.0.1", "localhost"]:
+        try:
+            urllib.request.urlopen(f"http://{host}:{CDP_PORT}/json/version", timeout=2)
+            logger.info(f"[+] CDP-Port bereits aktiv ({host})")
+            return f"http://{host}:{CDP_PORT}"
+        except Exception:
+            pass
+
+    # Edge-Browser-Prozesse beenden
     logger.info("[*] Beende laufende Edge-Prozesse...")
     subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
-    time.sleep(3)
-    # Edge neu starten
-    logger.info(f"[*] Starte Edge mit Debug-Port...")
-    subprocess.Popen([EDGE_EXE, f"--remote-debugging-port={CDP_PORT}",
-                      "--profile-directory=Default", "--no-first-run", CHATGPT_IMAGE_URL])
-    # Auf Port warten
+    for _ in range(10):
+        time.sleep(1)
+        r = subprocess.run(["tasklist", "/FI", "IMAGENAME eq msedge.exe"], capture_output=True)
+        if b"msedge.exe" not in (r.stdout or b""):
+            break
+    logger.info("[*] Edge-Prozesse beendet")
+
+    # CDP-Profilordner (persistiert zwischen Runs – Session bleibt erhalten)
+    CDP_USER_DATA.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"[*] Starte Edge mit Debug-Port {CDP_PORT} (CDP-Profil)...")
+    subprocess.Popen([EDGE_EXE,
+                      f"--remote-debugging-port={CDP_PORT}",
+                      "--remote-allow-origins=*",
+                      f"--user-data-dir={CDP_USER_DATA}",
+                      "--no-first-run",
+                      CHATGPT_IMAGE_URL])
+
     for i in range(20):
         time.sleep(2)
-        try:
-            urllib.request.urlopen(f"http://localhost:{CDP_PORT}/json/version", timeout=2)
-            logger.info(f"[+] Edge bereit (nach {(i+1)*2}s)")
-            return f"http://localhost:{CDP_PORT}"
-        except Exception:
-            logger.info(f"    ... warte ({(i+1)*2}s)")
+        for host in ["127.0.0.1", "localhost"]:
+            try:
+                urllib.request.urlopen(f"http://{host}:{CDP_PORT}/json/version", timeout=2)
+                logger.info(f"[+] Edge bereit via {host} (nach {(i+1)*2}s)")
+                return f"http://{host}:{CDP_PORT}"
+            except Exception:
+                pass
+        logger.info(f"    ... warte ({(i+1)*2}s)")
     logger.error("[-] Edge Debug-Port nicht erreichbar")
     return None
 
