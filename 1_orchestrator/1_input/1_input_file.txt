@@ -21,7 +21,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 20,Die Vereinsmeierei,X,X,57,X,X,,X,X,X
 21,Der Mallorca-Kegelclub,X,X,52,X,X,,X,X,X
 22,Sandalen mit Socken,X,X,53,X,X,,X,X,X
-23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539194/stereotypen/0023_Die%20Wandergruppe%20%E2%80%9EAlpengl%C3%BCck.mp4,X,,
+23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,,X,X,
 24,Der Handtuch-Reservierer,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255206/stereotypen/0024_Der%20Handtuch-Reservierer.mp4,X,,
 25,Der Berliner Techno-Hipster,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255344/stereotypen/0025_Der%20Berliner%20Techno-Hipster.mp4,X,,
 26,Der „Vanlife”-Aussteiger,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255484/stereotypen/0026_Der%20%E2%80%9EVanlife%E2%80%9D-Aussteiger.mp4,X,,
