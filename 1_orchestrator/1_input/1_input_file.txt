@@ -17,7 +17,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 16,Direktheit,X,X,52,X,X,,X,X,X
 17,Das Auto als Heiligtum,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779538966/stereotypen/0017_Das%20Auto%20als%20Heiligtum.mp4,X,,
 18,Mülltrennung als Extremsport,X,X,50,X,X,,X,X,X
-19,"Kein Bargeld, keine Chance",X,X,X,,,,X,,
+19,"Kein Bargeld, keine Chance",X,X,52,,,,X,,
 20,Die Vereinsmeierei,X,X,57,X,X,,X,X,X
 21,Der Mallorca-Kegelclub,X,X,52,X,X,,X,X,X
 22,Sandalen mit Socken,X,X,53,X,X,,X,X,X
@@ -41,7 +41,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 40,Die Angst vor „Durchzug“,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540297/stereotypen/0040_Die%20Angst%20vor%20%E2%80%9EDurchzug.mp4,X,,
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540441/stereotypen/0041_Der%20Kassen-Stress%20%28Einr%C3%A4umen%20gegen%20die%20Zeit%29.mp4,X,,
 42,„Tja“ – Die universelle Antwort,X,X,58,X,X,,X,X,X
-43,Der Schilderwald-Verteidiger,X,X,53,X,X,,X,,
+43,Der Schilderwald-Verteidiger,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783925518/stereotypen/0043_vid_Der%20Schilderwald-Verteidiger.mp4,X,,
 44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540729/stereotypen/0044_Die%20%E2%80%9EWo%20kommen%20Sie%20eigentlich%20her-Frage.mp4,X,,
 45,Der Baumarkt-Samstag,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540877/stereotypen/0045_Der%20Baumarkt-Samstag.mp4,X,,
 46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,,,,X,,
@@ -122,10 +122,10 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 121,Gendern,X,X,55,X,X,,X,X,X
 122,Das Arschgeweih,X,X,57,X,X,,X,X,X
 123,Das Augenbrauenpiercing,X,X,57,X,X,,X,X,
-124,Chaya sagt mach kein Auge,X,X,51,X,X,,X,,
-125,Klopapierrolle,X,X,50,X,X,,X,,
-126,Handschlag als Gruß,X,X,53,X,X,,X,,
-127,Haartransplantation Türkei,X,X,48,X,X,,X,,
+124,Chaya sagt mach kein Auge,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340549/stereotypen/0124_vid_Chaya%20sagt%20mach%20kein%20Auge.mp4,X,,
+125,Klopapierrolle,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340702/stereotypen/0125_vid_Klopapierrolle.mp4,X,,
+126,Handschlag als Gruß,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340842/stereotypen/0126_vid_Handschlag%20als%20Gru%C3%9F.mp4,X,,
+127,Haartransplantation Türkei,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340974/stereotypen/0127_vid_Haartransplantation%20T%C3%BCrkei.mp4,X,,
 128,Proteinprodukte Regal,X,X,50,,,,X,,
 129,Demeter,X,X,52,,,,X,,
 130,Des deutschen liebstes Kind,X,X,47,,,,X,,
