@@ -23,7 +23,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 22,Sandalen mit Socken,X,X,53,X,X,,X,X,X
 23,Die Wandergruppe „Alpenglück“,X,X,48,X,X,,X,X,
 24,Der Handtuch-Reservierer,X,X,47,X,X,,X,X,
-25,Der Berliner Techno-Hipster,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255344/stereotypen/0025_Der%20Berliner%20Techno-Hipster.mp4,X,,
+25,Der Berliner Techno-Hipster,X,X,48,X,X,,X,X,
 26,Der „Vanlife”-Aussteiger,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255484/stereotypen/0026_Der%20%E2%80%9EVanlife%E2%80%9D-Aussteiger.mp4,X,,
 27,Der Elektroauto-Missionar,X,X,52,X,X,,X,X,X
 28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,,X,X,X
