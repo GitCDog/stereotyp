@@ -261,7 +261,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 260,Hartz IV,X,X,43,,,,X,,
 261,Spritpreise,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920959/stereotypen/0261_Spritpreise.mp4,X,,
 262,Steuern überall,X,X,48,,,,X,,
-263,Handwerker-Termin,X,,,,,,,,
+263,Handwerker-Termin,X,X,53,,,,,,
 264,Arbeitsamt,X,X,48,,,,X,,
 265,Tür mit Ellbogen aufmachen,X,X,49,,,,X,,
 266,Energiewende,X,X,46,,,,X,,
@@ -285,7 +285,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 284,Feierabendbier,X,X,45,,,,X,,
 285,Datenschutz,X,X,47,,,,X,,
 286,Heizkosten,X,X,47,,,,X,,
-287,E-Scooter,X,,,,,,,,
+287,E-Scooter,X,X,52,,,,,,
 288,Deutsche Bahn,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780921057/stereotypen/0288_Deutsche%20Bahn.mp4,X,,
 289,Ja ja,X,X,46,X,X,,X,X,X
 290,Weihnachtsmarktpreise,X,X,44,,,,X,,
