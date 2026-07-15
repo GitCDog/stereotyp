@@ -70,7 +70,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 69,Der „Das ist deutsche Wertarbeit”-Sager,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101299/stereotypen/0069_vid_Der%20%E2%80%9EDas%20ist%20deutsche%20Wertarbeit%E2%80%9D-Sager.mp4,X,,
 70,Der Kleingarten-Vorstand,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101471/stereotypen/0070_vid_Der%20Kleingarten-Vorstand.mp4,X,,
 71,Das Fax-Gerät im Amt,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783502819/stereotypen/0071_vid_Das%20Fax-Ger%C3%A4t%20im%20Amt.mp4,X,,
-72,„Schatzi“-Paare im Partnerlook,X,X,54,X,,,X,,
+72,„Schatzi“-Paare im Partnerlook,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101629/stereotypen/0072_vid_%E2%80%9ESchatzi%E2%80%9C-Paare%20im%20Partnerlook.mp4,X,,
 73,Der Laubbläser-Fanatiker,X,X,50,X,,,X,,
 74,Die Landlust-Idylle-Leserin,X,X,54,X,,,X,,
 75,Der „Wir schenken uns nichts“-Lügner,X,X,47,X,,,X,,
