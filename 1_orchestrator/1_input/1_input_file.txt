@@ -127,7 +127,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 126,Handschlag als Gruß,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340842/stereotypen/0126_vid_Handschlag%20als%20Gru%C3%9F.mp4,X,,
 127,Haartransplantation Türkei,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340974/stereotypen/0127_vid_Haartransplantation%20T%C3%BCrkei.mp4,X,,
 128,Proteinprodukte Regal,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102261/stereotypen/0128_vid_Proteinprodukte%20Regal.mp4,X,,
-129,Demeter,X,X,52,X,,,X,,
+129,Demeter,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102410/stereotypen/0129_vid_Demeter.mp4,X,,
 130,Des deutschen liebstes Kind,X,X,47,X,,,X,,
 131,Shisha Boys,X,X,54,,,,X,,
 132,Das Du anbieten,X,X,51,,,,X,,
