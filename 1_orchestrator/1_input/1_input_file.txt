@@ -27,7 +27,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 26,Der „Vanlife”-Aussteiger,X,X,49,X,X,,X,X,
 27,Der Elektroauto-Missionar,X,X,52,X,X,,X,X,X
 28,Der Fitness-Influencer aus dem Dorf,X,X,46,X,X,,X,X,X
-29,Der Blockwart-Nachbar,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539361/stereotypen/0029_Der%20Blockwart-Nachbar.mp4,X,,
+29,Der Blockwart-Nachbar,X,X,48,X,X,,X,X,
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539447/stereotypen/0030_Der%20Anzeige%20ist%20raus-Typ.mp4,X,,
 31,Der DB-Wutbürger,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539532/stereotypen/0031_Der%20DB-Wutb%C3%BCrger.mp4,X,,
 32,Der Grillmeister,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539617/stereotypen/0032_Der%20Grillmeister.mp4,X,,
