@@ -44,7 +44,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783925518/stereotypen/0043_vid_Der%20Schilderwald-Verteidiger.mp4,X,,
 44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540729/stereotypen/0044_Die%20%E2%80%9EWo%20kommen%20Sie%20eigentlich%20her-Frage.mp4,X,,
 45,Der Baumarkt-Samstag,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540877/stereotypen/0045_Der%20Baumarkt-Samstag.mp4,X,,
-46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,X,,,X,,
+46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187623/stereotypen/0046_vid_P%C3%BCnktlichkeit%20%285%20Min.%20vor%20der%20Zeit%29.mp4,X,,
 47,Der „Haben wir das schriftlich“-Kollege,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541020/stereotypen/0047_Der%20%E2%80%9EHaben%20wir%20das%20schriftlich-Kollege.mp4,X,,
 48,Die Sonntagsruhe-Polizei,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540218/stereotypen/0048_Die%20Sonntagsruhe-Polizei.mp4,X,,
 49,Der Fahrradweg-Sheriff,X,X,55,X,X,,X,X,
