@@ -322,4 +322,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 321,Heidi Reichninnek,X,X,45,X,X,,X,X,X
 322,Dachgeschosswohnung,X,X,54,X,X,,X,X,X
 323,Selbständigkeit,X,X,65,X,X,,X,X,X
-324,Jens Spahn,X,X,60,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784186270/stereotypen/0324_vid_Jens%20Spahn.mp4,X,,
+324,Jens Spahn,X,X,60,X,X,,X,X,
