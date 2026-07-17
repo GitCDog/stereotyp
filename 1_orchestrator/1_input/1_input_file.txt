@@ -156,7 +156,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 155,20 Kaffee am Tag,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087224/stereotypen/0155_vid_20%20Kaffee%20am%20Tag.mp4,X,,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222676/stereotypen/0156_Tussi%20mit%20vielen%20kleinen%20Tattoos.mp4,X,,
 157,Veganes Steak,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222840/stereotypen/0157_Veganes%20Steak.mp4,X,,
-158,Papierstrohhalm,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222991/stereotypen/0158_Papierstrohhalm.mp4,X,,
+158,Papierstrohhalm,X,X,49,X,X,,X,X,
 159,Pornosüchtiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087309/stereotypen/0159_vid_Pornos%C3%BCchtiger.mp4,X,,
 160,Unfallgaffer,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087412/stereotypen/0160_vid_Unfallgaffer.mp4,X,X,
 161,Botox Frau,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087527/stereotypen/0161_vid_Botox%20Frau.mp4,X,,
@@ -323,3 +323,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 322,Dachgeschosswohnung,X,X,54,X,X,,X,X,X
 323,Selbständigkeit,X,X,65,X,X,,X,X,X
 324,Jens Spahn,X,X,60,X,X,,X,X,
+325,WM Finale 2026,X,X,58,,,,X,,
