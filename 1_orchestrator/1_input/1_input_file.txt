@@ -327,4 +327,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 326,"Warum tritt nur Jens Spahn zurück, warum nicht die ganze CDU?",X,X,52,X,X,,,X,
 327,Am Ende gewinnt die Korruption bei der WM,X,X,62,X,X,,X,X,
 328,"Messi oder Yamal, wer wird der GOAT?",X,,,,,,X,,
-329,Die Messi-Yamal Matrix-Verschwörung,X,X,59,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784473900/stereotypen/0329_vid_Die%20Messi-Yamal%20Matrix-Verschw%C3%B6rung.mp4,X,,
+329,Die Messi-Yamal Matrix-Verschwörung,X,X,59,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784473974/stereotypen/0329_vid_Die%20Messi-Yamal%20Matrix-Verschw%C3%B6rung.mp4,X,,
