@@ -36,10 +36,11 @@ def generate_title(stereotyp: str, story_text: str) -> str:
         f'Antworte NUR mit dem Titel, nichts sonst.\n\nStory: {story_text[:300]}'
     )
     no_window = subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0
+    env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
-        ["claude", "-p", prompt],
+        ["claude", "-p", prompt, "--allowedTools", ""],
         capture_output=True, text=True, encoding="utf-8",
-        creationflags=no_window, timeout=30
+        creationflags=no_window, timeout=30, env=env,
     )
     title = result.stdout.strip().strip('"').strip("'")
     return title if title else stereotyp
@@ -635,18 +636,30 @@ def generate_pictures_playwright():
     story_val = str(body.get("story", "")).strip()
 
     def task():
+        _abort_flag.clear()
         try:
-            if not story_val:
-                set_task("error", "Story-Nummer oder Bereich angeben (z.B. 49 oder 49,50,51)", 0)
-                return
-            set_task("running", f"Playwright: Bilder für {story_val}...", 10, log=[])
-            run_script_logged(["generate_pictures_playwright.py", "--story", story_val])
+            target = story_val
+            if not target:
+                import csv as _csv
+                input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+                with open(input_file, encoding="utf-8") as f:
+                    rows = list(_csv.DictReader(f))
+                pending = [r["nr"] for r in rows
+                           if r.get("status_story") == "X" and r.get("status_pic") != "X"]
+                if not pending:
+                    set_task("complete", "Alle Stories haben bereits ein Bild.", 100)
+                    return
+                target = ",".join(pending[:5])
+                append_log(f"[*] Auto-Modus: {len(pending)} Stories ohne Bild → nächste 5: {target}")
+            set_task("running", f"Playwright: Bilder für {target}...", 10, log=[])
+            run_script_logged(["generate_pictures_playwright.py", "--story", target])
             set_task("running", "Dashboard aktualisieren...", 95)
             refresh_dashboard()
             set_task("complete", f"Fertig! Bilder für {story_val} generiert.", 100)
         except Exception as e:
             set_task("error", str(e), 0)
 
+    _abort_flag.clear()
     set_task("running", "Starte Playwright...", 5)
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
@@ -664,24 +677,39 @@ def instagram_post():
 
     def task():
         try:
-            numbers = parse_range(story_val) if story_val else [None]
-            total = len(numbers)
-            set_task("running", f"0/{total} Posts fertig", 5, log=[])
-
-            for i, nr in enumerate(numbers):
-                pct = int((i / total) * 88) + 5
-                label = f"#{nr}" if nr else "nächste Story"
-                append_log(f"{'─'*50}")
-                append_log(f"▶ Poste {label} ({i+1}/{total})")
-                set_task("running", f"{i}/{total} fertig – poste {label}...", pct)
-
+            if story_val:
+                # Manueller Post: via GitHub Actions triggern
+                numbers = parse_range(story_val)
+                total = len(numbers)
+                set_task("running", f"Triggere GitHub Actions für {total} Story(s)...", 5, log=[])
+                repo_root = Path(__file__).parent.parent
+                for i, nr in enumerate(numbers):
+                    pct = int((i / total) * 88) + 5
+                    append_log(f"{'─'*50}")
+                    append_log(f"▶ Trigger GitHub Actions für #{nr} ({i+1}/{total})")
+                    set_task("running", f"{i}/{total} gestartet – triggere #{nr}...", pct)
+                    gh_env = {k: v for k, v in os.environ.items()
+                              if k not in ("GITHUB_TOKEN", "GH_TOKEN")}
+                    result = subprocess.run(
+                        ["gh", "workflow", "run", "post_story.yml", "-f", f"story_nr={nr}"],
+                        cwd=str(repo_root),
+                        capture_output=True, text=True, encoding="utf-8", errors="replace",
+                        timeout=30,
+                        env=gh_env,
+                    )
+                    if result.returncode == 0:
+                        append_log(f"✅ Workflow gestartet für #{nr} → postet in ~1-2 Min")
+                    else:
+                        err = result.stderr.strip() or result.stdout.strip()
+                        append_log(f"❌ Fehler bei #{nr}: {err}")
+                with _task_lock:
+                    _task["reload"] = False
+                set_task("complete", f"GitHub Actions Workflow für {total} Story(s) gestartet.", 100)
+            else:
+                # Auto-Modus: lokaler instagram_poster (nächste ausstehende Story)
+                set_task("running", "Poste nächste Story lokal...", 5, log=[])
                 env = os.environ.copy()
                 env["FORCE_POST"] = "1"
-                if nr:
-                    env["STORY_NR"] = nr
-                elif "STORY_NR" in env:
-                    del env["STORY_NR"]
-
                 proc = subprocess.Popen(
                     [sys.executable, "instagram_poster.py"],
                     cwd=Path(__file__).parent,
@@ -699,11 +727,10 @@ def instagram_post():
                         append_log(line)
                 proc.wait()
                 if proc.returncode != 0:
-                    append_log(f"⚠️ Fehlercode {proc.returncode} bei {label}")
-
-            set_task("running", "Dashboard aktualisieren...", 97)
-            refresh_dashboard()
-            set_task("complete", f"Fertig! {total} Post(s).", 100)
+                    append_log(f"⚠️ Fehlercode {proc.returncode}")
+                set_task("running", "Dashboard aktualisieren...", 97)
+                refresh_dashboard()
+                set_task("complete", "Fertig!", 100)
         except Exception as e:
             set_task("error", str(e), 0)
 

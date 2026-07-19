@@ -84,12 +84,14 @@ def build_story_prompt(stereotyp: str, stichworte: list[str] | None = None) -> s
 def generate_story(stereotyp: str, stichworte: list[str] | None = None) -> str:
     """Generiere Story-Text via Claude CLI (claude -p)."""
     prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
+    env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
-        ["claude", "-p", prompt],
+        ["claude", "-p", prompt, "--allowedTools", ""],
         capture_output=True,
         text=True,
         encoding="utf-8",
         timeout=300,
+        env=env,
     )
     if result.returncode != 0:
         raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip()}")

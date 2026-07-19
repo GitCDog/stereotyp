@@ -32,7 +32,7 @@ EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data
 INPUT_FILE        = "1_input/1_input_file.txt"
 OUTPUT_DIR        = Path("output")
 PROMPTS_FILE      = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
-CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a50e880-1edc-83eb-a825-c018070052a2"
+CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7"
 DEFAULT_WAIT_SEC  = 30
 # Eigenes persistentes Verzeichnis – kein Konflikt mit Default-Profil / WebView2-lockfile
 CDP_USER_DATA = Path(r"C:\Users\slawa\AppData\Local\Temp\EdgeCDP")

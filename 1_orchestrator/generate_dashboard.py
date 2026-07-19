@@ -111,7 +111,7 @@ for row in data:
         cloud_td = '<td class="status-cell"></td>'
     rows_html += f"""                <tr{row_cls}>
                     <td class="num{' cell-lightgreen' if name_green else ''}">{nr}</td>
-                    <td class="{name_cls}">{stereo}<span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
+                    <td class="{name_cls}">{stereo}<span class="eye-btn" data-nr="{nr}" onmouseenter="showStory(this)" onmouseleave="hideStory()" onclick="copyPrompt(this)" title="Klick = Prompt kopieren">👁</span><span class="eye-btn title-eye-btn" data-title="{title_text}" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     {status_td(row.get('status_story',''))}
                     {status_td(row.get('status_caption',''))}
                     {status_td(row.get('status_audio',''))}
@@ -737,7 +737,7 @@ html = f'''<!DOCTYPE html>
         'playwright': {{ btn: 'playwrightBtn', api: '/api/generate-pictures-playwright', label: '🤖 generate_pictures_playwright' }},
         'audio-pic': {{ btn: 'audioPicBtn', api: '/api/generate-audio-for-pics', label: '🎵 generate_audio (alle Pics)'      }},
         'video':   {{ btn: 'videoBtn',   api: '/api/generate-video',   label: '🎬 generate_videos'                           }},
-        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster',  inputHint: 'Story-Nummer(n) z.B. 20 oder 20,22 (leer = nächste aus Reihenfolge):' }},
+        'post':    {{ btn: 'postBtn',    api: '/api/instagram-post',      label: '📤 instagram_poster',  inputHint: 'Story-Nummer(n) z.B. 329 oder 325,327 (leer = nächste Story lokal):' }},
         'sofort':  {{ btn: 'sofortBtn', api: '/api/sofort-posten',        label: '⚡ Sofort posten' }},
     }};
 
@@ -847,8 +847,12 @@ html = f'''<!DOCTYPE html>
                         resetBtn(btn, label);
                         showSummary(data.log, data.message);
                     }} else if (data.status === 'complete') {{
-                        setLog(100, 'Fertig! Lade Dashboard neu...');
-                        setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
+                        if (data.reload === false) {{
+                            setLog(100, data.message || 'Fertig!');
+                        }} else {{
+                            setLog(100, 'Fertig! Lade Dashboard neu...');
+                            setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
+                        }}
                     }} else {{
                         // error oder idle: Log sichtbar lassen, Schließen-Button zeigen
                         const abortBtn = document.getElementById('abortBtn');
@@ -1100,6 +1104,37 @@ html = f'''<!DOCTYPE html>
     const _titleTooltip = document.createElement('div');
     _titleTooltip.id = 'title-tooltip';
     document.body.appendChild(_titleTooltip);
+
+    async function copyPrompt(eye) {{
+        const nr = eye.getAttribute('data-nr');
+        if (!_storyCache[nr]) {{
+            const r = await fetch('/api/story-text?nr=' + nr);
+            const d = await r.json();
+            _storyCache[nr] = d.text || '';
+        }}
+        const text = _storyCache[nr];
+        const titleEl = eye.parentElement ? eye.parentElement.querySelector('.title-eye-btn') : null;
+        const title = titleEl ? titleEl.getAttribute('data-title') : '';
+        const prompt = `${{nr}}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse und nehme nicht so viel text in das bild rein, verändere die szene und personen im vergleich zum vorherigen bild, stelle junge personen dar (20-35 jahre), Titel "${{title}}". Story: "${{text}}"`;
+        let ok = false;
+        try {{
+            await navigator.clipboard.writeText(prompt);
+            ok = true;
+        }} catch(e) {{
+            try {{
+                const ta = document.createElement('textarea');
+                ta.value = prompt;
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+            }} catch(e2) {{}}
+        }}
+        const orig = eye.textContent;
+        eye.textContent = ok ? '✅' : '❌';
+        setTimeout(() => {{ eye.textContent = orig; }}, 1500);
+    }}
 
     async function showStory(eye) {{
         const nr = eye.getAttribute('data-nr');

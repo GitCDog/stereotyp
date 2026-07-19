@@ -14,6 +14,7 @@ Verwendung:
   python generate_captions.py --all       # Alle (auch bereits generierte neu)
 """
 
+import os
 import sys
 import json
 import argparse
@@ -72,9 +73,11 @@ def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None) -> li
     else:
         stichworte_block = ""
     prompt = HASHTAG_PROMPT.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
+    env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
-        ["claude", "-p", prompt],
+        ["claude", "-p", prompt, "--allowedTools", ""],
         capture_output=True, text=True, encoding="utf-8", timeout=60,
+        env=env,
     )
     if result.returncode != 0:
         raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip()}")
