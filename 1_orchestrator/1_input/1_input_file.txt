@@ -323,6 +323,8 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 322,Dachgeschosswohnung,X,X,54,X,X,,X,X,X
 323,Selbständigkeit,X,X,65,X,X,,X,X,X
 324,Jens Spahn,X,X,60,X,X,,X,X,
-325,WM Finale 2026,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784450326/stereotypen/0325_vid_WM%20Finale%202026.mp4,X,,
+325,WM Finale 2026,X,X,58,X,X,,X,X,
 326,"Warum tritt nur Jens Spahn zurück, warum nicht die ganze CDU?",X,X,52,X,X,,,X,
-327,Am Ende gewinnt die Korruption bei der WM,X,X,62,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784450464/stereotypen/0327_vid_Am%20Ende%20gewinnt%20die%20Korruption%20bei%20der%20WM.mp4,,,
+327,Am Ende gewinnt die Korruption bei der WM,X,X,62,X,X,,X,X,
+328,"Messi oder Yamal, wer wird der GOAT?",X,,,,,,,,
+329,Die Messi-Yamal Matrix-Verschwörung,X,,,,,,X,,
