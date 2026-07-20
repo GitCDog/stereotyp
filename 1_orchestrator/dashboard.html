@@ -426,11 +426,11 @@
             <div class="pie-legend">
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#1a4d2e"></span>
-                    Gepostet: 107
+                    Gepostet: 108
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#22c55e"></span>
-                    Bereit zum Posten: 74
+                    Bereit zum Posten: 73
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background:#fbbf24"></span>
@@ -446,7 +446,7 @@
             <div class="stat-box"><h3>Audio ✓</h3><div class="val">328</div></div>
             <div class="stat-box"><h3>Bild ✓</h3><div class="val">180</div></div>
             <div class="stat-box"><h3>Video ✓</h3><div class="val">181</div></div>
-            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">107</div></div>
+            <div class="stat-box"><h3>Gepostet ✓</h3><div class="val">108</div></div>
         </div>
 
         <div class="progress-section">
@@ -6472,7 +6472,7 @@
                     </td>
                     <td class="center rq-col" data-nr="328"></td>
                 </tr>
-                <tr class="row-ready">
+                <tr class="row-posted">
                     <td class="num cell-lightgreen">329</td>
                     <td class="name cell-lightgreen">Die Messi-Yamal Matrix-Verschwörung<span class="eye-btn" data-nr="329" onmouseenter="showStory(this)" onmouseleave="hideStory()" onclick="copyPrompt(this)" title="Klick = Prompt kopieren">👁</span><span class="eye-btn title-eye-btn" data-title="Die Messi-Yamal Matrix-Verschwörung" onmouseenter="showTitle(this)" onmouseleave="hideTitle()" style="font-size:16px;">🏷</span></td>
                     <td class="status-cell cell-done"><span class="blk blk-green"></span></td>
@@ -6484,7 +6484,7 @@
                     <td class="status-cell cell-done"><span class='blk blk-green'></span></td>
                     <td class="status-cell"><span class="blk blk-yellow"></span></td>
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn " data-nr="329" onclick="togglePost(this)" >Post</button>
+                        <button class="insta-btn active" data-nr="329" onclick="togglePost(this)" >✓ Gepostet</button>
                         <button class="queue-btn" data-nr="329" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                         <button class="reset-btn" data-nr="329" onclick="resetVideo(this)" title="Video zurücksetzen (neu generieren)">🔄</button>
                     </td>
@@ -6502,8 +6502,8 @@
         if (!canvas) return;
         var ctx = canvas.getContext('2d');
         var data = [
-            { v: 107,     c: '#1a4d2e' },
-            { v: 74,      c: '#22c55e' },
+            { v: 108,     c: '#1a4d2e' },
+            { v: 73,      c: '#22c55e' },
             { v: 148, c: '#fbbf24' }
         ];
         var total = data.reduce(function(s, d) { return s + d.v; }, 0);
@@ -6643,9 +6643,10 @@
                         _isRefresh = false;
                         resetBtn(btn, label);
                         showSummary(data.log, data.message);
-                    } else if (data.status === 'complete') {
+                    } else if (data.status === 'complete' || data.status === 'error') {
                         if (data.reload === false) {
-                            setLog(100, data.message || 'Fertig!');
+                            setLog(data.status === 'complete' ? 100 : 0, data.message || 'Fertig!');
+                            if (data.notification) showNotification(data.notification);
                         } else {
                             setLog(100, 'Fertig! Lade Dashboard neu...');
                             setTimeout(() => { updateLogList([]); location.reload(); }, 1500);
@@ -7057,6 +7058,39 @@
             btn.textContent = '❌';
             setTimeout(() => { btn.textContent = '🔄'; btn.disabled = false; }, 2000);
         }
+    }
+
+    function showNotification(notif) {
+        const existing = document.getElementById('postNotif');
+        if (existing) existing.remove();
+        const isSuccess = notif.type === 'success';
+        const div = document.createElement('div');
+        div.id = 'postNotif';
+        div.style.cssText = `
+            position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:${isSuccess ? '#1a4d2e' : '#4d1a1a'};
+            color:#fff; border-radius:12px; padding:28px 36px; max-width:480px; width:90%;
+            box-shadow:0 8px 32px rgba(0,0,0,0.5); z-index:9999; text-align:center;
+            border:2px solid ${isSuccess ? '#22c55e' : '#ef4444'};
+        `;
+        const icon = isSuccess ? '✅' : '❌';
+        const msg = notif.message.replace(/
+/g, '<br>');
+        div.innerHTML = `
+            <div style="font-size:2.5rem;margin-bottom:12px">${icon}</div>
+            <div style="font-size:1.1rem;font-weight:600;line-height:1.5">${msg}</div>
+            <button onclick="document.getElementById('postNotif').remove()"
+                style="margin-top:20px;padding:8px 24px;border-radius:8px;border:none;
+                       background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:1rem;">
+                OK
+            </button>
+        `;
+        // Klick außerhalb schließt auch
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;';
+        overlay.onclick = () => { div.remove(); overlay.remove(); };
+        document.body.appendChild(overlay);
+        document.body.appendChild(div);
     }
 </script>
 </body>

@@ -846,9 +846,10 @@ html = f'''<!DOCTYPE html>
                         _isRefresh = false;
                         resetBtn(btn, label);
                         showSummary(data.log, data.message);
-                    }} else if (data.status === 'complete') {{
+                    }} else if (data.status === 'complete' || data.status === 'error') {{
                         if (data.reload === false) {{
-                            setLog(100, data.message || 'Fertig!');
+                            setLog(data.status === 'complete' ? 100 : 0, data.message || 'Fertig!');
+                            if (data.notification) showNotification(data.notification);
                         }} else {{
                             setLog(100, 'Fertig! Lade Dashboard neu...');
                             setTimeout(() => {{ updateLogList([]); location.reload(); }}, 1500);
@@ -1260,6 +1261,38 @@ html = f'''<!DOCTYPE html>
             btn.textContent = '❌';
             setTimeout(() => {{ btn.textContent = '🔄'; btn.disabled = false; }}, 2000);
         }}
+    }}
+
+    function showNotification(notif) {{
+        const existing = document.getElementById('postNotif');
+        if (existing) existing.remove();
+        const isSuccess = notif.type === 'success';
+        const div = document.createElement('div');
+        div.id = 'postNotif';
+        div.style.cssText = `
+            position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:${{isSuccess ? '#1a4d2e' : '#4d1a1a'}};
+            color:#fff; border-radius:12px; padding:28px 36px; max-width:480px; width:90%;
+            box-shadow:0 8px 32px rgba(0,0,0,0.5); z-index:9999; text-align:center;
+            border:2px solid ${{isSuccess ? '#22c55e' : '#ef4444'}};
+        `;
+        const icon = isSuccess ? '✅' : '❌';
+        const msg = notif.message.replace(/\n/g, '<br>');
+        div.innerHTML = `
+            <div style="font-size:2.5rem;margin-bottom:12px">${{icon}}</div>
+            <div style="font-size:1.1rem;font-weight:600;line-height:1.5">${{msg}}</div>
+            <button onclick="document.getElementById('postNotif').remove()"
+                style="margin-top:20px;padding:8px 24px;border-radius:8px;border:none;
+                       background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-size:1rem;">
+                OK
+            </button>
+        `;
+        // Klick außerhalb schließt auch
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;';
+        overlay.onclick = () => {{ div.remove(); overlay.remove(); }};
+        document.body.appendChild(overlay);
+        document.body.appendChild(div);
     }}
 </script>
 </body>

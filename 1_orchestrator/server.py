@@ -678,33 +678,87 @@ def instagram_post():
     def task():
         try:
             if story_val:
-                # Manueller Post: via GitHub Actions triggern
+                # Manueller Post: via GitHub Actions triggern + auf Ergebnis warten
+                import time as _time
                 numbers = parse_range(story_val)
-                total = len(numbers)
-                set_task("running", f"Triggere GitHub Actions für {total} Story(s)...", 5, log=[])
                 repo_root = Path(__file__).parent.parent
+                gh_env = {k: v for k, v in os.environ.items()
+                          if k not in ("GITHUB_TOKEN", "GH_TOKEN")}
+                input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+
+                final_notif = None
                 for i, nr in enumerate(numbers):
-                    pct = int((i / total) * 88) + 5
+                    # Story-Name aus CSV lesen
+                    stereotyp_name = f"#{nr}"
+                    try:
+                        with open(input_file, encoding="utf-8") as f:
+                            for row in csv.DictReader(f):
+                                if str(row.get("nr", "")).strip() == str(nr).strip():
+                                    stereotyp_name = row.get("stereotyp", f"#{nr}").strip()
+                                    break
+                    except Exception:
+                        pass
+
                     append_log(f"{'─'*50}")
-                    append_log(f"▶ Trigger GitHub Actions für #{nr} ({i+1}/{total})")
-                    set_task("running", f"{i}/{total} gestartet – triggere #{nr}...", pct)
-                    gh_env = {k: v for k, v in os.environ.items()
-                              if k not in ("GITHUB_TOKEN", "GH_TOKEN")}
+                    append_log(f"▶ Starte GitHub Actions für #{nr} „{stereotyp_name}"")
+                    set_task("running", f"Triggere Workflow für „{stereotyp_name}"...", 10)
+
                     result = subprocess.run(
                         ["gh", "workflow", "run", "post_story.yml", "-f", f"story_nr={nr}"],
                         cwd=str(repo_root),
                         capture_output=True, text=True, encoding="utf-8", errors="replace",
-                        timeout=30,
-                        env=gh_env,
+                        timeout=30, env=gh_env,
                     )
-                    if result.returncode == 0:
-                        append_log(f"✅ Workflow gestartet für #{nr} → postet in ~1-2 Min")
-                    else:
+                    if result.returncode != 0:
                         err = result.stderr.strip() or result.stdout.strip()
-                        append_log(f"❌ Fehler bei #{nr}: {err}")
+                        append_log(f"❌ Workflow-Start fehlgeschlagen: {err}")
+                        final_notif = {"type": "error", "message": f"Workflow-Start fehlgeschlagen:\n{err}"}
+                        break
+
+                    run_url = result.stdout.strip()
+                    run_id = run_url.rstrip("/").split("/")[-1]
+                    append_log(f"⏳ Warte auf Ergebnis (Run #{run_id})...")
+
+                    # Polling: max 7 Minuten, alle 10 Sekunden
+                    conclusion = None
+                    for attempt in range(42):
+                        _time.sleep(10)
+                        pr = subprocess.run(
+                            ["gh", "run", "view", run_id, "--json", "status,conclusion"],
+                            cwd=str(repo_root), capture_output=True, text=True,
+                            encoding="utf-8", errors="replace", env=gh_env,
+                        )
+                        if pr.returncode == 0:
+                            d = json.loads(pr.stdout)
+                            if d.get("status") == "completed":
+                                conclusion = d.get("conclusion")
+                                break
+                        pct = 10 + int(((attempt + 1) / 42) * 80)
+                        set_task("running", f"⏳ Warte auf GitHub Actions... ({(attempt+1)*10}s)", pct)
+
+                    if conclusion == "success":
+                        append_log(f"✅ „{stereotyp_name}" erfolgreich gepostet!")
+                        final_notif = {"type": "success", "message": f"„{stereotyp_name}" wurde erfolgreich gepostet!"}
+                    elif conclusion:
+                        fl = subprocess.run(
+                            ["gh", "run", "view", run_id, "--log-failed"],
+                            cwd=str(repo_root), capture_output=True, text=True,
+                            encoding="utf-8", errors="replace", env=gh_env,
+                        )
+                        error_lines = [l for l in fl.stdout.splitlines()
+                                       if "error" in l.lower() or "Error" in l or "[-]" in l][-5:]
+                        detail = "\n".join(error_lines) or conclusion
+                        append_log(f"❌ Fehlgeschlagen ({conclusion}): {detail}")
+                        final_notif = {"type": "error", "message": f"Posting fehlgeschlagen:\n{detail}"}
+                    else:
+                        append_log(f"⏰ Timeout: kein Ergebnis nach 7 Minuten")
+                        final_notif = {"type": "error", "message": "Timeout: kein Ergebnis nach 7 Minuten"}
+
                 with _task_lock:
                     _task["reload"] = False
-                set_task("complete", f"GitHub Actions Workflow für {total} Story(s) gestartet.", 100)
+                    _task["notification"] = final_notif
+                status = "complete" if (final_notif or {}).get("type") == "success" else "error"
+                set_task(status, final_notif["message"] if final_notif else "Fertig", 100)
             else:
                 # Auto-Modus: lokaler instagram_poster (nächste ausstehende Story)
                 set_task("running", "Poste nächste Story lokal...", 5, log=[])
@@ -750,11 +804,22 @@ def refresh():
         _abort_flag.clear()
         log = []
         try:
+            set_task("running", "GitHub: aktuelle Änderungen holen (git pull)...", 5, log=list(log))
+            repo_root = Path(__file__).parent.parent
+            pull = subprocess.run(
+                ["git", "pull", "--rebase"],
+                cwd=str(repo_root), capture_output=True, text=True, encoding="utf-8", errors="replace",
+            )
+            if "Already up to date" in pull.stdout:
+                log.append("✅ GitHub: Bereits aktuell")
+            else:
+                log.append(f"📥 GitHub pull: {pull.stdout.strip().splitlines()[-1]}")
+
             onedrive_dir = Path(r"C:\Users\slawa\OneDrive\8_stereotypen")
             def _count_imgs(d): return sum(len(list(d.glob(f"*.{e}"))) for e in ("png","jpg","jpeg")) if d.exists() else 0
             imgs_before = _count_imgs(onedrive_dir)
 
-            set_task("running", "OneDrive: neue Bilder identifizieren...", 10, log=list(log))
+            set_task("running", "OneDrive: neue Bilder identifizieren...", 15, log=list(log))
             run_script(["onedrive_check.py", "--onedrive-only"])
 
             imgs_after = _count_imgs(onedrive_dir)
