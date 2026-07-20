@@ -124,7 +124,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 123,Das Augenbrauenpiercing,X,X,57,X,X,,X,X,
 124,Chaya sagt mach kein Auge,X,X,51,X,X,,X,X,
 125,Klopapierrolle,X,X,50,X,X,,X,X,
-126,Handschlag als Gruß,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340842/stereotypen/0126_vid_Handschlag%20als%20Gru%C3%9F.mp4,X,,
+126,Handschlag als Gruß,X,X,53,X,X,,X,X,
 127,Haartransplantation Türkei,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783340974/stereotypen/0127_vid_Haartransplantation%20T%C3%BCrkei.mp4,X,,
 128,Proteinprodukte Regal,X,X,50,X,X,,X,X,
 129,Demeter,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102410/stereotypen/0129_vid_Demeter.mp4,X,,
