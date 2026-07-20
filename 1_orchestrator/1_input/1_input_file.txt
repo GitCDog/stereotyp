@@ -259,7 +259,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 258,Sozialstaat,X,X,48,,,,X,,
 259,Ausländer willkommen,X,X,46,,,,X,,
 260,Hartz IV,X,X,43,,,,X,,
-261,Spritpreise,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920959/stereotypen/0261_Spritpreise.mp4,X,,
+261,Spritpreise,X,X,50,X,X,,X,X,
 262,Steuern überall,X,X,48,,,,X,,
 263,Handwerker-Termin,X,X,53,,,,,,
 264,Arbeitsamt,X,X,48,,,,X,,
