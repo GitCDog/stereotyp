@@ -104,10 +104,10 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 103,Bali Yoga Retreat,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255625/stereotypen/0103_Bali%20Yoga%20Retreat.mp4,X,,
 104,Vibe Coder,X,X,47,,,,X,,
 105,Chaya in Frankfurt,X,X,52,X,X,,X,X,X
-106,Betriebsrat,X,X,53,,,,X,,
-107,Porschefahrer,X,X,50,,,,X,,
-108,Thermomix,X,X,51,,,,X,,
-109,Digga,X,X,53,,,,X,,
+106,Betriebsrat,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784720383/stereotypen/0106_vid_Betriebsrat.mp4,X,,
+107,Porschefahrer,X,X,50,X,,,X,,
+108,Thermomix,X,X,51,X,,,X,,
+109,Digga,X,X,53,X,,,X,,
 110,Katzenmami,X,X,53,X,X,,X,X,X
 111,Mops,X,X,55,,,,X,,
 112,Klimaaktivist,X,X,55,X,X,,X,X,X
