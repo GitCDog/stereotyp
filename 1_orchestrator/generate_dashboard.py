@@ -1277,7 +1277,7 @@ html = f'''<!DOCTYPE html>
             border:2px solid ${{isSuccess ? '#22c55e' : '#ef4444'}};
         `;
         const icon = isSuccess ? '✅' : '❌';
-        const msg = notif.message.replace(/\n/g, '<br>');
+        const msg = notif.message.replace(/\\n/g, '<br>');
         div.innerHTML = `
             <div style="font-size:2.5rem;margin-bottom:12px">${{icon}}</div>
             <div style="font-size:1.1rem;font-weight:600;line-height:1.5">${{msg}}</div>

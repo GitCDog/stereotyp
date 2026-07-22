@@ -700,8 +700,8 @@ def instagram_post():
                         pass
 
                     append_log(f"{'─'*50}")
-                    append_log(f"▶ Starte GitHub Actions für #{nr} „{stereotyp_name}"")
-                    set_task("running", f"Triggere Workflow für „{stereotyp_name}"...", 10)
+                    append_log(f"▶ Starte GitHub Actions für #{nr} '{stereotyp_name}'")
+                    set_task("running", f"Triggere Workflow fuer '{stereotyp_name}'...", 10)
 
                     result = subprocess.run(
                         ["gh", "workflow", "run", "post_story.yml", "-f", f"story_nr={nr}"],
@@ -737,8 +737,8 @@ def instagram_post():
                         set_task("running", f"⏳ Warte auf GitHub Actions... ({(attempt+1)*10}s)", pct)
 
                     if conclusion == "success":
-                        append_log(f"✅ „{stereotyp_name}" erfolgreich gepostet!")
-                        final_notif = {"type": "success", "message": f"„{stereotyp_name}" wurde erfolgreich gepostet!"}
+                        append_log(f"✅ '{stereotyp_name}' erfolgreich gepostet!")
+                        final_notif = {"type": "success", "message": f"'{stereotyp_name}' wurde erfolgreich gepostet!"}
                     elif conclusion:
                         fl = subprocess.run(
                             ["gh", "run", "view", run_id, "--log-failed"],
