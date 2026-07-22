@@ -15,7 +15,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 14,Abendbrot,X,X,53,X,X,,X,X,X
 15,Die Ampel-Disziplin,X,X,52,X,X,,X,X,X
 16,Direktheit,X,X,52,X,X,,X,X,X
-17,Das Auto als Heiligtum,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779538966/stereotypen/0017_Das%20Auto%20als%20Heiligtum.mp4,X,,
+17,Das Auto als Heiligtum,X,X,51,X,X,,X,X,
 18,Mülltrennung als Extremsport,X,X,50,X,X,,X,X,X
 19,"Kein Bargeld, keine Chance",X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187484/stereotypen/0019_vid_Kein%20Bargeld%2C%20keine%20Chance.mp4,X,,
 20,Die Vereinsmeierei,X,X,57,X,X,,X,X,X
