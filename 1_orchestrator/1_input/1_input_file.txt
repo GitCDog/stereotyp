@@ -174,7 +174,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 173,Biker Gruss,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088805/stereotypen/0173_vid_Biker%20Gruss.mp4,X,,
 174,Silberlöffel im Mund,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879175/stereotypen/0174_Silberl%C3%B6ffel%20im%20Mund.mp4,X,,
 175,Gammler,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879325/stereotypen/0175_Gammler.mp4,X,,
-176,GEZ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088927/stereotypen/0176_vid_GEZ.mp4,X,,
+176,GEZ,X,X,48,X,X,,X,X,
 177,Technomädchen,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089062/stereotypen/0177_vid_Technom%C3%A4dchen.mp4,X,,
 178,Technojunge,X,X,49,,,,X,,
 179,Love Parade,X,X,53,,,,X,,
