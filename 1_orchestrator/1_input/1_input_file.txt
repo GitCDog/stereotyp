@@ -75,7 +75,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 74,Die Landlust-Idylle-Leserin,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101961/stereotypen/0074_vid_Die%20Landlust-Idylle-Leserin.mp4,X,,
 75,Der „Wir schenken uns nichts“-Lügner,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102111/stereotypen/0075_vid_Der%20%E2%80%9EWir%20schenken%20uns%20nichts%E2%80%9C-L%C3%BCgner.mp4,X,,
 76,„Bier ist ein Grundnahrungsmittel“,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187773/stereotypen/0076_vid_%E2%80%9EBier%20ist%20ein%20Grundnahrungsmittel%E2%80%9C.mp4,X,,
-77,Der Kreuzfahrt-Rentner,X,X,46,X,,,X,,
+77,Der Kreuzfahrt-Rentner,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784899189/stereotypen/0077_vid_Der%20Kreuzfahrt-Rentner.mp4,X,,
 78,Die Funkloch-Verzweiflung im Zug,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540824/stereotypen/0078_Die%20Funkloch-Verzweiflung%20im%20Zug.mp4,X,,
 79,Der „Früher war mehr Lametta“-Nostalgiker,X,X,52,X,X,,X,X,X
 80,Der „Darf ich mal vorbei“-Drängler,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541098/stereotypen/0080_Der%20%E2%80%9EDarf%20ich%20mal%20vorbei-Dr%C3%A4ngler.mp4,X,,
