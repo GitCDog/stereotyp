@@ -160,7 +160,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 159,Pornosüchtiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087309/stereotypen/0159_vid_Pornos%C3%BCchtiger.mp4,X,,
 160,Unfallgaffer,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087412/stereotypen/0160_vid_Unfallgaffer.mp4,X,X,
 161,Botox Frau,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087527/stereotypen/0161_vid_Botox%20Frau.mp4,X,,
-162,Botox Mann,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087650/stereotypen/0162_vid_Botox%20Mann.mp4,X,,
+162,Botox Mann,X,X,52,X,X,,X,X,
 163,Alternative Lifestyle,X,X,57,X,X,,X,X,X
 164,Silikonbrüste,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087750/stereotypen/0164_vid_Silikonbr%C3%BCste.mp4,X,,
 165,Face Lifting,X,X,46,,,,X,,
