@@ -75,12 +75,12 @@ def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None) -> li
     prompt = HASHTAG_PROMPT.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
     env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
-        ["claude", "-p", prompt, "--allowedTools", ""],
+        ["claude", "-p", prompt, "--allowedTools", "", "--model", "claude-sonnet-4-6"],
         capture_output=True, text=True, encoding="utf-8", timeout=60,
-        env=env,
+        stdin=subprocess.DEVNULL, env=env,
     )
     if result.returncode != 0:
-        raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip()}")
+        raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip() or result.stdout.strip()}")
     raw = result.stdout.strip()
     return [h.strip() for h in raw.split(",") if h.strip()][:4]
 
