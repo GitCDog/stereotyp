@@ -180,6 +180,29 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         return False
 
 
+def mix_background_music(video_path: Path, bg_music: str, bg_vol: float,
+                         ffmpeg: str, logger: logging.Logger) -> Path:
+    """Mischt Hintergrundmusik in Video. Gibt Pfad zur gemischten Datei zurück."""
+    mixed_path = video_path.with_stem(video_path.stem + "_mixed")
+    mix_cmd = [
+        ffmpeg, "-y",
+        "-i", str(video_path),
+        "-i", bg_music,
+        "-filter_complex",
+        f"[1:a]volume={bg_vol},aloop=loop=-1:size=2000000000[bg];[0:a]volume=1.0[vo];[vo][bg]amix=inputs=2:duration=first[out]",
+        "-map", "0:v", "-map", "[out]",
+        "-c:v", "copy", "-c:a", "aac", "-ac", "2", "-ar", "44100",
+        str(mixed_path),
+    ]
+    result = subprocess.run(mix_cmd, capture_output=True, text=True, timeout=300)
+    if result.returncode != 0:
+        logger.warning(f"[!] Musik-Mix fehlgeschlagen: {result.stderr[-300:]}")
+        return video_path
+    mixed_path.replace(video_path)
+    logger.info(f"[+] Hintergrundmusik gemischt (Lautstärke: {bg_vol*100:.0f}%)")
+    return video_path
+
+
 def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
                  subtitles: bool = False, subtitle_words: int = 5) -> bool:
     """Erstelle MP4 aus Bild + Audio via ffmpeg."""
@@ -286,6 +309,12 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
     if ass_path and ass_path.exists():
         ass_path.unlink()
 
+    # Hintergrundmusik mixen (optional)
+    bg_music = config.get("bg_music")
+    if bg_music and Path(bg_music).exists():
+        bg_vol = config.get("bg_music_volume", 0.3)
+        output_path = mix_background_music(output_path, bg_music, bg_vol, ffmpeg, logger)
+
     # Cloudinary Upload
     cloudinary_url = upload_to_cloudinary(output_path, logger)
     ir.update_field(nr, "status_cloudinary", cloudinary_url, input_file)
@@ -347,6 +376,8 @@ def main():
     parser.add_argument("--all", action="store_true", help="Alle bereitstehenden Videos")
     parser.add_argument("--subtitles", action="store_true", help="Burned-in Untertitel via Whisper")
     parser.add_argument("--subtitle-words", type=int, default=5, help="Wörter pro Untertitel-Block (default: 5)")
+    parser.add_argument("--bg-music", type=str, default="", help="Pfad zur Hintergrundmusik-Datei")
+    parser.add_argument("--bg-music-volume", type=float, default=0.3, help="Lautstärke der Musik (0.0–1.0, default: 0.3)")
     parser.add_argument("--no-push", action="store_true", help="Kein automatischer Git Push")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
@@ -357,6 +388,10 @@ def main():
     setup_cloudinary()
 
     created = 0
+
+    if args.bg_music:
+        config["bg_music"] = args.bg_music
+        config["bg_music_volume"] = args.bg_music_volume
 
     if args.story:
         row = ir.find_row(args.story, input_file)
