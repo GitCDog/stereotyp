@@ -339,7 +339,7 @@ TITLES = {
     321: "Würde Heidi unser Land kaputt machen?",
     322: "Und, wie läufts in der Dachgeschosswohnung?",
     323: "Lohnt sich die Selbständigkeit in D überhaupt?",
-    331: "Was ist der Unterschied zwischen Zoo und CSD",
+    331: "Was ist der Unterschied zwischen Zoo und CSD – Jens Spahn weiß es",
 }
 
 
