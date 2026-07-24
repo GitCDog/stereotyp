@@ -38,7 +38,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 37,Die Kehrwoche-Aufsicht,X,X,52,X,X,,X,X,X
 38,Der passiv-aggressive Treppenhaus-Zettel,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540049/stereotypen/0038_Der%20passive-aggressive%20Treppenhaus-Zettel.mp4,X,,
 39,Das „Mahlzeit“-Rufen im Büroflur,X,X,53,X,X,,X,X,X
-40,Die Angst vor „Durchzug“,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540297/stereotypen/0040_Die%20Angst%20vor%20%E2%80%9EDurchzug.mp4,X,,
+40,Die Angst vor „Durchzug“,X,X,49,X,X,,X,X,
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540441/stereotypen/0041_Der%20Kassen-Stress%20%28Einr%C3%A4umen%20gegen%20die%20Zeit%29.mp4,X,,
 42,„Tja“ – Die universelle Antwort,X,X,58,X,X,,X,X,X
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,,X,X,
