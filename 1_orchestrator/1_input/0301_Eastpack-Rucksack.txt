@@ -1,3 +1,5 @@
 Aufgepasst - Wer in den Neunzigern zur Schule ging, weiß: Ohne Eastpak war man gesellschaftlich erledigt. Der Eastpak-Rucksack ist kein Behälter für Bücher. Er ist ein Identitätsdokument mit lebenslanger Garantie als moralischer Grundlage. Man kauft ihn einmal, trägt ihn fünfzehn Jahre, flickt ihn notfalls mit Gaffa-Tape und vererbt ihn an die nächste Generation – weil Wegwerfen in Deutschland eine Charakterschwäche ist, keine Lösung. • Die lebenslange Garantie macht jedes Ersetzen zur ethischen Verfehlung • Wer 45 Euro für einen Rucksack zahlt, hat das moralische Recht auf permanente Nutzung • Ein kaputter Reißverschluss ist kein Produktfehler, sondern eine persönliche Prüfung Wer in der Schule mit einem namenlosen Discounter-Rucksack erscheint, wird nicht gemobbt – er wird bemitleidet.
 
-Das ist bekanntlich schlimmer. Tja, der Eastpak ist das einzige Statussymbol, das man beim Trödelmarkt kauft und trotzdem ernst genommen wird. --- 134 Wörter. Paragraph-Break sitzt nach dem Mythos-Abschnitt (~48%). Bullets mit `•` wie im Projektformat.
+Das ist bekanntlich schlimmer. Tja, der Eastpak ist das einzige Statussymbol, das man beim Trödelmarkt kauft und trotzdem ernst genommen wird. --- 134 Wörter. Paragraph-Break sitzt nach dem Mythos-Abschnitt (~48%).
+
+Bullets mit `•` wie im Projektformat.

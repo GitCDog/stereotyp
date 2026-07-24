@@ -109,7 +109,22 @@ def add_paragraph_break(text: str) -> str:
         return text
     best = min(sentence_ends, key=lambda pos: abs(pos - target))
     insert_at = text.index(' ', best)
-    return text[:insert_at] + '\n\n' + text[insert_at + 1:]
+    text = text[:insert_at] + '\n\n' + text[insert_at + 1:]
+    return _add_end_pause(text)
+
+
+def _add_end_pause(text: str) -> str:
+    """Leerzeile vor dem letzten Satz einfügen (ElevenLabs-Pause am Ende)."""
+    import re
+    text = text.rstrip()
+    matches = list(re.finditer(r'[.!?]\s+(?=[A-ZÜÄÖ])', text))
+    if not matches:
+        return text
+    pos = matches[-1].end()
+    before = text[:pos - 1].rstrip()
+    if before.endswith('\n'):
+        return text
+    return before + '\n\n' + text[pos:]
 
 
 def _strip_meta_comments(text: str) -> str:
