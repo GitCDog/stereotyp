@@ -328,4 +328,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 327,Am Ende gewinnt die Korruption bei der WM,X,X,62,X,X,,X,X,
 328,"Messi oder Yamal, wer wird der GOAT?",X,,,,,,X,,
 329,Die Messi-Yamal Matrix-Verschwörung,X,X,59,X,X,,X,X,
-330,CSD-ok oder fetisch,X,X,62,,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784809775/stereotypen/0330_vid_CSD-ok%20oder%20fetisch.mp4,,,
+330,CSD-ok oder fetisch,X,X,62,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784809775/stereotypen/0330_vid_CSD-ok%20oder%20fetisch.mp4,X,,
