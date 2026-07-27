@@ -232,7 +232,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 231,rasierte Arme,X,X,51,X,X,,X,X,
 232,Augenkontakt beim Anstoßen,X,X,50,X,X,,X,X,
 233,Sitzfussballer,X,X,45,X,X,,X,X,X
-234,deutsche Küche,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089306/stereotypen/0234_vid_deutsche%20K%C3%BCche.mp4,X,,
+234,deutsche Küche,X,X,49,X,X,,X,X,
 235,Negerkuss,X,X,49,X,X,,X,X,
 236,Faxgerät,X,X,45,X,X,,X,X,
 237,Ruhetag,X,X,46,,,,X,,
