@@ -168,7 +168,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 167,Fake Louis Vuitton Tasche,X,X,48,X,X,,X,X,X
 168,TikTok Süchtig,X,X,52,X,X,,X,X,X
 169,Insta Süchtig,X,X,42,X,X,,X,X,
-170,Hipster,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089720/stereotypen/0170_vid_Hipster.mp4,X,,
+170,Hipster,X,X,49,X,X,,X,X,
 171,Jutebeutel,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088593/stereotypen/0171_vid_Jutebeutel.mp4,X,,
 172,Rocker,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088692/stereotypen/0172_vid_Rocker.mp4,X,,
 173,Biker Gruss,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088805/stereotypen/0173_vid_Biker%20Gruss.mp4,X,,
