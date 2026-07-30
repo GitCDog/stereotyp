@@ -605,7 +605,7 @@ def generate_video():
                 pct = int((i / total) * 88) + 5
                 log[i] = f"🎬 #{nr}  {name}"
                 set_task("running", f"{i}/{total} – rendere #{nr}: {name}...", pct, log=list(log))
-                run_script(["generate_videos.py", "--story", str(nr), "--subtitles"])
+                run_script(["generate_videos.py", "--story", str(nr), "--subtitles", "--bg-music", "Demeter - O.P..mp3", "--bg-music-volume", "0.2"])
                 if _abort_flag.is_set():
                     log[i] = f"⏹️ #{nr}  {name}"
                     set_task("idle", "Abgebrochen", 0, log=list(log))
@@ -1242,7 +1242,7 @@ def sofort_posten():
             else:
                 set_task("running", f"[7/8] Video #{new_nr} rendern (ffmpeg + Untertitel)...", 63)
                 append_log(f"⏳ [7/8] Video rendern mit Karaoke-Untertiteln...")
-                run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles"])
+                run_script_logged(["generate_videos.py", "--story", new_nr, "--subtitles", "--bg-music", "Demeter - O.P..mp3", "--bg-music-volume", "0.2"])
                 append_log(f"✅ [7/8] Video gerendert")
 
             # Git sync: sicherstellen dass CSV-Push vor dem Post erfolgreich war
