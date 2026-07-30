@@ -379,15 +379,25 @@ def main():
             skipped += 1
             continue
 
-        title = TITLES.get(nr_int, stereotyp)
         text = story_file.read_text(encoding="utf-8").strip()
         text = re.sub(r"\s+", " ", text)
 
-        lines.append(
-            f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
-            f'und nehme nicht so viel text in das bild rein, '
-            f'Titel "{title}". Story: "{text}"'
-        )
+        if 2000 <= nr_int <= 2999:
+            lines.append(
+                f'{nr_int}. erstelle ein portrait-bild (1024x1536) im Stil einer modernen flachen Illustration. '
+                f'Zeige eine Person passend zum deutschen Namen "{stereotyp}" und zur folgenden Story. '
+                f'Oben links nur den Namen "{stereotyp}" in grosser, dunkler moderner Schrift – kein weiterer Text im Bild, kein Titel. '
+                f'Hintergrund: organische abstrakte Formen in gedaempften Farben, passend zur Stimmung der Story. '
+                f'Die Person, Mimik, Kleidung, Koerpersprache und Hintergrundfarben sollen die Story widerspiegeln. '
+                f'Stil: cleane Vektor-Illustration, warme Pastelltöne. Story: "{text}"'
+            )
+        else:
+            title = TITLES.get(nr_int, stereotyp)
+            lines.append(
+                f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
+                f'und nehme nicht so viel text in das bild rein, '
+                f'Titel "{title}". Story: "{text}"'
+            )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n\n".join(lines), encoding="utf-8")
