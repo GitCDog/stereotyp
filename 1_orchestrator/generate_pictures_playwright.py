@@ -32,7 +32,12 @@ EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data
 INPUT_FILE        = "1_input/1_input_file.txt"
 OUTPUT_DIR        = Path("output")
 PROMPTS_FILE      = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
-CHATGPT_IMAGE_URL = "https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7"
+CHATGPT_IMAGE_URL  = "https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7"  # Stereotypen
+CHATGPT_NAMES_URL  = "https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8"  # Namen 2000–2999
+
+
+def get_chatgpt_url(nr: str) -> str:
+    return CHATGPT_NAMES_URL if 2000 <= int(nr) <= 2999 else CHATGPT_IMAGE_URL
 DEFAULT_WAIT_SEC  = 30
 # Eigenes persistentes Verzeichnis – kein Konflikt mit Default-Profil / WebView2-lockfile
 CDP_USER_DATA = Path(r"C:\Users\slawa\AppData\Local\Temp\EdgeCDP")
@@ -62,11 +67,20 @@ def nr_str(nr: str) -> str:
 
 def build_prompt(nr: str, stereotyp: str) -> str | None:
     nr_int = int(nr)
-    title = TITLES.get(nr_int, stereotyp)
     story_file = find_story_file(nr)
     if not story_file:
         return None
     text = re.sub(r"\s+", " ", story_file.read_text(encoding="utf-8").strip())
+    if 2000 <= nr_int <= 2999:
+        return (
+            f'{nr_int}. erstelle ein portrait-bild (1024x1536) im Stil einer modernen flachen Illustration. '
+            f'Zeige eine Person passend zum deutschen Namen "{stereotyp}" und zur folgenden Story. '
+            f'Oben links nur den Namen "{stereotyp}" in grosser, dunkler moderner Schrift – kein weiterer Text im Bild, kein Titel. '
+            f'Hintergrund: organische abstrakte Formen in gedaempften Farben, passend zur Stimmung der Story. '
+            f'Die Person, Mimik, Kleidung, Koerpersprache und Hintergrundfarben sollen die Story widerspiegeln. '
+            f'Stil: cleane Vektor-Illustration, warme Pastelltöne. Story: "{text}"'
+        )
+    title = TITLES.get(nr_int, stereotyp)
     return (
         f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
         f'und nehme nicht so viel text in das bild rein, '
@@ -438,7 +452,7 @@ def start_edge_with_debug(logger):
                       "--remote-allow-origins=*",
                       f"--user-data-dir={CDP_USER_DATA}",
                       "--no-first-run",
-                      CHATGPT_IMAGE_URL])
+                      get_chatgpt_url(nrs[0]) if nrs else CHATGPT_IMAGE_URL])
 
     for i in range(20):
         time.sleep(2)
@@ -479,13 +493,14 @@ def main():
     with sync_playwright() as pw:
         browser = pw.chromium.connect_over_cdp(cdp_url)
         context = browser.contexts[0] if browser.contexts else browser.new_context()
+        first_url = get_chatgpt_url(to_process[0])
         page = next((p for p in context.pages if "chatgpt.com" in p.url), None)
         if page is None:
             page = context.new_page()
-            page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
+            page.goto(first_url, wait_until="domcontentloaded")
             page.wait_for_timeout(4000)
-        if CHATGPT_IMAGE_URL not in page.url:
-            page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
+        if first_url not in page.url:
+            page.goto(first_url, wait_until="domcontentloaded")
             page.wait_for_timeout(3000)
         logger.info(f"[*] Seite: {page.url[:60]}")
 
@@ -493,6 +508,13 @@ def main():
 
         ok = err = 0
         for i, nr in enumerate(to_process):
+            # Zur richtigen URL navigieren wenn sich der Story-Typ ändert
+            target_url = get_chatgpt_url(nr)
+            if target_url not in page.url:
+                logger.info(f"[*] Wechsle zu {target_url[:60]}")
+                page.goto(target_url, wait_until="domcontentloaded")
+                page.wait_for_timeout(3000)
+
             if i > 0:
                 wait_sec = args.wait
                 logger.info(f"")
