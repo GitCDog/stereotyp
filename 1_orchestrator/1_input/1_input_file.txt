@@ -348,7 +348,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2015,Claudia,,,,,,,,,
 2016,Tobias,,,,,,,,,
 2017,Jennifer,,,,,,,,,
-2018,René,X,,,,,,,,
+2018,René,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785416952/stereotypen/2018_vid_Ren%C3%A9.mp4,X,,
 2019,Vanessa,,,,,,,,,
 2020,Christian,,,,,,,,,
 2021,Melanie,,,,,,,,,
