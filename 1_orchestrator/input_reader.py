@@ -54,7 +54,7 @@ def _write_rows(rows: list, path: Path):
         writer = csv.DictWriter(f, fieldnames=COLUMNS)
         writer.writeheader()
         for row in rows:
-            out = {k: row.get(k, "").strip() for k in COLUMNS}
+            out = {k: (row.get(k) or "").strip() for k in COLUMNS}
             try:
                 out["nr"] = str(int(out["nr"]))
             except (ValueError, TypeError):

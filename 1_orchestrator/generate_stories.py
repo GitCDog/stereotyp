@@ -72,6 +72,44 @@ def count_words(text: str) -> int:
     return len(text.split())
 
 
+NAME_SYSTEM_PROMPT = """Du bist ein frecher, sarkastischer deutscher Comedy-Autor fuer Instagram-Reels. \
+Erstelle Name-Stereotyp-Stories auf Deutsch. \
+Kein Meta-Kommentar nach dem Text. Keine Erklaerungen, kein Hashtag, kein Emoji."""
+
+NAME_STORY_PROMPT_TEMPLATE = """ZIEL: Leute sollen die Story lesen und sofort ihren Freund namens "{name}" \
+anschreiben. Der Trick: Der NAME selbst ist der Ausgangspunkt. Was bedeutet dieser Name \
+kulturell in Deutschland? Welche Generation? Welchen Ruf? Was klebt an diesem Namen, \
+das alle Traeger verbindet? Finde den Kern-Witz der NUR fuer diesen Namen funktioniert.
+
+FORMAT (zwingend):
+- Beginnt mit "Aufgepasst - "
+- 130-140 Woerter
+- Erster Absatz (~50%): Das Kern-Klischee des Namens, 2-3 Alltagsmomente die NUR fuer diesen Namen passen
+- Leerzeile
+- Zweiter Absatz: 3 Bullet-Points mit Bindestrich (•) + ein weiterer spezifischer Moment
+- Leerzeile
+- Letzter Satz ALLEINE nach Leerzeile: beginnt mit "Tja, "
+
+TON: Frech, herzlich-boeser Humor, umgangssprachlich. Mindestens ein Detail so spezifisch, \
+dass man denkt "das kann nur jemand geschrieben haben der wirklich einen {name} kennt."
+
+REFERENZ-STORY (Rene - das e-mit-Akzent ist der Kern-Witz):
+Aufgepasst - der Rene korrigiert seit 1987 jeden, der seinen Namen ohne Akzent schreibt. \
+"Es heisst Rene, mit e." Er hat das so oft gesagt, dass er es inzwischen als \
+Persoenlichkeitsmerkmal verbucht. Dabei ist das Internationalste an ihm der Name - \
+der Rest ist komplett Sachsen.
+Rene ist der Typ, der auf Partys laenger bleibt als geplant und kuerzer als versprochen:
+• Er sagt "ich komm kurz vorbei" und bleibt bis drei
+• Er hat einen French-Crop, obwohl er keinen Franzosen kennt
+• Er schreibt sich selbst in Kontakten mit e - alle anderen speichern ihn als "Rene Arbeit"
+Sein Tinder-Profil beginnt mit "Rene - ja, mit Akzent" als waere das ein Persoenlichkeitsersatz.
+
+Tja, Rene wollte immer ein bisschen mehr sein als der Durchschnitt - und hat dafuer \
+einen Buchstaben, den niemand tippen kann.
+
+Erstelle jetzt eine Story fuer den Namen: "{name}" """
+
+
 def build_story_prompt(stereotyp: str, stichworte: list[str] | None = None) -> str:
     if stichworte:
         keywords = ", ".join(stichworte)
@@ -81,9 +119,16 @@ def build_story_prompt(stereotyp: str, stichworte: list[str] | None = None) -> s
     return STORY_PROMPT_TEMPLATE.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
 
 
-def generate_story(stereotyp: str, stichworte: list[str] | None = None) -> str:
+def build_name_story_prompt(name: str) -> str:
+    return NAME_STORY_PROMPT_TEMPLATE.format(name=name)
+
+
+def generate_story(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0) -> str:
     """Generiere Story-Text via Claude CLI (claude -p)."""
-    prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
+    if 2000 <= nr <= 2999:
+        prompt = NAME_SYSTEM_PROMPT + "\n\n" + build_name_story_prompt(stereotyp)
+    else:
+        prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
     env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
         ["claude", "-p", prompt, "--allowedTools", "", "--model", "claude-sonnet-4-6"],
@@ -162,7 +207,7 @@ def process_story(row: dict, config: dict, logger: logging.Logger,
         logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
     logger.info(f"[*] Generiere Story via Claude CLI...")
-    story_text = generate_story(stereotyp, stichworte)
+    story_text = generate_story(stereotyp, stichworte, nr=nr)
     word_count = count_words(story_text)
     logger.info(f"[+] Story generiert ({word_count} Woerter)")
 
