@@ -53,11 +53,12 @@ Story (Claude) → Audio (ElevenLabs) → Bild (GPT/manuell) → Video (ffmpeg) 
 
 ## Nummerierung
 
-**Immer 4-stellig zero-padded:** `f"{int(nr):04d}"` → `0001`, `0042`, `0173`
+**Immer 4-stellig zero-padded:** `f"{int(nr):04d}"` → `0001`, `0042`, `0173`, `2018`
 
 - Alle Dateinamen: `0042_Stereotyp-Name.txt`, `0042_mp3.mp3`, `0042_pic.png`
 - CSV-Spalte `nr`: plain integer als String (`"42"`, nicht `"0042"`)
 - `_nr_str(nr)` in allen Scripts gibt immer 4-stelliges Format zurück
+- **Namen-Stories: nr 2000–2999** (z.B. `2018_René.txt`) — anderes Format, anderer Prompt
 
 ---
 
@@ -74,14 +75,16 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_ca
 - `seconds` = Audio-Dauer in Sekunden
 - `youtube_post` = `X` nach erfolgreichem YouTube-Upload
 - `nr` in CSV immer als plain integer (`"42"`, nie `"0042"`) — `_write_rows()` normalisiert automatisch
-- 298+ Stories (Stand: Mai 2026), fortlaufend nummeriert bis 9999 möglich
+- 331+ Stereotypen-Stories + 100 Namen-Stories (2000–2099, Stand: Juli 2026)
+- Neue Spalten: `status_cloudinary` (Cloudinary-URL nach Upload) — 11 Spalten gesamt
 
 ---
 
-## Story-Format
+## Story-Format (Stereotypen, nr < 2000)
 
-Jede Story-TXT-Datei **muss einen Absatz (`\n\n`) bei ~50% des Textes** haben.
-Ohne Absatz wird die Vertonung in `generate_audio.py` blockiert (ElevenLabs-Pause).
+Jede Story-TXT-Datei **muss zwei Absätze (`\n\n`)** haben:
+1. Bei ~50% des Textes (ElevenLabs-Pause in der Mitte)
+2. Vor dem letzten Satz (ElevenLabs-Pause am Ende — `_add_end_pause()` in `generate_stories.py`)
 
 Struktur (130–140 Wörter):
 1. `Aufgepasst - ` (Opener)
@@ -89,13 +92,42 @@ Struktur (130–140 Wörter):
 3. Der Mythos (heilige Zeremonie / Naturgesetz)
 4. Die „deutsche Logik" (2–3 Bullet-Points mit `•`)
 5. Der soziale Endgegner
-6. Der virale Twist (Pro-Tipp / trockener Vergleich)
+6. Leerzeile
+7. Letzter Satz alleine: beginnt mit `Tja,`
 
-Abschluss: `Tja,` statt `Ah ja,`
+**Tonalität:** Scharf, sarkastisch, gnadenlos. Bei echten Personen (Politiker, Celebrities) darf es eine richtige Abrechnung sein — alles erlaubt. Die Person demontieren, nicht schützen.
 
-**Tonalität:** Scharf, sarkastisch, gnadenlos — kein `nie bösartig`. Bei echten Personen (Politiker, Celebrities) darf es eine richtige Abrechnung sein: verbitterte Hexen, selbsternannte Retter, Vollidioten mit Mikrofon — alles erlaubt. Die Person demontieren, nicht schützen.
+**Kein Meta-Kommentar** nach dem Text — nur der Story-Text selbst.
 
-**Kein Meta-Kommentar** nach dem Text (kein `--- X Wörter`, kein `Keywords eingebaut` o.ä.) — nur der Story-Text selbst.
+---
+
+## Namen-Stories (nr 2000–2999)
+
+Andere Story-Logik: Der **Name selbst ist der Witz**, nicht eine generische Eigenschaft.
+Ziel: Leser schicken die Story sofort ihrem Freund mit diesem Namen ("das bist du!").
+
+**Struktur (130–140 Wörter):**
+1. `Aufgepasst - ` (Opener)
+2. Kern-Klischee des Namens: Was bedeutet dieser Name kulturell? Generation, Herkunft, Ruf
+3. 2–3 Alltagsmomente die NUR für diesen Namen passen
+4. Leerzeile
+5. 3 Bullet-Points (`•`) + weiterer spezifischer Moment
+6. Leerzeile
+7. Letzter Satz alleine: `Tja, ...`
+
+**Mindestens 1 Detail das so spezifisch ist, dass man denkt: "Das kann nur jemand geschrieben haben der wirklich einen [Name] kennt."**
+
+`generate_stories.py` erkennt nr 2000–2999 automatisch und verwendet den Namen-Prompt (mit René als Referenzbeispiel).
+
+**Bild-Format:** Portrait-Illustration, nur der Name oben links, kein Titel.
+Separater ChatGPT-Chat: `https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8`
+
+**Namen-Liste:**
+- 2000–2019: Andreas, Anna, Michael, Julia, Thomas, Sarah, Markus, Lisa, Stefan, Laura, Daniel, Katharina, Sebastian, Sophie, Patrick, Claudia, Tobias, Jennifer, René, Vanessa
+- 2020–2039: Christian, Melanie, Kevin, Sabrina, Marcel, Nicole, Dennis, Christina, Alexander, Maria, Jan, Sandra, Simon, Nadine, Tim, Melanie, Nico, Leonie, Florian, Franziska
+- 2040–2059: Benjamin, Michelle, David, Jasmin, Lukas, Eva, Philipp, Nina, Oliver, Patricia, Felix, Stefanie, Kai, Johanna, Dennis, Elena, Marcel, Bianca, Fabian, Alina
+- 2060–2079: Max, Lea, Jonathan, Carmen, Leon, Theresa, Robin, Susanne, Moritz, Daniela, Dominic, Svenja, Julian, Pia, Sven, Tanja, Christian, Miriam, Dennis, Carina
+- 2080–2099: Matthias, Yvonne, Martin, Heike, Jens, Anja, Marco, Denise, Sascha, Melanie, Erik, Charlotte, Niklas, Elisa, Vincent, Monika, Paul, Ines, Felix, Christine
 
 ---
 
@@ -128,6 +160,12 @@ Neue Bilder in `C:\Users\slawa\OneDrive\8_stereotypen\` ablegen:
 
 GPT-Bild-Prompts generieren: Dashboard → `📝 GPT Prompts` (speichert in `1_input/gpt_prompts.txt`)
 
+**Zwei ChatGPT-Chats für Bildgenerierung (`generate_pictures_playwright.py`):**
+- Stereotypen (nr < 2000): `https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7`
+- Namen (nr 2000–2999): `https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8`
+
+Das Script wählt automatisch den richtigen Chat anhand der Story-Nummer und navigiert bei Wechsel.
+
 ---
 
 ## Video-Pipeline (nach ffmpeg-Render)
@@ -149,10 +187,17 @@ GPT-Bild-Prompts generieren: Dashboard → `📝 GPT Prompts` (speichert in `1_i
 
 **CLI-Flags:**
 ```bash
-python generate_videos.py --story 42 --subtitles          # Mit Untertiteln (Standard via Dashboard)
-python generate_videos.py --story 42 --subtitle-words 5   # Wörter pro Block (default: 5)
-python generate_videos.py --all --subtitles               # Alle ausstehenden mit Untertiteln
+python generate_videos.py --story 42 --subtitles                          # Mit Untertiteln (Standard via Dashboard)
+python generate_videos.py --story 42 --subtitle-words 5                   # Wörter pro Block (default: 5)
+python generate_videos.py --all --subtitles                               # Alle ausstehenden mit Untertiteln
+python generate_videos.py --story 42 --subtitles --bg-music "Demeter - O.P..mp3" --bg-music-volume 0.2
 ```
+
+**Hintergrundmusik (`--bg-music`):**
+- Mischt eine Audiodatei unter die Tonspur (looped automatisch)
+- `--bg-music-volume`: Lautstärke 0.0–1.0 (default: 0.3) — Tonspur immer 1.0
+- Musik-Datei liegt in `1_orchestrator/` (z.B. `Demeter - O.P..mp3`)
+- Mixen passiert nach Untertitel-Rendering, vor Cloudinary-Upload
 
 ---
 
@@ -242,3 +287,8 @@ Workflow: `.github/workflows/post_story.yml`
 - `ir.safe_name(text)` – Dateiname-sicherer String
 - SSL-Verify ist bewusst deaktiviert (Cloudinary-Kompatibilität auf Windows)
 - Alle Scripts laufen mit `cwd = 1_orchestrator/`
+
+**Claude CLI in Scripts:**
+- Immer `stdin=subprocess.DEVNULL` setzen — sonst wartet der Prozess 3s auf Input wenn ohne Konsole gestartet
+- Immer `--model claude-sonnet-4-6` angeben — Standard ist Fable 5 (andere Credits)
+- Gilt für: `generate_stories.py`, `generate_captions.py`, `server.py` (generate_title)
