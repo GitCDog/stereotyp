@@ -40,6 +40,20 @@ Die Hashtags sollen:
 Antworte NUR mit den 4 Hashtags, durch Komma getrennt, kein weiterer Text.
 Beispiel: Funktionskleidung,Outdoorfreak,DeutscheProbleme,Wanderausrüstung"""
 
+NAME_HASHTAG_PROMPT = """Du erstellst 6 Instagram-Hashtags für einen viralen Post über das Namens-Klischee "{name}".
+
+Strategie: Die Hashtags sollen Leute dazu bringen, den Post an ihren Freund mit diesem Namen zu schicken.
+
+Regeln:
+- 1. Hashtag: immer der Name selbst (z.B. René)
+- 2. Hashtag: "KennstDuEinen" oder "TagEinen{name}" (zum Weiterleiten)
+- 3.–6. Hashtag: passend zum Namens-Klischee (Generation, Herkunft, Charakter des Namens)
+- Ohne # Symbol, nur das Wort
+- Kein Leerzeichen in Hashtags
+
+Antworte NUR mit den 6 Hashtags, durch Komma getrennt, kein weiterer Text.
+Beispiel für René: René,TagEinenRené,DDRKind,DeutscheNamen,Namensklischee,DasIstEr"""
+
 
 def setup_logging() -> logging.Logger:
     logging.basicConfig(
@@ -67,12 +81,17 @@ def build_caption(stereotyp: str, hashtags: list[str], stichworte: list[str] | N
     return f"Aufgepasst - {stereotyp}\n\n{tags}"
 
 
-def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None) -> list[str]:
-    if stichworte:
-        stichworte_block = f"\n\nDie folgenden Begriffe sollen als Hashtags vorkommen: {', '.join(stichworte)}"
+def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0) -> list[str]:
+    if 2000 <= nr <= 2999:
+        prompt = NAME_HASHTAG_PROMPT.format(name=stereotyp)
+        max_tags = 6
     else:
-        stichworte_block = ""
-    prompt = HASHTAG_PROMPT.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
+        if stichworte:
+            stichworte_block = f"\n\nDie folgenden Begriffe sollen als Hashtags vorkommen: {', '.join(stichworte)}"
+        else:
+            stichworte_block = ""
+        prompt = HASHTAG_PROMPT.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
+        max_tags = 4
     env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
     result = subprocess.run(
         ["claude", "-p", prompt, "--allowedTools", "", "--model", "claude-sonnet-4-6"],
@@ -82,7 +101,7 @@ def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None) -> li
     if result.returncode != 0:
         raise RuntimeError(f"Claude CLI Fehler: {result.stderr.strip() or result.stdout.strip()}")
     raw = result.stdout.strip()
-    return [h.strip() for h in raw.split(",") if h.strip()][:4]
+    return [h.strip() for h in raw.split(",") if h.strip()][:max_tags]
 
 
 def load_captions_file(captions_path: Path) -> dict:
@@ -121,7 +140,7 @@ def process_caption(row: dict, config: dict, captions_data: dict,
     if stichworte:
         logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
-    hashtags = generate_hashtags(stereotyp, stichworte)
+    hashtags = generate_hashtags(stereotyp, stichworte, nr=int(nr))
     caption = build_caption(stereotyp, hashtags, stichworte)
 
     logger.info(f"[+] {caption}")
