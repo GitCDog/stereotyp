@@ -84,7 +84,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 83,Der Flohmarkt-Feilscher,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785582026/stereotypen/0083_vid_Der%20Flohmarkt-Feilscher.mp4,X,,
 84,Der „Ordnung muss sein“-Vermieter,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785582183/stereotypen/0084_vid_Der%20%E2%80%9EOrdnung%20muss%20sein%E2%80%9C-Vermieter.mp4,X,,
 85,Die „Darf man das noch sagen“-Runde,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785582345/stereotypen/0085_vid_Die%20%E2%80%9EDarf%20man%20das%20noch%20sagen%E2%80%9C-Runde.mp4,X,,
-86,Der „Ich hab das im Internet gelesen“-Experte,X,X,55,X,,,X,,
+86,Der „Ich hab das im Internet gelesen“-Experte,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785582513/stereotypen/0086_vid_Der%20%E2%80%9EIch%20hab%20das%20im%20Internet%20gelesen%E2%80%9C-Experte.mp4,X,,
 87,Parkplatz-Reservieren mit dem Körper,X,X,55,X,,,X,,
 88,Der „Morgenstund hat Gold im Mund“-Typ,X,X,51,,,,X,,
 89,Der Adventskranz-Wettbewerb,X,X,55,,,,X,,
