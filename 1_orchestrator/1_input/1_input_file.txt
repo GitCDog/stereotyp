@@ -81,7 +81,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 80,Der „Darf ich mal vorbei“-Drängler,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541098/stereotypen/0080_Der%20%E2%80%9EDarf%20ich%20mal%20vorbei-Dr%C3%A4ngler.mp4,X,,
 81,Der Schnitzel-Größen-Check,X,X,54,X,X,,X,X,
 82,„Man gönnt sich ja sonst nichts“,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785581874/stereotypen/0082_vid_%E2%80%9EMan%20g%C3%B6nnt%20sich%20ja%20sonst%20nichts%E2%80%9C.mp4,X,,
-83,Der Flohmarkt-Feilscher,X,X,52,X,,,X,,
+83,Der Flohmarkt-Feilscher,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785582026/stereotypen/0083_vid_Der%20Flohmarkt-Feilscher.mp4,X,,
 84,Der „Ordnung muss sein“-Vermieter,X,X,53,X,,,X,,
 85,Die „Darf man das noch sagen“-Runde,X,X,54,X,,,X,,
 86,Der „Ich hab das im Internet gelesen“-Experte,X,X,55,X,,,X,,
