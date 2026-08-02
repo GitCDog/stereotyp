@@ -48,7 +48,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 47,Der „Haben wir das schriftlich“-Kollege,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541020/stereotypen/0047_Der%20%E2%80%9EHaben%20wir%20das%20schriftlich-Kollege.mp4,X,,
 48,Die Sonntagsruhe-Polizei,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540218/stereotypen/0048_Die%20Sonntagsruhe-Polizei.mp4,X,,
 49,Der Fahrradweg-Sheriff,X,X,55,X,X,,X,X,
-50,Die Über-Versicherung für alles,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540515/stereotypen/0050_Die%20%C3%9Cber-Versicherung%20f%C3%BCr%20alles.mp4,X,,
+50,Die Über-Versicherung für alles,X,X,53,X,X,,X,X,
 51,Die Pfandflaschen-Jagd,X,X,48,X,X,,X,X,
 52,Die Ruhe im Speisewagen,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831752/stereotypen/0052_Die%20Ruhe%20im%20Speisewagen.mp4,X,,
 53,Der Umzugs-Helfer-Stress,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831841/stereotypen/0053_Der%20Umzugs-Helfer-Stress.mp4,X,,
