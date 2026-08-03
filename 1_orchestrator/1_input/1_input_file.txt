@@ -336,7 +336,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2003,Julia,X,X,45,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785748842/stereotypen/2003_vid_Julia.mp4,X,,
 2004,Thomas,X,X,43,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785748936/stereotypen/2004_vid_Thomas.mp4,X,,
 2005,Sarah,X,X,41,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785749029/stereotypen/2005_vid_Sarah.mp4,X,,
-2006,Markus,X,X,41,X,,,X,,
+2006,Markus,X,X,41,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785749141/stereotypen/2006_vid_Markus.mp4,X,,
 2007,Lisa,X,,,,,,X,,
 2008,Stefan,X,,,,,,X,,
 2009,Laura,X,,,,,,X,,
