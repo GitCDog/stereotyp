@@ -677,93 +677,37 @@ def instagram_post():
 
     def task():
         try:
+            env = os.environ.copy()
+            env["FORCE_POST"] = "1"
             if story_val:
-                # Manueller Post: via GitHub Actions triggern + auf Ergebnis warten
-                import time as _time
                 numbers = parse_range(story_val)
-                repo_root = Path(__file__).parent.parent
-                gh_env = {k: v for k, v in os.environ.items()
-                          if k not in ("GITHUB_TOKEN", "GH_TOKEN")}
-                input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
-
-                final_notif = None
                 for i, nr in enumerate(numbers):
-                    # Story-Name aus CSV lesen
-                    stereotyp_name = f"#{nr}"
-                    try:
-                        with open(input_file, encoding="utf-8") as f:
-                            for row in csv.DictReader(f):
-                                if str(row.get("nr", "")).strip() == str(nr).strip():
-                                    stereotyp_name = row.get("stereotyp", f"#{nr}").strip()
-                                    break
-                    except Exception:
-                        pass
-
+                    pct = int((i / len(numbers)) * 90) + 5
+                    set_task("running", f"Poste #{nr} lokal...", pct, log=[] if i == 0 else None)
                     append_log(f"{'─'*50}")
-                    append_log(f"▶ Starte GitHub Actions für #{nr} '{stereotyp_name}'")
-                    set_task("running", f"Triggere Workflow fuer '{stereotyp_name}'...", 10)
-
-                    result = subprocess.run(
-                        ["gh", "workflow", "run", "post_story.yml", "-f", f"story_nr={nr}"],
-                        cwd=str(repo_root),
-                        capture_output=True, text=True, encoding="utf-8", errors="replace",
-                        timeout=30, env=gh_env,
+                    append_log(f"▶ Poste Story #{nr} via instagram_poster.py")
+                    env["STORY_NR"] = str(nr)
+                    proc = subprocess.Popen(
+                        [sys.executable, "instagram_poster.py"],
+                        cwd=Path(__file__).parent,
+                        env=env,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        encoding="utf-8",
+                        errors="replace",
+                        creationflags=subprocess.CREATE_NO_WINDOW,
                     )
-                    if result.returncode != 0:
-                        err = result.stderr.strip() or result.stdout.strip()
-                        append_log(f"❌ Workflow-Start fehlgeschlagen: {err}")
-                        final_notif = {"type": "error", "message": f"Workflow-Start fehlgeschlagen:\n{err}"}
-                        break
-
-                    run_url = result.stdout.strip()
-                    run_id = run_url.rstrip("/").split("/")[-1]
-                    append_log(f"⏳ Warte auf Ergebnis (Run #{run_id})...")
-
-                    # Polling: max 7 Minuten, alle 10 Sekunden
-                    conclusion = None
-                    for attempt in range(42):
-                        _time.sleep(10)
-                        pr = subprocess.run(
-                            ["gh", "run", "view", run_id, "--json", "status,conclusion"],
-                            cwd=str(repo_root), capture_output=True, text=True,
-                            encoding="utf-8", errors="replace", env=gh_env,
-                        )
-                        if pr.returncode == 0:
-                            d = json.loads(pr.stdout)
-                            if d.get("status") == "completed":
-                                conclusion = d.get("conclusion")
-                                break
-                        pct = 10 + int(((attempt + 1) / 42) * 80)
-                        set_task("running", f"⏳ Warte auf GitHub Actions... ({(attempt+1)*10}s)", pct)
-
-                    if conclusion == "success":
-                        append_log(f"✅ '{stereotyp_name}' erfolgreich gepostet!")
-                        final_notif = {"type": "success", "message": f"'{stereotyp_name}' wurde erfolgreich gepostet!"}
-                    elif conclusion:
-                        fl = subprocess.run(
-                            ["gh", "run", "view", run_id, "--log-failed"],
-                            cwd=str(repo_root), capture_output=True, text=True,
-                            encoding="utf-8", errors="replace", env=gh_env,
-                        )
-                        error_lines = [l for l in fl.stdout.splitlines()
-                                       if "error" in l.lower() or "Error" in l or "[-]" in l][-5:]
-                        detail = "\n".join(error_lines) or conclusion
-                        append_log(f"❌ Fehlgeschlagen ({conclusion}): {detail}")
-                        final_notif = {"type": "error", "message": f"Posting fehlgeschlagen:\n{detail}"}
-                    else:
-                        append_log(f"⏰ Timeout: kein Ergebnis nach 7 Minuten")
-                        final_notif = {"type": "error", "message": "Timeout: kein Ergebnis nach 7 Minuten"}
-
-                with _task_lock:
-                    _task["reload"] = False
-                    _task["notification"] = final_notif
-                status = "complete" if (final_notif or {}).get("type") == "success" else "error"
-                set_task(status, final_notif["message"] if final_notif else "Fertig", 100)
+                    for line in proc.stdout:
+                        line = line.rstrip()
+                        if line:
+                            append_log(line)
+                    proc.wait()
+                    if proc.returncode != 0:
+                        append_log(f"⚠️ Fehlercode {proc.returncode}")
             else:
-                # Auto-Modus: lokaler instagram_poster (nächste ausstehende Story)
+                # Auto-Modus: nächste ausstehende Story
                 set_task("running", "Poste nächste Story lokal...", 5, log=[])
-                env = os.environ.copy()
-                env["FORCE_POST"] = "1"
                 proc = subprocess.Popen(
                     [sys.executable, "instagram_poster.py"],
                     cwd=Path(__file__).parent,
@@ -782,9 +726,9 @@ def instagram_post():
                 proc.wait()
                 if proc.returncode != 0:
                     append_log(f"⚠️ Fehlercode {proc.returncode}")
-                set_task("running", "Dashboard aktualisieren...", 97)
-                refresh_dashboard()
-                set_task("complete", "Fertig!", 100)
+            set_task("running", "Dashboard aktualisieren...", 97)
+            refresh_dashboard()
+            set_task("complete", "Fertig!", 100)
         except Exception as e:
             set_task("error", str(e), 0)
 
