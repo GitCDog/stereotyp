@@ -380,9 +380,10 @@ def process_story(page, nr: str, logger) -> bool:
     logger.info(f"{'='*60}")
     logger.info(f"[*] Prompt: {prompt[:100]}...")
 
-    # Zur ChatGPT-Konversation navigieren
-    if CHATGPT_IMAGE_URL not in page.url:
-        page.goto(CHATGPT_IMAGE_URL, wait_until="domcontentloaded")
+    # Zur ChatGPT-Konversation navigieren (Stereotypen vs. Namen-URL)
+    target_url = get_chatgpt_url(nr)
+    if target_url not in page.url:
+        page.goto(target_url, wait_until="domcontentloaded")
         page.wait_for_timeout(3000)
 
     dismiss_popups(page)
