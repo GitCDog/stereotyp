@@ -75,6 +75,7 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
         return (
             f'{nr_int}. erstelle ein portrait-bild (1024x1536) im Stil einer modernen flachen Illustration. '
             f'Zeige eine Person passend zum deutschen Namen "{stereotyp}" und zur folgenden Story. '
+            f'Die Person soll realistisch und unscheinbar aussehen – kein model, kein idealtyp, normaler alltags-mensch. '
             f'Oben links nur den Namen "{stereotyp}" in grosser, dunkler moderner Schrift – kein weiterer Text im Bild, kein Titel. '
             f'Hintergrund: organische abstrakte Formen in gedaempften Farben, passend zur Stimmung der Story. '
             f'Die Person, Mimik, Kleidung, Koerpersprache und Hintergrundfarben sollen die Story widerspiegeln. '
@@ -85,7 +86,8 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
         f'{nr_int}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse '
         f'und nehme nicht so viel text in das bild rein, '
         f'verändere die szene und personen im vergleich zum vorherigen bild, '
-        f'stelle junge personen dar (20-35 jahre), '
+        f'stelle realistische alltagsmenschen dar – keine models, keine attraktiven idealtypen, '
+        f'normale körper, verschiedene altersgruppen (20-65 jahre), unscheinbares aussehen wie echte deutsche, '
         f'Titel "{title}". Story: "{text}"'
     )
 
