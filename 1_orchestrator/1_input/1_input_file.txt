@@ -30,7 +30,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 29,Der Blockwart-Nachbar,X,X,48,X,X,,X,X,
 30,Der Anzeige ist raus-Typ,X,X,50,X,X,,X,X,
 31,Der DB-Wutbürger,X,X,47,X,X,,X,X,
-32,Der Grillmeister,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539617/stereotypen/0032_Der%20Grillmeister.mp4,X,,
+32,Der Grillmeister,X,X,54,X,X,,X,X,
 33,Die Bio-Mami,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781165226/stereotypen/0033_Die%20Bio-Mami.mp4,X,,
 34,Der Feierabendbier-Verteidiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539711/stereotypen/0034_Der%20Feierabendbier-Verteidiger.mp4,X,,
 35,Der Wiesn-Tourist,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779539858/stereotypen/0035_Der%20Wiesn-Tourist.mp4,X,,
