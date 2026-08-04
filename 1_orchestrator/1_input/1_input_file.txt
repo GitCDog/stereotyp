@@ -164,7 +164,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 163,Alternative Lifestyle,X,X,57,X,X,,X,X,X
 164,Silikonbrüste,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087750/stereotypen/0164_vid_Silikonbr%C3%BCste.mp4,X,,
 165,Face Lifting,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785842293/stereotypen/0165_vid_Face%20Lifting.mp4,X,,
-166,Schlauchboot Lippen,X,X,55,X,,,X,,
+166,Schlauchboot Lippen,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785842459/stereotypen/0166_vid_Schlauchboot%20Lippen.mp4,X,,
 167,Fake Louis Vuitton Tasche,X,X,48,X,X,,X,X,X
 168,TikTok Süchtig,X,X,52,X,X,,X,X,X
 169,Insta Süchtig,X,X,42,X,X,,X,X,
