@@ -63,7 +63,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 62,Der „Wir fahren über Nacht“-Urlauber,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081454/stereotypen/0062_vid_Der%20%E2%80%9EWir%20fahren%20%C3%BCber%20Nacht%E2%80%9C-Urlauber.mp4,X,,
 63,Der Behörden-Marathon,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081603/stereotypen/0063_vid_Der%20Beh%C3%B6rden-Marathon.mp4,X,,
 64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081744/stereotypen/0064_vid_Der%20%E2%80%9EAlles%20Bio%2C%20oder%20was%E2%80%9C-Eink%C3%A4ufer.mp4,X,,
-65,Der Tatort-Experte,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081885/stereotypen/0065_vid_Der%20Tatort-Experte.mp4,X,,
+65,Der Tatort-Experte,X,X,48,X,X,,X,X,
 66,Der Sonntags-Spaziergänger,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783082032/stereotypen/0066_vid_Der%20Sonntags-Spazierg%C3%A4nger.mp4,X,,
 67,Der Hobby-Meteorologe (Regenradar-Check),X,X,52,X,X,,X,X,
 68,Die „Nur gucken”-Shopping-Tour,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783689922/stereotypen/0068_vid_Die%20%E2%80%9ENur%20gucken%E2%80%9C-Shopping-Tour.mp4,X,,
