@@ -17,7 +17,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 16,Direktheit,X,X,52,X,X,,X,X,X
 17,Das Auto als Heiligtum,X,X,51,X,X,,X,X,
 18,Mülltrennung als Extremsport,X,X,50,X,X,,X,X,X
-19,"Kein Bargeld, keine Chance",X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187484/stereotypen/0019_vid_Kein%20Bargeld%2C%20keine%20Chance.mp4,X,,
+19,"Kein Bargeld, keine Chance",X,X,52,X,X,,X,X,
 20,Die Vereinsmeierei,X,X,57,X,X,,X,X,X
 21,Der Mallorca-Kegelclub,X,X,52,X,X,,X,X,X
 22,Sandalen mit Socken,X,X,53,X,X,,X,X,X
