@@ -425,7 +425,7 @@ EDGE_EXE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 CDP_PORT = 9222
 
 
-def start_edge_with_debug(logger):
+def start_edge_with_debug(logger, first_nr: str = None):
     import subprocess, urllib.request
     # CDP bereits aktiv?
     for host in ["127.0.0.1", "localhost"]:
@@ -449,13 +449,14 @@ def start_edge_with_debug(logger):
     # CDP-Profilordner (persistiert zwischen Runs – Session bleibt erhalten)
     CDP_USER_DATA.mkdir(parents=True, exist_ok=True)
 
+    start_url = get_chatgpt_url(first_nr) if first_nr else CHATGPT_IMAGE_URL
     logger.info(f"[*] Starte Edge mit Debug-Port {CDP_PORT} (CDP-Profil)...")
     subprocess.Popen([EDGE_EXE,
                       f"--remote-debugging-port={CDP_PORT}",
                       "--remote-allow-origins=*",
                       f"--user-data-dir={CDP_USER_DATA}",
                       "--no-first-run",
-                      get_chatgpt_url(nrs[0]) if nrs else CHATGPT_IMAGE_URL])
+                      start_url])
 
     for i in range(20):
         time.sleep(2)
@@ -489,7 +490,7 @@ def main():
 
     logger.info(f"[*] {len(to_process)} Story/s: {', '.join(to_process)}")
 
-    cdp_url = start_edge_with_debug(logger)
+    cdp_url = start_edge_with_debug(logger, first_nr=to_process[0] if to_process else None)
     if not cdp_url:
         sys.exit(1)
 
