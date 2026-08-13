@@ -39,7 +39,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 38,Der passiv-aggressive Treppenhaus-Zettel,X,X,58,X,X,,X,X,
 39,Das „Mahlzeit“-Rufen im Büroflur,X,X,53,X,X,,X,X,X
 40,Die Angst vor „Durchzug“,X,X,49,X,X,,X,X,
-41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540441/stereotypen/0041_Der%20Kassen-Stress%20%28Einr%C3%A4umen%20gegen%20die%20Zeit%29.mp4,X,,
+41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,,X,X,
 42,„Tja“ – Die universelle Antwort,X,X,58,X,X,,X,X,X
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,,X,X,
 44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540729/stereotypen/0044_Die%20%E2%80%9EWo%20kommen%20Sie%20eigentlich%20her-Frage.mp4,X,,
