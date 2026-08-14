@@ -42,7 +42,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 41,Der Kassen-Stress (Einräumen gegen die Zeit),X,X,52,X,X,,X,X,
 42,„Tja“ – Die universelle Antwort,X,X,58,X,X,,X,X,X
 43,Der Schilderwald-Verteidiger,X,X,53,X,X,,X,X,
-44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540729/stereotypen/0044_Die%20%E2%80%9EWo%20kommen%20Sie%20eigentlich%20her-Frage.mp4,X,,
+44,Die „Wo kommen Sie eigentlich her“-Frage,X,X,50,X,X,,X,X,
 45,Der Baumarkt-Samstag,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779540877/stereotypen/0045_Der%20Baumarkt-Samstag.mp4,X,,
 46,Pünktlichkeit (5 Min. vor der Zeit),X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187623/stereotypen/0046_vid_P%C3%BCnktlichkeit%20%285%20Min.%20vor%20der%20Zeit%29.mp4,X,,
 47,Der „Haben wir das schriftlich“-Kollege,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779541020/stereotypen/0047_Der%20%E2%80%9EHaben%20wir%20das%20schriftlich-Kollege.mp4,X,,
