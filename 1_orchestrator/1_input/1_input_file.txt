@@ -93,7 +93,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 92,Die „Wir müssen uns mal wieder treffen“-Lüge,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786900907/stereotypen/0092_vid_Die%20%E2%80%9EWir%20m%C3%BCssen%20uns%20mal%20wieder%20treffen%E2%80%9C-L%C3%BCge.mp4,X,,
 93,Der „Damals im Ferienlager“-Erzähler,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786901073/stereotypen/0093_vid_Der%20%E2%80%9EDamals%20im%20Ferienlager%E2%80%9C-Erz%C3%A4hler.mp4,X,,
 94,Der „Das lohnt sich nicht mehr“-Rentner,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786901228/stereotypen/0094_vid_Der%20%E2%80%9EDas%20lohnt%20sich%20nicht%20mehr%E2%80%9C-Rentner.mp4,X,,
-95,Der „Ich hab’s euch ja gesagt“-Pessimist,X,X,49,X,,,X,,
+95,Der „Ich hab’s euch ja gesagt“-Pessimist,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786901383/stereotypen/0095_vid_Der%20%E2%80%9EIch%20hab%E2%80%99s%20euch%20ja%20gesagt%E2%80%9C-Pessimist.mp4,X,,
 96,Der „Das ist mir zu modern“-Verweigerer,X,X,52,,,,X,,
 97,Der „Wir sind doch alle erwachsen“-Konfliktscheue,X,X,57,,,,X,,
 98,Der „Das war ein Schnäppchen“-Angeber,X,X,54,,,,X,,
