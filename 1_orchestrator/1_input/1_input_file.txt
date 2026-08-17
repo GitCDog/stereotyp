@@ -330,6 +330,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 329,Die Messi-Yamal Matrix-Verschwörung,X,X,59,X,X,,X,X,
 330,CSD-ok oder fetisch,X,X,62,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784809775/stereotypen/0330_vid_CSD-ok%20oder%20fetisch.mp4,X,X,
 331,Unterschied CSD und Zoo,X,,,,,,X,,
+332,Ferrari Luce verkauft,X,X,73,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786948444/stereotypen/0332_vid_Ferrari%20Luce%20verkauft.mp4,,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
