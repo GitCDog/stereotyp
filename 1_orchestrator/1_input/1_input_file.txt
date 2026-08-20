@@ -51,7 +51,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 50,Die Über-Versicherung für alles,X,X,53,X,X,,X,X,
 51,Die Pfandflaschen-Jagd,X,X,48,X,X,,X,X,
 52,Die Ruhe im Speisewagen,X,X,47,X,X,,X,X,
-53,Der Umzugs-Helfer-Stress,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831841/stereotypen/0053_Der%20Umzugs-Helfer-Stress.mp4,X,,
+53,Der Umzugs-Helfer-Stress,X,X,48,X,X,,X,X,
 54,Die Parkplatz-Suche,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780831926/stereotypen/0054_Die%20Parkplatz-Suche.mp4,X,,
 55,Der Versicherungs-Check,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780832029/stereotypen/0055_Der%20Versicherungs-Check.mp4,X,,
 56,Die deutsche Gründlichkeit,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086824/stereotypen/0056_vid_Die%20deutsche%20Gr%C3%BCndlichkeit.mp4,X,,
