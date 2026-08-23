@@ -54,7 +54,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 53,Der Umzugs-Helfer-Stress,X,X,48,X,X,,X,X,
 54,Die Parkplatz-Suche,X,X,47,X,X,,X,X,
 55,Der Versicherungs-Check,X,X,49,X,X,,X,X,
-56,Die deutsche Gründlichkeit,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086824/stereotypen/0056_vid_Die%20deutsche%20Gr%C3%BCndlichkeit.mp4,X,,
+56,Die deutsche Gründlichkeit,X,X,52,X,X,,X,X,
 57,Der Kaffee-Snob,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920025/stereotypen/0057_Der%20Kaffee-Snob.mp4,X,,
 58,Die Fensterputz-Eskalation,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086912/stereotypen/0058_vid_Die%20Fensterputz-Eskalation.mp4,X,,
 59,Der Vereinsausflug,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920233/stereotypen/0059_Der%20Vereinsausflug.mp4,X,,
