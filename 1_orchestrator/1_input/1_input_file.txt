@@ -56,7 +56,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 55,Der Versicherungs-Check,X,X,49,X,X,,X,X,
 56,Die deutsche Gründlichkeit,X,X,52,X,X,,X,X,
 57,Der Kaffee-Snob,X,X,52,X,X,,X,X,
-58,Die Fensterputz-Eskalation,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783086912/stereotypen/0058_vid_Die%20Fensterputz-Eskalation.mp4,X,,
+58,Die Fensterputz-Eskalation,X,X,53,X,X,,X,X,
 59,Der Vereinsausflug,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920233/stereotypen/0059_Der%20Vereinsausflug.mp4,X,,
 60,Die Handtuch-Mafia,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920342/stereotypen/0060_Die%20Handtuch-Mafia.mp4,X,,
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920461/stereotypen/0061_Der%20%E2%80%9EDas%20ist%20doch%20noch%20gut%E2%80%9C-Sparer.mp4,X,,
