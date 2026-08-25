@@ -102,7 +102,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 101,Talahon,X,X,51,X,X,,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087005/stereotypen/0102_vid_Wehrdienstverweigerer.mp4,X,,
 103,Bali Yoga Retreat,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255625/stereotypen/0103_Bali%20Yoga%20Retreat.mp4,X,,
-104,Vibe Coder,X,X,47,X,,,X,,
+104,Vibe Coder,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787663837/stereotypen/0104_vid_Vibe%20Coder.mp4,X,,
 105,Chaya in Frankfurt,X,X,52,X,X,,X,X,X
 106,Betriebsrat,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784720383/stereotypen/0106_vid_Betriebsrat.mp4,X,,
 107,Porschefahrer,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784726808/stereotypen/0107_vid_Porschefahrer.mp4,X,,
