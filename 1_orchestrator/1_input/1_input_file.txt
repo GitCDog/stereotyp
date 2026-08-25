@@ -98,7 +98,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 97,Der „Wir sind doch alle erwachsen“-Konfliktscheue,X,X,57,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787663088/stereotypen/0097_vid_Der%20%E2%80%9EWir%20sind%20doch%20alle%20erwachsen%E2%80%9C-Konfliktscheue.mp4,X,,
 98,Der „Das war ein Schnäppchen“-Angeber,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787663283/stereotypen/0098_vid_Der%20%E2%80%9EDas%20war%20ein%20Schn%C3%A4ppchen%E2%80%9C-Angeber.mp4,X,,
 99,Der „Ich kenn da jemanden“-Netzwerker,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787663479/stereotypen/0099_vid_Der%20%E2%80%9EIch%20kenn%20da%20jemanden%E2%80%9C-Netzwerker.mp4,X,,
-100,Der „Eigentlich bin ich ja ganz anders“-Selbstbetrüger,X,X,56,X,,,X,,
+100,Der „Eigentlich bin ich ja ganz anders“-Selbstbetrüger,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787663670/stereotypen/0100_vid_Der%20%E2%80%9EEigentlich%20bin%20ich%20ja%20ganz%20anders%E2%80%9C-Selbstbetr%C3%BCger.mp4,X,,
 101,Talahon,X,X,51,X,X,,X,X,X
 102,Wehrdienstverweigerer,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087005/stereotypen/0102_vid_Wehrdienstverweigerer.mp4,X,,
 103,Bali Yoga Retreat,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1781255625/stereotypen/0103_Bali%20Yoga%20Retreat.mp4,X,,
