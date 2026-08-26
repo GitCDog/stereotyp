@@ -1082,9 +1082,9 @@ html = f'''<!DOCTYPE html>
                 const typeSel = document.getElementById('newIsNameStory').value;
                 if (nextNr >= 2100 && nextNr <= 2999 && typeSel === 'auto') {{
                     const ok = confirm(
-                        '⚠️ Die nächste freie Nummer wäre #' + nextNr + ' (Bereich 2100–2999).\n\n' +
-                        'Das ist KEIN definierter Name-Story-Bereich (2000–2099).\n' +
-                        'Bitte Story-Typ manuell wählen:\n\n' +
+                        '⚠️ Die nächste freie Nummer wäre #' + nextNr + ' (Bereich 2100–2999).\\n\\n' +
+                        'Das ist KEIN definierter Name-Story-Bereich (2000–2099).\\n' +
+                        'Bitte Story-Typ manuell wählen:\\n\\n' +
                         '→ Abbrechen und "Stereotyp-Story" oder "Name-Story" im Dropdown wählen.'
                     );
                     if (!ok) return;
