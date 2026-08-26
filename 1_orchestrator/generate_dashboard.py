@@ -612,6 +612,14 @@ html = f'''<!DOCTYPE html>
                         <input type="number" id="newPositionNr" min="1" placeholder="z.B. 3">
                     </div>
                 </div>
+                <div class="new-story-field" style="flex:0;min-width:130px;">
+                    <label>Story-Typ</label>
+                    <select id="newIsNameStory">
+                        <option value="auto">Auto (nr-Range)</option>
+                        <option value="false">Stereotyp-Story</option>
+                        <option value="true">Name-Story</option>
+                    </select>
+                </div>
                 <button class="new-story-submit" id="createStoryBtn" onclick="createStory()">Generieren</button>
             </div>
         </div>
@@ -1065,6 +1073,24 @@ html = f'''<!DOCTYPE html>
             document.getElementById('newStereotyp').focus();
             return;
         }}
+        // Nächste nr vorab prüfen – Warnung wenn im Grenzbereich 2100-2999
+        try {{
+            const nrResp = await fetch('/api/next-nr');
+            if (nrResp.ok) {{
+                const nrData = await nrResp.json();
+                const nextNr = nrData.next_nr;
+                const typeSel = document.getElementById('newIsNameStory').value;
+                if (nextNr >= 2100 && nextNr <= 2999 && typeSel === 'auto') {{
+                    const ok = confirm(
+                        '⚠️ Die nächste freie Nummer wäre #' + nextNr + ' (Bereich 2100–2999).\n\n' +
+                        'Das ist KEIN definierter Name-Story-Bereich (2000–2099).\n' +
+                        'Bitte Story-Typ manuell wählen:\n\n' +
+                        '→ Abbrechen und "Stereotyp-Story" oder "Name-Story" im Dropdown wählen.'
+                    );
+                    if (!ok) return;
+                }}
+            }}
+        }} catch(e) {{}}
         const btn = document.getElementById('createStoryBtn');
         btn.disabled = true;
         btn.textContent = '⏳...';
@@ -1074,13 +1100,15 @@ html = f'''<!DOCTYPE html>
         setLog(5, 'Starte...');
         try {{
             let position = document.getElementById('newPosition').value;
-        if (position === 'custom') {{
-            position = document.getElementById('newPositionNr').value.trim() || '';
-        }}
+            if (position === 'custom') {{
+                position = document.getElementById('newPositionNr').value.trim() || '';
+            }}
+            const typeSel = document.getElementById('newIsNameStory').value;
+            const is_name_story = typeSel === 'true' ? true : typeSel === 'false' ? false : null;
         const resp = await fetch('/api/create-story', {{
                 method: 'POST',
                 headers: {{'Content-Type': 'application/json'}},
-                body: JSON.stringify({{stereotyp, stichworte, position}})
+                body: JSON.stringify({{stereotyp, stichworte, position, is_name_story}})
             }});
             if (resp.ok) {{
                 pollProgress(btn, '✍️ Story generieren');

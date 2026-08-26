@@ -123,9 +123,11 @@ def build_name_story_prompt(name: str) -> str:
     return NAME_STORY_PROMPT_TEMPLATE.format(name=name)
 
 
-def generate_story(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0) -> str:
+def generate_story(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0, is_name_story: bool | None = None) -> str:
     """Generiere Story-Text via Claude CLI (claude -p)."""
-    if 2000 <= nr <= 2999:
+    if is_name_story is None:
+        is_name_story = 2000 <= nr <= 2099
+    if is_name_story:
         prompt = NAME_SYSTEM_PROMPT + "\n\n" + build_name_story_prompt(stereotyp)
     else:
         prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
@@ -189,7 +191,7 @@ def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1
 
 
 def process_story(row: dict, config: dict, logger: logging.Logger,
-                  stichworte: list[str] | None = None):
+                  stichworte: list[str] | None = None, is_name_story: bool | None = None):
     nr = int(row["nr"])
     stereotyp = row["stereotyp"].strip()
     input_file = config["output"]["input_file"]
@@ -207,7 +209,7 @@ def process_story(row: dict, config: dict, logger: logging.Logger,
         logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
     logger.info(f"[*] Generiere Story via Claude CLI...")
-    story_text = generate_story(stereotyp, stichworte, nr=nr)
+    story_text = generate_story(stereotyp, stichworte, nr=nr, is_name_story=is_name_story)
     word_count = count_words(story_text)
     logger.info(f"[+] Story generiert ({word_count} Woerter)")
 
@@ -233,6 +235,10 @@ def main():
     parser.add_argument("--all", action="store_true", help="Alle ausstehenden Stories")
     parser.add_argument("--stichworte", type=str, default="",
                         help="Kommagetrennte Stichworte die in die Story einfliessen sollen")
+    parser.add_argument("--name-story", action="store_true", default=None,
+                        help="Erzwinge Namen-Story-Prompt (überschreibt nr-Range-Check)")
+    parser.add_argument("--no-name-story", action="store_true",
+                        help="Erzwinge Stereotyp-Prompt (überschreibt nr-Range-Check)")
     parser.add_argument("--config", default="config.yaml")
     args = parser.parse_args()
 
@@ -242,12 +248,18 @@ def main():
 
     stichworte = [s.strip() for s in args.stichworte.split(",") if s.strip()] if args.stichworte else None
 
+    is_name_story: bool | None = None
+    if getattr(args, "name_story", False):
+        is_name_story = True
+    elif getattr(args, "no_name_story", False):
+        is_name_story = False
+
     if args.story:
         row = ir.find_row(args.story, input_file)
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        process_story(row, config, logger, stichworte=stichworte)
+        process_story(row, config, logger, stichworte=stichworte, is_name_story=is_name_story)
 
     elif args.all:
         rows = ir.read_rows(input_file)
@@ -255,7 +267,7 @@ def main():
         logger.info(f"[*] {len(pending)} ausstehende Stories")
         for row in pending:
             try:
-                process_story(row, config, logger, stichworte=stichworte)
+                process_story(row, config, logger, stichworte=stichworte, is_name_story=is_name_story)
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
 
@@ -264,7 +276,7 @@ def main():
         if not row:
             logger.info("[+] Keine ausstehenden Stories")
             return
-        process_story(row, config, logger, stichworte=stichworte)
+        process_story(row, config, logger, stichworte=stichworte, is_name_story=is_name_story)
 
 
 if __name__ == "__main__":

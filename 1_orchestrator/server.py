@@ -386,6 +386,15 @@ def generate_picture():
 
 # ── Neue Story erstellen ─────────────────────────────────────────────────────
 
+@app.route("/api/next-nr")
+def next_nr():
+    input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+    with open(input_file, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
+    return jsonify({"next_nr": max_nr + 1})
+
+
 @app.route("/api/create-story", methods=["POST"])
 def create_story():
     if _task["status"] == "running":
@@ -395,6 +404,7 @@ def create_story():
     stereotyp = body.get("stereotyp", "").strip()
     stichworte = body.get("stichworte", "").strip()
     position = body.get("position", "")  # "start", "end", Zahl, oder leer = nicht einreihen
+    is_name_story = body.get("is_name_story", None)  # True/False/None (None = auto via nr-Range)
 
     if not stereotyp:
         return jsonify({"error": "Stereotyp fehlt"}), 400
@@ -431,6 +441,10 @@ def create_story():
             args = ["generate_stories.py", "--story", new_nr]
             if stichworte:
                 args += ["--stichworte", stichworte]
+            if is_name_story is True:
+                args += ["--name-story"]
+            elif is_name_story is False:
+                args += ["--no-name-story"]
             run_script(args)
             log.append(f"✅ Story-Text gespeichert")
 

@@ -37,7 +37,7 @@ CHATGPT_NAMES_URL  = "https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8
 
 
 def get_chatgpt_url(nr: str) -> str:
-    return CHATGPT_NAMES_URL if 2000 <= int(nr) <= 2999 else CHATGPT_IMAGE_URL
+    return CHATGPT_NAMES_URL if 2000 <= int(nr) <= 2099 else CHATGPT_IMAGE_URL
 DEFAULT_WAIT_SEC  = 30
 # Eigenes persistentes Verzeichnis – kein Konflikt mit Default-Profil / WebView2-lockfile
 CDP_USER_DATA = Path(r"C:\Users\slawa\AppData\Local\Temp\EdgeCDP")
@@ -71,7 +71,7 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
     if not story_file:
         return None
     text = re.sub(r"\s+", " ", story_file.read_text(encoding="utf-8").strip())
-    if 2000 <= nr_int <= 2999:
+    if 2000 <= nr_int <= 2099:
         return (
             f'{nr_int}. erstelle ein portrait-bild (1024x1536) im Stil einer modernen flachen Illustration. '
             f'Zeige eine Person passend zum deutschen Namen "{stereotyp}" und zur folgenden Story. '
