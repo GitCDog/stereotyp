@@ -109,7 +109,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 108,Thermomix,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784726971/stereotypen/0108_vid_Thermomix.mp4,X,,
 109,Digga,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784726655/stereotypen/0109_vid_Digga.mp4,X,,
 110,Katzenmami,X,X,53,X,X,,X,X,X
-111,Mops,X,X,55,,,,X,,
+111,Mops,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787834362/stereotypen/0111_vid_Mops.mp4,X,,
 112,Klimaaktivist,X,X,55,X,X,,X,X,X
 113,DSGVO,X,X,47,X,X,,X,X,X
 114,Pattaya Urlaub,X,X,50,X,X,,X,X,X
@@ -333,7 +333,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 332,Ferrari Luce verkauft,X,X,73,X,X,,,X,
 333,Die Zuckersteuer,X,X,58,X,X,,,X,
 334,Der Hamburger Topverdiener,X,X,61,X,X,,X,X,
-335,Lebkuchen im August,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1787821222/stereotypen/0335_vid_Lebkuchen%20im%20August.mp4,X,,
+335,Lebkuchen im August,X,X,54,X,X,,X,X,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
