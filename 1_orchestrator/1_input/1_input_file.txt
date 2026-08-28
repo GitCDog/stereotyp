@@ -58,7 +58,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 57,Der Kaffee-Snob,X,X,52,X,X,,X,X,
 58,Die Fensterputz-Eskalation,X,X,53,X,X,,X,X,
 59,Der Vereinsausflug,X,X,51,X,X,,X,X,
-60,Die Handtuch-Mafia,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920342/stereotypen/0060_Die%20Handtuch-Mafia.mp4,X,,
+60,Die Handtuch-Mafia,X,X,53,X,X,,X,X,
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1780920461/stereotypen/0061_Der%20%E2%80%9EDas%20ist%20doch%20noch%20gut%E2%80%9C-Sparer.mp4,X,,
 62,Der „Wir fahren über Nacht“-Urlauber,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081454/stereotypen/0062_vid_Der%20%E2%80%9EWir%20fahren%20%C3%BCber%20Nacht%E2%80%9C-Urlauber.mp4,X,,
 63,Der Behörden-Marathon,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081603/stereotypen/0063_vid_Der%20Beh%C3%B6rden-Marathon.mp4,X,,
