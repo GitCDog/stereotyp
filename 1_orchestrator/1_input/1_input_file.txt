@@ -61,7 +61,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 60,Die Handtuch-Mafia,X,X,53,X,X,,X,X,
 61,Der „Das ist doch noch gut“-Sparer,X,X,55,X,X,,X,X,
 62,Der „Wir fahren über Nacht“-Urlauber,X,X,48,X,X,,X,X,
-63,Der Behörden-Marathon,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081603/stereotypen/0063_vid_Der%20Beh%C3%B6rden-Marathon.mp4,X,,
+63,Der Behörden-Marathon,X,X,52,X,X,,X,X,
 64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783081744/stereotypen/0064_vid_Der%20%E2%80%9EAlles%20Bio%2C%20oder%20was%E2%80%9C-Eink%C3%A4ufer.mp4,X,,
 65,Der Tatort-Experte,X,X,48,X,X,,X,X,
 66,Der Sonntags-Spaziergänger,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783082032/stereotypen/0066_vid_Der%20Sonntags-Spazierg%C3%A4nger.mp4,X,,
