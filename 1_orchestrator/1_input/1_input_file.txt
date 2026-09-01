@@ -334,6 +334,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 333,Die Zuckersteuer,X,X,58,X,X,,,X,
 334,Der Hamburger Topverdiener,X,X,61,X,X,,X,X,
 335,Lebkuchen im August,X,X,54,X,X,,X,X,
+336,Sommerinterview mit Friedrich Merz,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1788262028/stereotypen/0336_vid_Sommerinterview%20mit%20Friedrich%20Merz.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
