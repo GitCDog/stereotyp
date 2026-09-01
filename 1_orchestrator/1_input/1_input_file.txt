@@ -64,7 +64,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 63,Der Behörden-Marathon,X,X,52,X,X,,X,X,
 64,"Der „Alles Bio, oder was“-Einkäufer",X,X,49,X,X,,X,X,
 65,Der Tatort-Experte,X,X,48,X,X,,X,X,
-66,Der Sonntags-Spaziergänger,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783082032/stereotypen/0066_vid_Der%20Sonntags-Spazierg%C3%A4nger.mp4,X,,
+66,Der Sonntags-Spaziergänger,X,X,52,X,X,,X,X,
 67,Der Hobby-Meteorologe (Regenradar-Check),X,X,52,X,X,,X,X,
 68,Die „Nur gucken”-Shopping-Tour,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783689922/stereotypen/0068_vid_Die%20%E2%80%9ENur%20gucken%E2%80%9C-Shopping-Tour.mp4,X,,
 69,Der „Das ist deutsche Wertarbeit”-Sager,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101299/stereotypen/0069_vid_Der%20%E2%80%9EDas%20ist%20deutsche%20Wertarbeit%E2%80%9D-Sager.mp4,X,,
