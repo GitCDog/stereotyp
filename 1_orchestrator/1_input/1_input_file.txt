@@ -340,7 +340,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 339,Vier VW Werke werden geschlossen,X,X,61,X,X,,X,X,
 340,Hausaufgaben nur noch mit KI,X,X,57,,,,X,,
 341,Deindustrialisierung - Audi Werk Neckarsulm stirbt,X,X,58,,,,X,,
-342,JP Krämer im Wife Beater Shirt,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1788351443/stereotypen/0342_vid_JP%20Kr%C3%A4mer%20im%20Wife%20Beater%20Shirt.mp4,X,,
+342,JP Krämer im Wife Beater Shirt,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1788352170/stereotypen/0342_vid_JP%20Kr%C3%A4mer%20im%20Wife%20Beater%20Shirt.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
