@@ -342,7 +342,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 341,Deindustrialisierung - Audi Werk Neckarsulm stirbt,X,X,58,,,,X,,
 342,JP Krämer im Wife Beater Shirt,X,X,51,X,X,,X,X,
 343,Das Cybercab,X,X,59,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1788555928/stereotypen/0343_vid_Das%20Cybercab.mp4,X,,
-344,"Wer kann sich den Sprit noch leisten bei 2,49€",X,X,65,X,,,X,,
+344,"Wer kann sich den Sprit noch leisten bei 2,49€",X,X,65,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1788556118/stereotypen/0344_vid_Wer%20kann%20sich%20den%20Sprit%20noch%20leisten%20bei%202%2C49%E2%82%AC.mp4,X,,
 345,Lars Klingbeils Schweißdetektor,X,X,60,,,,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
