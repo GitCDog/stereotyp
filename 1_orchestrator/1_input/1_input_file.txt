@@ -71,7 +71,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 70,Der Kleingarten-Vorstand,X,X,50,X,X,,X,X,
 71,Das Fax-Gerät im Amt,X,X,50,X,X,,X,X,
 72,„Schatzi“-Paare im Partnerlook,X,X,54,X,X,,X,X,
-73,Der Laubbläser-Fanatiker,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101778/stereotypen/0073_vid_Der%20Laubbl%C3%A4ser-Fanatiker.mp4,X,,
+73,Der Laubbläser-Fanatiker,X,X,50,X,X,,X,X,
 74,Die Landlust-Idylle-Leserin,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784101961/stereotypen/0074_vid_Die%20Landlust-Idylle-Leserin.mp4,X,,
 75,Der „Wir schenken uns nichts“-Lügner,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102111/stereotypen/0075_vid_Der%20%E2%80%9EWir%20schenken%20uns%20nichts%E2%80%9C-L%C3%BCgner.mp4,X,,
 76,„Bier ist ein Grundnahrungsmittel“,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784187773/stereotypen/0076_vid_%E2%80%9EBier%20ist%20ein%20Grundnahrungsmittel%E2%80%9C.mp4,X,,
