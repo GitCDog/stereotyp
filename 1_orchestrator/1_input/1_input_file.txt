@@ -115,10 +115,10 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 114,Pattaya Urlaub,X,X,50,X,X,,X,X,X
 115,Bierleiche,X,X,53,X,,,X,,
 116,Pilates,X,X,51,X,,,X,,
-117,Mein Nervensystem,X,X,56,,,,X,,
+117,Mein Nervensystem,X,X,56,X,,,X,,
 118,Longevity Trend,X,X,49,X,X,,X,X,X
-119,Verschwörungstheoretiker,X,X,52,,,,X,,
-120,Bitcoin Maxi,X,X,53,,,,X,,
+119,Verschwörungstheoretiker,X,X,52,X,,,X,,
+120,Bitcoin Maxi,X,X,53,X,,,X,,
 121,Gendern,X,X,55,X,X,,X,X,X
 122,Das Arschgeweih,X,X,57,X,X,,X,X,X
 123,Das Augenbrauenpiercing,X,X,57,X,X,,X,X,
@@ -345,7 +345,8 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 344,"Wer kann sich den Sprit noch leisten bei 2,49€",X,X,65,X,X,,X,X,
 345,Lars Klingbeils Schweißdetektor,X,X,60,,,,X,,
 346,"Nike Aktie - Go woke, go broke",X,X,56,X,X,,X,X,
-347,iphone duo - 2000€ Problem was vorher niemand hatte,X,X,62,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789022948/stereotypen/0347_vid_iphone%20duo%20-%202000%E2%82%AC%20Problem%20was%20vorher%20niemand%20hatte.mp4,,,
+347,iphone duo - 2000€ Problem was vorher niemand hatte,X,X,62,X,X,,,X,
+348,Berlin nach der Wahl,X,X,61,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789992465/stereotypen/0348_vid_Berlin%20nach%20der%20Wahl.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
