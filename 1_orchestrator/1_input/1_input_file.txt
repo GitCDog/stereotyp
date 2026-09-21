@@ -117,7 +117,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 116,Pilates,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994097/stereotypen/0116_vid_Pilates.mp4,X,,
 117,Mein Nervensystem,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994226/stereotypen/0117_vid_Mein%20Nervensystem.mp4,X,,
 118,Longevity Trend,X,X,49,X,X,,X,X,X
-119,Verschwörungstheoretiker,X,X,52,X,,,X,,
+119,Verschwörungstheoretiker,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994345/stereotypen/0119_vid_Verschw%C3%B6rungstheoretiker.mp4,X,,
 120,Bitcoin Maxi,X,X,53,X,,,X,,
 121,Gendern,X,X,55,X,X,,X,X,X
 122,Das Arschgeweih,X,X,57,X,X,,X,X,X
