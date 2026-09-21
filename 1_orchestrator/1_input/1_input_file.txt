@@ -115,7 +115,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 114,Pattaya Urlaub,X,X,50,X,X,,X,X,X
 115,Bierleiche,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789993979/stereotypen/0115_vid_Bierleiche.mp4,X,,
 116,Pilates,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994097/stereotypen/0116_vid_Pilates.mp4,X,,
-117,Mein Nervensystem,X,X,56,X,,,X,,
+117,Mein Nervensystem,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994226/stereotypen/0117_vid_Mein%20Nervensystem.mp4,X,,
 118,Longevity Trend,X,X,49,X,X,,X,X,X
 119,Verschwörungstheoretiker,X,X,52,X,,,X,,
 120,Bitcoin Maxi,X,X,53,X,,,X,,
