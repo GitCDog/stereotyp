@@ -113,7 +113,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 112,Klimaaktivist,X,X,55,X,X,,X,X,X
 113,DSGVO,X,X,47,X,X,,X,X,X
 114,Pattaya Urlaub,X,X,50,X,X,,X,X,X
-115,Bierleiche,X,X,53,X,,,X,,
+115,Bierleiche,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789993979/stereotypen/0115_vid_Bierleiche.mp4,X,,
 116,Pilates,X,X,51,X,,,X,,
 117,Mein Nervensystem,X,X,56,X,,,X,,
 118,Longevity Trend,X,X,49,X,X,,X,X,X
@@ -129,10 +129,10 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 128,Proteinprodukte Regal,X,X,50,X,X,,X,X,
 129,Demeter,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102410/stereotypen/0129_vid_Demeter.mp4,X,,
 130,Des deutschen liebstes Kind,X,X,47,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1784102550/stereotypen/0130_vid_Des%20deutschen%20liebstes%20Kind.mp4,X,,
-131,Shisha Boys,X,X,54,,,,X,,
-132,Das Du anbieten,X,X,51,,,,X,,
+131,Shisha Boys,X,X,54,X,,,X,,
+132,Das Du anbieten,X,X,51,X,,,X,,
 133,OnlyFans Girl,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087070/stereotypen/0133_vid_OnlyFans%20Girl.mp4,X,,
-134,Stringtanga 2nd Hand Ebay,X,X,56,,,,X,,
+134,Stringtanga 2nd Hand Ebay,X,X,56,X,,,X,,
 135,Tinder Girl,X,X,50,,,,X,,
 136,Tinder Guy,X,X,51,,,,X,,
 137,Tinder Date sieht anders aus,X,X,49,,,,X,,
@@ -347,7 +347,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 346,"Nike Aktie - Go woke, go broke",X,X,56,X,X,,X,X,
 347,iphone duo - 2000€ Problem was vorher niemand hatte,X,X,62,X,X,,,X,
 348,Berlin nach der Wahl,X,X,61,X,X,,X,X,
-349,Das Khalifat Berlin,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789993006/stereotypen/0349_vid_Das%20Khalifat%20Berlin.mp4,X,,
+349,Das Khalifat Berlin,X,X,58,X,X,,X,X,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
