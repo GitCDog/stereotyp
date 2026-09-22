@@ -86,7 +86,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 85,Die „Darf man das noch sagen“-Runde,X,X,54,X,X,,X,X,
 86,Der „Ich hab das im Internet gelesen“-Experte,X,X,55,X,X,,X,X,
 87,Parkplatz-Reservieren mit dem Körper,X,X,55,X,X,,X,X,
-88,Der „Morgenstund hat Gold im Mund“-Typ,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785841821/stereotypen/0088_vid_Der%20%E2%80%9EMorgenstund%20hat%20Gold%20im%20Mund%E2%80%9C-Typ.mp4,X,,
+88,Der „Morgenstund hat Gold im Mund“-Typ,X,X,51,X,X,,X,X,
 89,Der Adventskranz-Wettbewerb,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785841983/stereotypen/0089_vid_Der%20Adventskranz-Wettbewerb.mp4,X,,
 90,Der „Das wird man wohl noch sagen dürfen“-Stammtischler,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785842140/stereotypen/0090_vid_Der%20%E2%80%9EDas%20wird%20man%20wohl%20noch%20sagen%20d%C3%BCrfen%E2%80%9C-Stammtischler.mp4,X,,
 91,"Der „Ich bin kein Experte, aber...“-Besserwisser",X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1786900740/stereotypen/0091_vid_Der%20%E2%80%9EIch%20bin%20kein%20Experte%2C%20aber...%E2%80%9C-Besserwisser.mp4,X,,
