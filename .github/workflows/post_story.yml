@@ -2,8 +2,8 @@ name: Stereotypen – Täglicher Instagram Post
 
 on:
   schedule:
-    # Täglich 17:05 CEST (15:05 UTC)
-    - cron: "5 15 * * *"
+    # Täglich 11:00 CEST (09:00 UTC) – früh genug um GitHub-Delays von bis zu 6h abzufangen
+    - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
       story_nr:
