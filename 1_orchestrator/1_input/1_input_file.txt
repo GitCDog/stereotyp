@@ -176,10 +176,10 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 175,Gammler,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1779879325/stereotypen/0175_Gammler.mp4,X,,
 176,GEZ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783088927/stereotypen/0176_vid_GEZ.mp4,X,,
 177,Technomädchen,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783089062/stereotypen/0177_vid_Technom%C3%A4dchen.mp4,X,,
-178,Technojunge,X,X,49,,,,X,,
-179,Love Parade,X,X,53,,,,X,,
-180,Buffaloschuhe,X,X,49,,,,X,,
-181,Klimakleber,X,X,54,,,,X,,
+178,Technojunge,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532552/stereotypen/0178_vid_Technojunge.mp4,X,,
+179,Love Parade,X,X,53,X,,,X,,
+180,Buffaloschuhe,X,X,49,X,,,X,,
+181,Klimakleber,X,X,54,X,,,X,,
 182,CDU,X,X,49,X,X,,X,X,X
 183,SPD,X,X,54,X,X,,X,X,X
 184,FDP,X,X,45,X,X,,X,X,X
@@ -196,7 +196,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 195,Sonderschule,X,X,51,X,X,,X,X,
 196,Berufsschule,X,X,50,X,X,,X,X,
 197,Home Office,X,X,52,X,X,,X,X,
-198,Schwarzarbeit,X,X,47,,,,X,,
+198,Schwarzarbeit,X,X,47,X,,,X,,
 199,Baustelle,X,X,48,X,X,,X,X,X
 200,Tankstelle,X,X,51,X,X,,X,X,
 201,Boxautomat,X,X,52,X,X,,X,X,X
