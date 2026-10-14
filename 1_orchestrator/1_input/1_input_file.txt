@@ -113,7 +113,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 112,Klimaaktivist,X,X,55,X,X,,X,X,X
 113,DSGVO,X,X,47,X,X,,X,X,X
 114,Pattaya Urlaub,X,X,50,X,X,,X,X,X
-115,Bierleiche,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789993979/stereotypen/0115_vid_Bierleiche.mp4,X,,
+115,Bierleiche,X,X,53,X,X,,X,X,
 116,Pilates,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994097/stereotypen/0116_vid_Pilates.mp4,X,,
 117,Mein Nervensystem,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994226/stereotypen/0117_vid_Mein%20Nervensystem.mp4,X,,
 118,Longevity Trend,X,X,49,X,X,,X,X,X
