@@ -12,6 +12,15 @@ STORIES_DIR = Path("1_input")
 INPUT_FILE = "1_input/1_input_file.txt"
 OUT = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
 
+# Schriftstil "E – Magazin-Cover" (Auswahl vom 15.10.2026)
+TITLE_STYLE = (
+    'Setze den Titel im Stil eines Nachrichtenmagazin-Covers: grosse, kontrastreiche Serifenschrift '
+    '(wie DM Serif Display), weiss, linksbuendig direkt im oberen Bildbereich, oberer Bildrand leicht '
+    'abgedunkelt damit der Titel lesbar ist, nur das wichtigste Wort gelb. '
+    'KEIN Kasten, KEINE Pinselstriche, KEINE Marker-Balken, KEINE Outlines, KEINE 3D-Effekte, '
+    'KEINE runde oder fette Sans-Serif-Schrift'
+)
+
 # Provokante Titel pro Story-Nr (plain integer als Key)
 TITLES = {
     19:  "Bargeld ist Freiheit?",
@@ -358,6 +367,7 @@ TITLES = {
     347: "Warum stehen Deutsche für 2000€ Schlange wie in der DDR?",
     348: "Warum waehlt Berlin immer wieder dieselbe Katastrophe?",
     349: "Warum wird Berlin zum Khalifat - und keiner stoppt es?",
+    350: "Kassiert Merz jetzt sogar an deiner Cola mit?",
 }
 
 
@@ -417,7 +427,7 @@ def main():
                 f'und nehme nicht so viel text in das bild rein, '
                 f'stelle realistische alltagsmenschen dar – keine models, keine attraktiven idealtypen, '
                 f'normale körper, verschiedene altersgruppen (20-65 jahre), unscheinbares aussehen wie echte deutsche, '
-                f'Titel "{title}". Story: "{text}"'
+                f'Titel "{title}". {TITLE_STYLE}. Story: "{text}"'
             )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

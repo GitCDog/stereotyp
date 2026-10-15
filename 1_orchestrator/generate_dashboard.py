@@ -5,7 +5,7 @@ import csv
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
-from generate_gpt_prompt_titled import TITLES
+from generate_gpt_prompt_titled import TITLES, TITLE_STYLE
 
 with open("1_input/1_input_file.txt", encoding="utf-8") as f:
     data = [r for r in csv.DictReader(f) if r.get("nr", "").strip()]
@@ -1326,7 +1326,7 @@ html = f'''<!DOCTYPE html>
         const text = _storyCache[nr];
         const titleEl = eye.parentElement ? eye.parentElement.querySelector('.title-eye-btn') : null;
         const title = titleEl ? titleEl.getAttribute('data-title') : '';
-        const prompt = `${{nr}}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse und nehme nicht so viel text in das bild rein, verändere die szene und personen im vergleich zum vorherigen bild, stelle junge personen dar (20-35 jahre), Titel "${{title}}". Story: "${{text}}"`;
+        const prompt = `${{nr}}. erstelle ein bild (1024x1536) dazu, nicht düster und nicht böse und nehme nicht so viel text in das bild rein, verändere die szene und personen im vergleich zum vorherigen bild, stelle junge personen dar (20-35 jahre), Titel "${{title}}". {TITLE_STYLE}. Story: "${{text}}"`;
         let ok = false;
         try {{
             await navigator.clipboard.writeText(prompt);
