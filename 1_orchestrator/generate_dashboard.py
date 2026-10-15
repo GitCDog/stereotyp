@@ -121,7 +121,7 @@ for row in data:
                     {cloud_td}
                     {status_td(yt)}
                     <td class="center" style="white-space:nowrap;">
-                        <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="togglePost(this)" {"" if vid_done else "disabled"}>{insta_lbl}</button>
+                        <button class="insta-btn {insta_cls}" data-nr="{nr}" onclick="smartPost(this)">{insta_lbl}</button>
                         <button class="queue-btn" data-nr="{nr}" onclick="openQueueModal(this)" title="In Reihenfolge einreihen">☰</button>
                         <button class="reset-btn" data-nr="{nr}" onclick="resetVideo(this)" title="Video zurücksetzen (neu generieren)">🔄</button>
                     </td>
@@ -217,11 +217,18 @@ html = f'''<!DOCTYPE html>
         }}
         .log-box {{
             display: none;
-            margin-top: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 420px;
+            max-width: calc(100vw - 40px);
+            padding: 14px 16px;
+            background: #fff;
+            border-radius: 10px;
             font-size: 13px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.22);
+            border: 1px solid #ddd;
+            z-index: 1500;
         }}
         .log-box.visible {{ display: block; }}
         .log-progress {{
@@ -356,14 +363,16 @@ html = f'''<!DOCTYPE html>
         .new-story-field label {{
             font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px;
         }}
-        .new-story-field input {{
+        .new-story-field input, .new-story-field textarea {{
             padding: 9px 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
             width: 100%;
+            font-family: inherit;
         }}
-        .new-story-field input:focus {{
+        .new-story-field textarea {{ resize: vertical; min-height: 40px; }}
+        .new-story-field input:focus, .new-story-field textarea:focus {{
             outline: none; border-color: #e8120a; box-shadow: 0 0 0 2px rgba(232,18,10,0.15);
         }}
         .new-story-submit {{
@@ -460,6 +469,50 @@ html = f'''<!DOCTYPE html>
             background: none; border: none; color: #888; cursor: pointer;
             font-size: 12px; margin-top: 8px; width: 100%; text-align: center;
         }}
+        .pipeline-modal {{
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); z-index: 3000;
+            justify-content: center; align-items: center;
+        }}
+        .pipeline-modal.visible {{ display: flex; }}
+        .pipeline-inner {{
+            background: white; border-radius: 14px; padding: 28px 32px;
+            max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.45);
+        }}
+        .pipeline-inner h3 {{ font-size: 16px; margin-bottom: 16px; color: #111; }}
+        .pipeline-title-box {{
+            background: #fff8e6; border: 2px solid #f0a800;
+            border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;
+            font-size: 14px; font-weight: 700; color: #7a5000;
+        }}
+        .pipeline-story-text {{
+            font-size: 13px; line-height: 1.75; color: #333;
+            white-space: pre-wrap; background: #f8f8f8;
+            border-radius: 8px; padding: 14px 16px;
+            max-height: 38vh; overflow-y: auto; margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+        }}
+        .pipeline-hint {{
+            font-size: 12px; color: #555; margin-bottom: 18px;
+            padding: 8px 12px; background: #f0f4ff; border-radius: 6px;
+        }}
+        .pipeline-btns {{ display: flex; gap: 10px; justify-content: flex-end; }}
+        .pipeline-btn-ok {{
+            background: #28a745; color: white; border: none;
+            padding: 10px 28px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 700;
+        }}
+        .pipeline-btn-ok:hover {{ background: #218838; }}
+        .pipeline-btn-cancel {{
+            background: #dc3545; color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 700;
+        }}
+        .pipeline-btn-cancel:hover {{ background: #c82333; }}
+        .new-story-submit.pipeline-submit {{ background: #e87e0a; }}
+        .new-story-submit.pipeline-submit:hover {{ background: #c96a08; }}
         .reihenfolge-card {{
             background: #fff8f8;
             border: 1px solid #f0c0c0;
@@ -486,7 +539,7 @@ html = f'''<!DOCTYPE html>
         @media (max-width: 600px) {{
             .new-story-fields {{ flex-direction: column; }}
             .new-story-submit {{ width: 100%; padding: 12px; font-size: 16px; }}
-            .new-story-field input, .new-story-field select {{ font-size: 16px; }}
+            .new-story-field input, .new-story-field select, .new-story-field textarea {{ font-size: 16px; }}
         }}
         .server-status {{
             display: flex; align-items: center; gap: 8px;
@@ -549,7 +602,6 @@ html = f'''<!DOCTYPE html>
             <button class="action-btn" id="videoBtn"    onclick="showInput('video')">🎬 generate_videos</button>
             <button class="action-btn" id="playwrightBtn" onclick="showInput('playwright')">🤖 generate_pictures_playwright</button>
             <button class="action-btn" id="postBtn"     onclick="showInput('post')">📤 instagram_poster</button>
-            <button class="action-btn btn-sofort" id="sofortBtn" onclick="runDirect('sofort')">⚡ Sofort posten</button>
         </div>
 
         <div class="pie-section">
@@ -595,10 +647,11 @@ html = f'''<!DOCTYPE html>
                     <input type="text" id="newStereotyp" placeholder="z.B. Der Sparfuchs"
                            onkeydown="if(event.key==='Enter') createStory()">
                 </div>
-                <div class="new-story-field">
-                    <label>Stichworte (optional)</label>
-                    <input type="text" id="newStichworte" placeholder="z.B. Sonderangebot, Coupons, Kassenzettel"
-                           onkeydown="if(event.key==='Enter') createStory()">
+                <div class="new-story-field" style="flex:2;min-width:260px;">
+                    <label>Stichworte / Beschreibung (optional)</label>
+                    <textarea id="newStichworte" rows="2"
+                              placeholder="Stichworte (z.B. Sonderangebot, Coupons) oder beschreiben was in der Story vorkommen soll – Fakten, Namen, Pointe..."
+                              onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)) createStory()"></textarea>
                 </div>
                 <div class="new-story-field" style="flex:0;min-width:150px;">
                     <label>Reihenfolge</label>
@@ -621,6 +674,7 @@ html = f'''<!DOCTYPE html>
                     </select>
                 </div>
                 <button class="new-story-submit" id="createStoryBtn" onclick="createStory()">Generieren</button>
+                <button class="new-story-submit pipeline-submit" id="pipelineStartBtn" onclick="pipelineStart()">&#x26A1; Pipeline</button>
             </div>
         </div>
 
@@ -673,9 +727,25 @@ html = f'''<!DOCTYPE html>
         </div>
     </div>
 
+    <div class="pipeline-modal" id="pipelineModal">
+        <div class="pipeline-inner" onclick="event.stopPropagation()">
+            <h3>&#x26A1; Story pr&#xFC;fen &#x2013; weiter mit Pipeline?</h3>
+            <div class="pipeline-title-box" id="pipelineTitleBox"></div>
+            <div class="pipeline-story-text" id="pipelineStoryText"></div>
+            <div class="pipeline-hint">
+                &#x2705; <strong>Weiter</strong>: Caption &#x2192; Audio &#x2192; Warte auf Bild &#x2192; Video &#x2192; Post auf Instagram + YouTube<br>
+                &#x2715; <strong>Abbrechen</strong>: Story bleibt gespeichert, Pipeline stoppt.
+            </div>
+            <div class="pipeline-btns">
+                <button class="pipeline-btn-cancel" onclick="closePipelineModal()">&#x2715; Abbrechen</button>
+                <button class="pipeline-btn-ok" onclick="pipelineContinue()">&#x2705; Weiter &#x2192; Pipeline</button>
+            </div>
+        </div>
+    </div>
+
     <div class="summary-modal" id="summaryModal" onclick="closeSummary()">
         <div class="summary-inner" onclick="event.stopPropagation()">
-            <h3>✅ Refresh abgeschlossen</h3>
+            <h3>&#x2705; Refresh abgeschlossen</h3>
             <div class="summary-list" id="summaryList"></div>
             <button class="summary-ok" onclick="closeSummary()">OK</button>
         </div>
@@ -854,9 +924,9 @@ html = f'''<!DOCTYPE html>
                         _isRefresh = false;
                         resetBtn(btn, label);
                         showSummary(data.log, data.message);
-                    }} else if (data.status === 'complete' || data.status === 'error') {{
+                    }} else if (data.status === 'complete') {{
                         if (data.reload === false) {{
-                            setLog(data.status === 'complete' ? 100 : 0, data.message || 'Fertig!');
+                            setLog(100, data.message || 'Fertig!');
                             if (data.notification) showNotification(data.notification);
                         }} else {{
                             setLog(100, 'Fertig! Lade Dashboard neu...');
@@ -1125,6 +1195,118 @@ html = f'''<!DOCTYPE html>
         }}
     }}
 
+    let _pipelineNr = null;
+    let _pipelineStichworte = '';
+
+    async function pipelineStart() {{
+        const stereotyp = document.getElementById('newStereotyp').value.trim();
+        const stichworte = document.getElementById('newStichworte').value.trim();
+        if (!stereotyp) {{ document.getElementById('newStereotyp').focus(); return; }}
+        try {{
+            const nrResp = await fetch('/api/next-nr');
+            if (nrResp.ok) {{
+                const nrData = await nrResp.json();
+                const nextNr = nrData.next_nr;
+                const typeSel = document.getElementById('newIsNameStory').value;
+                if (nextNr >= 2100 && nextNr <= 2999 && typeSel === 'auto') {{
+                    const ok = confirm('⚠️ Die nächste freie Nummer wäre #' + nextNr + ' (Bereich 2100–2999).\\n\\nKein Name-Story-Bereich.\\n→ Abbrechen und Story-Typ manuell wählen.');
+                    if (!ok) return;
+                }}
+            }}
+        }} catch(e) {{}}
+        const btn = document.getElementById('pipelineStartBtn');
+        const createBtn = document.getElementById('createStoryBtn');
+        btn.disabled = true; btn.textContent = '⏳...';
+        createBtn.disabled = true;
+        _pipelineStichworte = stichworte;
+        _activeBtn = null;
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = '⚡ Pipeline: ' + stereotyp;
+        setLog(5, 'Story generieren...');
+        let position = document.getElementById('newPosition').value;
+        if (position === 'custom') position = document.getElementById('newPositionNr').value.trim() || '';
+        const typeSel = document.getElementById('newIsNameStory').value;
+        const is_name_story = typeSel === 'true' ? true : typeSel === 'false' ? false : null;
+        try {{
+            const resp = await fetch('/api/pipeline-start', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{stereotyp, stichworte, position, is_name_story}})
+            }});
+            if (resp.ok) {{
+                _pipelinePollPhase1(btn, createBtn);
+            }} else {{
+                const err = await resp.json();
+                alert('Fehler: ' + (err.error || 'Unbekannter Fehler'));
+                btn.disabled = false; btn.textContent = '⚡ Pipeline';
+                createBtn.disabled = false;
+            }}
+        }} catch(e) {{
+            btn.disabled = false; btn.textContent = '⚡ Pipeline';
+            createBtn.disabled = false;
+        }}
+    }}
+
+    function _pipelinePollPhase1(btn, createBtn) {{
+        if (_pollInterval) clearInterval(_pollInterval);
+        let pct = 5;
+        _pollInterval = setInterval(async () => {{
+            try {{
+                const resp = await fetch('/api/progress');
+                const data = await resp.json();
+                setLog(data.percent || pct, data.message || '...');
+                updateLogList(data.log);
+                if (data.status === 'pipeline-ready') {{
+                    clearInterval(_pollInterval); _pollInterval = null;
+                    btn.disabled = false; btn.textContent = '⚡ Pipeline';
+                    createBtn.disabled = false;
+                    const stateResp = await fetch('/api/pipeline-state');
+                    const state = await stateResp.json();
+                    _pipelineNr = state.nr;
+                    const textResp = await fetch('/api/story-text?nr=' + state.nr);
+                    const textData = await textResp.json();
+                    document.getElementById('logBox').classList.remove('visible');
+                    document.getElementById('pipelineTitleBox').textContent = '\U0001f3f7 ' + (state.title || '(kein Titel)');
+                    document.getElementById('pipelineStoryText').textContent = textData.text || '';
+                    document.getElementById('pipelineModal').classList.add('visible');
+                }} else if (data.status === 'error' || data.status === 'idle') {{
+                    clearInterval(_pollInterval); _pollInterval = null;
+                    btn.disabled = false; btn.textContent = '⚡ Pipeline';
+                    createBtn.disabled = false;
+                    document.getElementById('abortBtn').style.display = 'none';
+                    document.getElementById('closeLogBtn').style.display = '';
+                }} else {{ pct = Math.min(pct + 8, 90); }}
+            }} catch(e) {{ pct = Math.min(pct + 3, 80); }}
+        }}, 2000);
+    }}
+
+    function closePipelineModal() {{
+        document.getElementById('pipelineModal').classList.remove('visible');
+        _pipelineNr = null;
+    }}
+
+    async function pipelineContinue() {{
+        const nr = _pipelineNr;
+        if (!nr) return;
+        document.getElementById('pipelineModal').classList.remove('visible');
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = '⚡ Pipeline läuft: #' + nr;
+        setLog(5, 'Caption → Audio → Warte auf Bild → Video → Post...');
+        try {{
+            const resp = await fetch('/api/pipeline-continue', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{nr, stichworte: _pipelineStichworte}})
+            }});
+            if (resp.ok) {{
+                pollProgress(null, '⚡ Pipeline');
+            }} else {{
+                const err = await resp.json();
+                alert('Fehler: ' + (err.error || 'Unbekannter Fehler'));
+            }}
+        }} catch(e) {{ alert(e); }}
+    }}
+
     const _storyCache = {{}};
     const _tooltip = document.createElement('div');
     _tooltip.id = 'story-tooltip';
@@ -1213,55 +1395,59 @@ html = f'''<!DOCTYPE html>
         _titleTooltip.style.top  = y + 'px';
     }}
 
-    async function togglePost(btn) {{
+    async function smartPost(btn) {{
         const nr = btn.getAttribute('data-nr');
+
+        // Bereits gepostet → Unmark anbieten
         if (btn.classList.contains('active')) {{
             if (!confirm(`Story #${{nr}} als NICHT gepostet markieren?`)) return;
-            btn.disabled = true;
-            btn.textContent = '...';
+            btn.disabled = true; btn.textContent = '...';
             try {{
                 const resp = await fetch('/api/unmark-posted', {{
-                    method: 'POST',
-                    headers: {{'Content-Type': 'application/json'}},
+                    method: 'POST', headers: {{'Content-Type': 'application/json'}},
                     body: JSON.stringify({{nr}})
                 }});
                 if (resp.ok) {{
-                    btn.classList.remove('active');
-                    btn.textContent = 'Post';
-                    btn.disabled = false;
+                    btn.classList.remove('active'); btn.textContent = 'Post'; btn.disabled = false;
                     const row = btn.closest('tr');
-                    if (row) {{ row.className = 'row-ready'; }}
+                    if (row) row.className = 'row-ready';
                 }} else {{
-                    btn.textContent = '✓ Gepostet';
-                    btn.disabled = false;
+                    btn.textContent = '✓ Gepostet'; btn.disabled = false;
                 }}
-            }} catch(e) {{
-                btn.textContent = '✓ Gepostet';
-                btn.disabled = false;
-            }}
+            }} catch(e) {{ btn.textContent = '✓ Gepostet'; btn.disabled = false; }}
             return;
         }}
-        if (!confirm(`Story #${{nr}} als gepostet markieren?`)) return;
+
+        // Noch nicht gepostet → Smart Post starten
+        if (!confirm(`Story #${{nr}} komplett fertigstellen und posten?\\n\\nFehlende Schritte werden automatisch ausgeführt.`)) return;
+
+        const label = '📤 Smart Post #' + nr;
+        _activeBtn = btn;
+        btn.classList.add('running');
         btn.disabled = true;
-        btn.textContent = '...';
+        const abortBtn = document.getElementById('abortBtn');
+        abortBtn.disabled = false;
+        abortBtn.textContent = '⏹ Abbrechen';
+        abortBtn.style.display = '';
+        document.getElementById('closeLogBtn').style.display = 'none';
+        document.getElementById('logBox').classList.add('visible');
+        document.getElementById('logTitle').textContent = label;
+        setLog(5, 'Starte Smart Post...');
+
         try {{
-            const resp = await fetch('/api/mark-posted', {{
-                method: 'POST',
-                headers: {{'Content-Type': 'application/json'}},
+            const resp = await fetch('/api/smart-post', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
                 body: JSON.stringify({{nr}})
             }});
             if (resp.ok) {{
-                btn.classList.add('active');
-                btn.textContent = '✓ Gepostet';
-                const row = btn.closest('tr');
-                if (row) {{ row.className = 'row-posted'; }}
+                pollProgress(btn, label);
             }} else {{
-                btn.textContent = 'Fehler';
-                setTimeout(() => {{ btn.textContent = 'Post'; btn.disabled = false; }}, 2000);
+                const err = await resp.json();
+                alert('Fehler: ' + (err.error || 'Unbekannter Fehler'));
+                resetBtn(btn, label);
             }}
         }} catch(e) {{
-            btn.textContent = 'Fehler';
-            setTimeout(() => {{ btn.textContent = 'Post'; btn.disabled = false; }}, 2000);
+            resetBtn(btn, label);
         }}
     }}
 

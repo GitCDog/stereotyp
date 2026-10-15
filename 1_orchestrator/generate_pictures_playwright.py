@@ -328,13 +328,28 @@ def wait_for_new_image(page, logger, snapshot: set, timeout_sec: int = 180) -> s
         page.wait_for_timeout(9500)
         elapsed += 10
 
-    all_srcs = page.evaluate("""() =>
-        Array.from(document.querySelectorAll('img[src]'))
-            .map(img => img.src + ' [' + (img.naturalWidth||0) + 'x' + (img.naturalHeight||0) + ']')
-    """)
-    logger.info(f"[D] Bilder auf der Seite ({len(all_srcs)}):")
-    for s in all_srcs:
-        logger.info(f"    {s[:120]}")
+    # Timeout abgelaufen — als Fallback: letztes Bild aus dem letzten Assistenten-Turn holen.
+    # Das passiert wenn dasselbe Bild schon aus einem vorherigen Run im Snapshot ist.
+    fallback_src = page.evaluate("""() => {
+        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button', 'auth0'];
+        function isGeneratedImg(src) {
+            if (!src || src.endsWith('.svg')) return false;
+            return !skip.some(s => src.toLowerCase().includes(s));
+        }
+        const msgs = document.querySelectorAll(
+            '[data-message-author-role="assistant"], article[data-testid*="conversation-turn"]'
+        );
+        if (msgs.length > 0) {
+            const lastMsg = msgs[msgs.length - 1];
+            for (const img of lastMsg.querySelectorAll('img[src]')) {
+                if (isGeneratedImg(img.src)) return img.src;
+            }
+        }
+        return null;
+    }""")
+    if fallback_src:
+        logger.info(f"[*] Fallback: letztes Assistenten-Bild verwendet: {fallback_src[:80]}")
+        return fallback_src
     return None
 
 

@@ -14,6 +14,7 @@ text_to_speech:
   similarity_boost: 0.81
   style: 0.21
   speed: 1.17
+  speed_ending: 0.85
 
 video_creation:
   width: 1080

@@ -91,7 +91,7 @@ def archive_used_files(rows: list) -> int:
         # Bild, MP3 archivieren sobald Video erstellt
         if row.get("status_video") == "X":
             # Bild via glob (neue Konvention: {ns}_pic_{name}.png)
-            for pic in list(OUTPUT_DIR.glob(f"{ns}_pic*.png")) + list(OUTPUT_DIR.glob(f"{ns}_pic*.jpg")):
+            for pic in list(OUTPUT_DIR.glob(f"{ns}_pic*.png")) + list(OUTPUT_DIR.glob(f"{ns}_pic*.jpg")) + list(OUTPUT_DIR.glob(f"{ns}_pic*.jpeg")):
                 try:
                     shutil.move(str(pic), str(USED_DIR / pic.name))
                     print(f"[>] Archiviert: {pic.name}")
@@ -283,8 +283,10 @@ def sync():
         pic_exists = (
             any(OUTPUT_DIR.glob(f"{ns}_pic*.png")) or
             any(OUTPUT_DIR.glob(f"{ns}_pic*.jpg")) or
+            any(OUTPUT_DIR.glob(f"{ns}_pic*.jpeg")) or
             any(USED_DIR.glob(f"{ns}_pic*.png")) or
-            any(USED_DIR.glob(f"{ns}_pic*.jpg"))
+            any(USED_DIR.glob(f"{ns}_pic*.jpg")) or
+            any(USED_DIR.glob(f"{ns}_pic*.jpeg"))
         )
         if pic_exists and row.get("status_pic") != "X":
             ir.update_field(nr_val, "status_pic", "X", INPUT_FILE)

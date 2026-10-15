@@ -110,25 +110,32 @@ einen Buchstaben, den niemand tippen kann.
 Erstelle jetzt eine Story fuer den Namen: "{name}" """
 
 
-def build_story_prompt(stereotyp: str, stichworte: list[str] | None = None) -> str:
-    if stichworte:
-        keywords = ", ".join(stichworte)
-        stichworte_block = f"\n\nWichtig: Folgende Stichworte sollen natuerlich und unauffaellig in die Story einfliessen: {keywords}"
-    else:
-        stichworte_block = ""
-    return STORY_PROMPT_TEMPLATE.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
+def build_vorgaben_block(stichworte: str | None) -> str:
+    if not stichworte:
+        return ""
+    return (
+        "\n\nVORGABEN DES AUFTRAGGEBERS (zwingend umsetzen, haben Vorrang vor allem anderen): "
+        "Die Story MUSS die folgenden Stichworte, Inhalte, Fakten und Namen konkret enthalten bzw. "
+        "die Beschreibung inhaltlich umsetzen. Echte Fakten aus den Vorgaben nicht verfaelschen, "
+        "nicht abschwaechen und nicht weglassen. Struktur und Wortzahl bleiben trotzdem gleich.\n"
+        f'"""\n{stichworte.strip()}\n"""'
+    )
 
 
-def build_name_story_prompt(name: str) -> str:
-    return NAME_STORY_PROMPT_TEMPLATE.format(name=name)
+def build_story_prompt(stereotyp: str, stichworte: str | None = None) -> str:
+    return STORY_PROMPT_TEMPLATE.format(stereotyp=stereotyp, stichworte_block=build_vorgaben_block(stichworte))
 
 
-def generate_story(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0, is_name_story: bool | None = None) -> str:
+def build_name_story_prompt(name: str, stichworte: str | None = None) -> str:
+    return NAME_STORY_PROMPT_TEMPLATE.format(name=name) + build_vorgaben_block(stichworte)
+
+
+def generate_story(stereotyp: str, stichworte: str | None = None, nr: int = 0, is_name_story: bool | None = None) -> str:
     """Generiere Story-Text via Claude CLI (claude -p)."""
     if is_name_story is None:
         is_name_story = 2000 <= nr <= 2099
     if is_name_story:
-        prompt = NAME_SYSTEM_PROMPT + "\n\n" + build_name_story_prompt(stereotyp)
+        prompt = NAME_SYSTEM_PROMPT + "\n\n" + build_name_story_prompt(stereotyp, stichworte)
     else:
         prompt = SYSTEM_PROMPT + "\n\n" + build_story_prompt(stereotyp, stichworte)
     env = {**os.environ, "TERM": "dumb", "NO_COLOR": "1"}
@@ -191,7 +198,7 @@ def save_story(nr: int, stereotyp: str, story_text: str, stories_dir: str = "./1
 
 
 def process_story(row: dict, config: dict, logger: logging.Logger,
-                  stichworte: list[str] | None = None, is_name_story: bool | None = None):
+                  stichworte: str | None = None, is_name_story: bool | None = None):
     nr = int(row["nr"])
     stereotyp = row["stereotyp"].strip()
     input_file = config["output"]["input_file"]
@@ -206,7 +213,7 @@ def process_story(row: dict, config: dict, logger: logging.Logger,
         return False
 
     if stichworte:
-        logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
+        logger.info(f"[*] Vorgaben: {stichworte}")
 
     logger.info(f"[*] Generiere Story via Claude CLI...")
     story_text = generate_story(stereotyp, stichworte, nr=nr, is_name_story=is_name_story)
@@ -234,7 +241,7 @@ def main():
     parser.add_argument("--story", type=int, help="Story-Nummer (z.B. 1)")
     parser.add_argument("--all", action="store_true", help="Alle ausstehenden Stories")
     parser.add_argument("--stichworte", type=str, default="",
-                        help="Kommagetrennte Stichworte die in die Story einfliessen sollen")
+                        help="Stichworte oder freie Beschreibung, was in der Story vorkommen soll")
     parser.add_argument("--name-story", action="store_true", default=None,
                         help="Erzwinge Namen-Story-Prompt (überschreibt nr-Range-Check)")
     parser.add_argument("--no-name-story", action="store_true",
@@ -246,7 +253,7 @@ def main():
     logger = setup_logging(config["output"]["log_file"])
     input_file = config["output"]["input_file"]
 
-    stichworte = [s.strip() for s in args.stichworte.split(",") if s.strip()] if args.stichworte else None
+    stichworte = args.stichworte.strip() or None
 
     is_name_story: bool | None = None
     if getattr(args, "name_story", False):

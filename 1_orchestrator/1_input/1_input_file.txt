@@ -140,7 +140,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 139,GNTM Fan,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791190032/stereotypen/0139_vid_GNTM%20Fan.mp4,X,,
 140,Gym Girl,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791295085/stereotypen/0140_vid_Gym%20Girl.mp4,X,,
 141,Gym Guy,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791295188/stereotypen/0141_vid_Gym%20Guy.mp4,X,,
-142,Hyrox,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791295285/stereotypen/0142_vid_Hyrox.mp4,X,,
+142,Hyrox,X,X,49,X,X,,X,X,
 143,Tight Pants Typ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791191155/stereotypen/0143_vid_Tight%20Pants%20Typ.mp4,X,,
 144,Bachata Tänzer,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396680/stereotypen/0144_vid_Bachata%20T%C3%A4nzer.mp4,X,,
 145,Bachata Tänzerin,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396783/stereotypen/0145_vid_Bachata%20T%C3%A4nzerin.mp4,X,,

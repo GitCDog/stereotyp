@@ -65,7 +65,7 @@ def get_story_text(nr: int, stereotyp: str, stories_dir: str, output_dir: str) -
 
 def generate_audio_elevenlabs(api_key: str, text: str, voice_id: str, model_id: str,
                                stability: float, similarity_boost: float,
-                               style: float = 0.0, speed: float = 1.0) -> bytes | None:
+                               style: float = 0.0, speed: float = 1.0) -> bytes:
     """Rufe ElevenLabs TTS API auf und gib Audio-Bytes zurück."""
     if not voice_id:
         raise ValueError("voice_id in config.yaml ist leer! Bitte ElevenLabs Voice ID eintragen.")
@@ -93,6 +93,38 @@ def generate_audio_elevenlabs(api_key: str, text: str, voice_id: str, model_id: 
         raise RuntimeError(f"ElevenLabs Fehler {response.status_code}: {response.text[:300]}")
 
     return response.content
+
+
+def generate_audio_with_slow_ending(api_key: str, story_text: str, tts_config: dict) -> bytes:
+    """Generiert Audio: Hauptteil normal, letzter Absatz (Tja,...) verlangsamt."""
+    from pydub import AudioSegment
+    from io import BytesIO
+
+    common = dict(
+        api_key=api_key,
+        voice_id=tts_config["voice_id"],
+        model_id=tts_config["model_id"],
+        stability=tts_config["stability"],
+        similarity_boost=tts_config["similarity_boost"],
+        style=tts_config.get("style", 0.0),
+    )
+    speed_normal = tts_config.get("speed", 1.0)
+    speed_ending = tts_config.get("speed_ending", speed_normal)
+
+    # Letzten Absatz (Tja-Satz) abtrennen
+    parts = story_text.rsplit("\n\n", 1)
+    if len(parts) == 2 and speed_ending != speed_normal:
+        main_text, ending_text = parts[0].strip(), parts[1].strip()
+        main_bytes = generate_audio_elevenlabs(text=main_text, speed=speed_normal, **common)
+        ending_bytes = generate_audio_elevenlabs(text=ending_text, speed=speed_ending, **common)
+        main_seg = AudioSegment.from_mp3(BytesIO(main_bytes))
+        ending_seg = AudioSegment.from_mp3(BytesIO(ending_bytes))
+        buf = BytesIO()
+        (main_seg + ending_seg).export(buf, format="mp3")
+        return buf.getvalue()
+
+    # Fallback: kein Absatz oder gleiche Speed → ein Call
+    return generate_audio_elevenlabs(text=story_text, speed=speed_normal, **common)
 
 
 def process_audio(nr: int, config: dict, logger: logging.Logger, api_key: str) -> bool:
@@ -132,16 +164,7 @@ def process_audio(nr: int, config: dict, logger: logging.Logger, api_key: str) -
     logger.info(f"[*] ElevenLabs TTS, Voice ID: {tts_config['voice_id'] or '(nicht gesetzt)'}")
 
     try:
-        audio_bytes = generate_audio_elevenlabs(
-            api_key=api_key,
-            text=story_text,
-            voice_id=tts_config["voice_id"],
-            model_id=tts_config["model_id"],
-            stability=tts_config["stability"],
-            similarity_boost=tts_config["similarity_boost"],
-            style=tts_config.get("style", 0.0),
-            speed=tts_config.get("speed", 1.0),
-        )
+        audio_bytes = generate_audio_with_slow_ending(api_key, story_text, tts_config)
     except Exception as e:
         logger.error(f"[-] ElevenLabs Fehler: {e}")
         return False

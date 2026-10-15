@@ -151,6 +151,30 @@ def parse_range(val: str) -> list[str]:
     return [val]
 
 
+def next_story_nr(rows: list, is_name_story: bool | None) -> str:
+    """Berechnet die nächste freie Story-Nummer je nach Typ."""
+    if is_name_story:
+        nrs = [int(r["nr"].strip()) for r in rows
+               if r.get("nr", "").strip().isdigit() and 2000 <= int(r["nr"].strip()) <= 2099]
+        return str((max(nrs) if nrs else 1999) + 1)
+    else:
+        nrs = [int(r["nr"].strip()) for r in rows
+               if r.get("nr", "").strip().isdigit() and int(r["nr"].strip()) < 2000]
+        return str((max(nrs) if nrs else 0) + 1)
+
+
+def csv_insert_sorted(input_file: Path, new_row: dict, fieldnames: list) -> None:
+    """Fügt new_row in die CSV ein und sortiert danach nach nr (numerisch)."""
+    with open(input_file, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    rows.append(new_row)
+    rows.sort(key=lambda r: int(r["nr"].strip()) if r.get("nr", "").strip().isdigit() else 0)
+    with open(input_file, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def run_script(args: list[str]) -> int:
     global _current_proc
     if _abort_flag.is_set():
@@ -391,8 +415,7 @@ def next_nr():
     input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
     with open(input_file, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
-    return jsonify({"next_nr": max_nr + 1})
+    return jsonify({"next_nr": int(next_story_nr(rows, is_name_story=False))})
 
 
 @app.route("/api/create-story", methods=["POST"])
@@ -422,15 +445,12 @@ def create_story():
                 log = [f"ℹ️ #{new_nr} '{stereotyp}' existiert bereits – Story wird neu generiert"]
                 set_task("running", f"Regeneriere Story #{new_nr}...", 10, log=log)
             else:
-                max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
-                new_nr = str(max_nr + 1)
+                new_nr = next_story_nr(rows, is_name_story)
                 fieldnames = list(rows[0].keys())
                 new_row = {k: "" for k in fieldnames}
                 new_row["nr"] = new_nr
                 new_row["stereotyp"] = stereotyp
-                with open(input_file, "a", encoding="utf-8", newline="") as f:
-                    writer = csv.DictWriter(f, fieldnames=fieldnames)
-                    writer.writerow(new_row)
+                csv_insert_sorted(input_file, new_row, fieldnames)
                 log = [f"📋 #{new_nr} '{stereotyp}' in CSV eingetragen"]
                 if stichworte:
                     log.append(f"🔑 Stichworte: {stichworte}")
@@ -506,6 +526,204 @@ def create_story():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
+# ── Pipeline ─────────────────────────────────────────────────────────────────
+
+_pipeline_state: dict = {}
+
+
+@app.route("/api/pipeline-state")
+def pipeline_state_api():
+    return jsonify(_pipeline_state)
+
+
+@app.route("/api/pipeline-start", methods=["POST"])
+def pipeline_start():
+    global _pipeline_state
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    body = request.get_json(silent=True) or {}
+    stereotyp = body.get("stereotyp", "").strip()
+    stichworte = body.get("stichworte", "").strip()
+    position = body.get("position", "")
+    is_name_story = body.get("is_name_story", None)
+
+    if not stereotyp:
+        return jsonify({"error": "Stereotyp fehlt"}), 400
+
+    def task():
+        global _pipeline_state
+        try:
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+            with open(input_file, encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+
+            existing = next((r for r in rows if r.get("stereotyp", "").strip().lower() == stereotyp.lower()), None)
+            if existing:
+                new_nr = existing["nr"].strip()
+                log = [f"ℹ️ #{new_nr} '{stereotyp}' existiert bereits – Story wird neu generiert"]
+            else:
+                new_nr = next_story_nr(rows, is_name_story)
+                fieldnames = list(rows[0].keys())
+                new_row = {k: "" for k in fieldnames}
+                new_row["nr"] = new_nr
+                new_row["stereotyp"] = stereotyp
+                csv_insert_sorted(input_file, new_row, fieldnames)
+                log = [f"📋 #{new_nr} '{stereotyp}' in CSV eingetragen"]
+
+            log.append("⏳ Story-Text via Claude generieren...")
+            set_task("running", f"Story #{new_nr} via Claude generieren...", 30, log=list(log))
+
+            args = ["generate_stories.py", "--story", new_nr]
+            if stichworte:
+                args += ["--stichworte", stichworte]
+            if is_name_story is True:
+                args += ["--name-story"]
+            elif is_name_story is False:
+                args += ["--no-name-story"]
+            run_script(args)
+            log.append("✅ Story-Text gespeichert")
+
+            set_task("running", f"Titel für #{new_nr} generieren...", 70, log=list(log))
+            title = ""
+            try:
+                story_file = next(
+                    (p for p in (Path(__file__).parent / "1_input").glob(f"{int(new_nr):04d}_*.txt")
+                     if p.name not in {"00_sammelsurium.txt", "gpt_prompts.txt"}),
+                    None
+                )
+                story_text_content = story_file.read_text(encoding="utf-8").strip() if story_file else stereotyp
+                title = generate_title(stereotyp, story_text_content)
+                save_title_to_dict(int(new_nr), title)
+                log.append(f"🏷 Titel: \"{title}\"")
+            except Exception as e:
+                log.append(f"⚠️ Titel-Generierung fehlgeschlagen: {e}")
+
+            if position:
+                reihenfolge_path = Path(__file__).parent / "1_input" / "0_reihenfolge.txt"
+                lines = []
+                if reihenfolge_path.exists():
+                    lines = [l.strip() for l in reihenfolge_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+                lines = [l for l in lines if l != new_nr]
+                if position == "start":
+                    lines.insert(0, new_nr)
+                elif position == "end":
+                    lines.append(new_nr)
+                else:
+                    try:
+                        pos = max(0, int(position) - 1)
+                        lines.insert(pos, new_nr)
+                    except Exception:
+                        lines.append(new_nr)
+                reihenfolge_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                git_push_reihenfolge()
+
+            _pipeline_state = {"nr": new_nr, "title": title}
+            set_task("pipeline-ready", f"Story #{new_nr} bereit zur Prüfung", 100, log=list(log))
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Starte...", 5, log=[])
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
+@app.route("/api/pipeline-continue", methods=["POST"])
+def pipeline_continue():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    body = request.get_json(silent=True) or {}
+    nr = str(body.get("nr", "")).strip()
+    stichworte = body.get("stichworte", "").strip()
+
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+
+    def task():
+        import time
+        try:
+            log = []
+
+            log.append("⏳ Caption via Claude generieren...")
+            set_task("running", f"Caption für #{nr} generieren...", 8, log=list(log))
+            caption_args = ["generate_captions.py", "--story", nr]
+            if stichworte:
+                caption_args += ["--stichworte", stichworte]
+            run_script(caption_args)
+            log.append("✅ Caption fertig")
+
+            set_task("running", "GPT-Prompt aktualisieren...", 15, log=list(log))
+            run_script(["generate_gpt_prompt_titled.py"])
+            log.append("📝 GPT-Prompt aktualisiert")
+
+            log.append("⏳ Audio via ElevenLabs generieren...")
+            set_task("running", f"Audio für #{nr} via ElevenLabs...", 20, log=list(log))
+            run_script(["generate_audio.py", "--story", nr])
+            log.append("✅ Audio fertig")
+
+            ns = f"{int(nr):04d}"
+            output_dir = Path(__file__).parent / "output"
+
+            pic_found = None
+            for ext in ("jpg", "jpeg", "png"):
+                m = list(output_dir.glob(f"{ns}_pic*.{ext}"))
+                if m:
+                    pic_found = m[0]; break
+
+            if not pic_found:
+                log.append(f"🤖 Kein Bild — Playwright generiert Bild für #{nr}...")
+                set_task("running", f"🤖 Playwright: Bild für #{nr} generieren...", 38, log=list(log))
+                run_script(["generate_pictures_playwright.py", "--story", nr])
+                for ext in ("jpg", "jpeg", "png"):
+                    m = list(output_dir.glob(f"{ns}_pic*.{ext}"))
+                    if m:
+                        pic_found = m[0]; break
+
+            if not pic_found:
+                set_task("error", f"Playwright konnte kein Bild erstellen für #{nr}", 0, log=list(log))
+                return
+
+            log.append(f"✅ Bild: {pic_found.name}")
+
+            log.append("⏳ Video rendern...")
+            set_task("running", f"Video für #{nr} rendern...", 52, log=list(log))
+            run_script(["generate_videos.py", "--story", nr, "--subtitles",
+                        "--bg-music", "Demeter - O.P..mp3", "--bg-music-volume", "0.2"])
+            log.append("✅ Video fertig + Cloudinary Upload")
+
+            log.append("⏳ Instagram + YouTube posten...")
+            set_task("running", f"Poste #{nr} auf Instagram + YouTube...", 85, log=list(log))
+            env = os.environ.copy()
+            env["STORY_NR"] = nr
+            env["FORCE_POST"] = "1"
+            proc = subprocess.Popen(
+                [sys.executable, "instagram_poster.py"],
+                cwd=Path(__file__).parent,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                stdin=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            for line in proc.stdout:
+                append_log(line.rstrip())
+            proc.wait()
+            log.append("✅ Gepostet!")
+
+            refresh_dashboard()
+            set_task("complete", f"⚡ Pipeline #{nr} abgeschlossen!", 100, log=list(log))
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", "Pipeline läuft...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
 
@@ -675,6 +893,122 @@ def generate_pictures_playwright():
 
     _abort_flag.clear()
     set_task("running", "Starte Playwright...", 5)
+    threading.Thread(target=task, daemon=True).start()
+    return jsonify({"status": "started"})
+
+
+# ── Smart Post ───────────────────────────────────────────────────────────────
+
+@app.route("/api/smart-post", methods=["POST"])
+def smart_post():
+    if _task["status"] == "running":
+        return jsonify({"error": "Task läuft bereits"}), 409
+
+    body = request.get_json(silent=True) or {}
+    nr = str(body.get("nr", "")).strip()
+    if not nr:
+        return jsonify({"error": "nr fehlt"}), 400
+
+    def task():
+        try:
+            input_file = Path(__file__).parent / "1_input" / "1_input_file.txt"
+            output_dir = Path(__file__).parent / "output"
+            used_dir = output_dir / "0_used"
+            ns = f"{int(nr):04d}"
+            log = []
+
+            with open(input_file, encoding="utf-8") as f:
+                rows = {r["nr"].strip(): r for r in csv.DictReader(f)}
+            row = rows.get(nr)
+            if not row:
+                set_task("error", f"Story #{nr} nicht gefunden", 0)
+                return
+
+            stereotyp = row.get("stereotyp", "").strip()
+            set_task("running", f"Smart Post #{nr}: {stereotyp}", 5, log=log)
+
+            # Caption
+            if row.get("status_caption") != "X":
+                log.append("⏳ Caption generieren...")
+                set_task("running", f"Caption für #{nr}...", 10, log=list(log))
+                run_script(["generate_captions.py", "--story", nr])
+                log.append("✅ Caption fertig")
+
+            # Audio
+            if row.get("status_audio") != "X":
+                log.append("⏳ Audio via ElevenLabs generieren...")
+                set_task("running", f"Audio für #{nr}...", 20, log=list(log))
+                run_script(["generate_audio.py", "--story", nr])
+                log.append("✅ Audio fertig")
+            else:
+                log.append("✅ Audio vorhanden")
+
+            # Bild prüfen
+            pic_found = None
+            for ext in ("jpg", "jpeg", "png"):
+                m = list(output_dir.glob(f"{ns}_pic*.{ext}"))
+                if m:
+                    pic_found = m[0]; break
+            if not pic_found:
+                for ext in ("jpg", "jpeg", "png"):
+                    m = list(used_dir.glob(f"{ns}_pic*.{ext}"))
+                    if m:
+                        pic_found = m[0]; break
+
+            if not pic_found and row.get("status_pic") != "X":
+                log.append(f"🤖 Kein Bild — Playwright generiert Bild für #{nr}...")
+                set_task("running", f"🤖 Playwright: Bild für #{nr} generieren...", 35, log=list(log))
+                run_script(["generate_pictures_playwright.py", "--story", nr])
+                for ext in ("jpg", "jpeg", "png"):
+                    m = list(output_dir.glob(f"{ns}_pic*.{ext}"))
+                    if m:
+                        pic_found = m[0]; break
+                if not pic_found:
+                    set_task("error", f"Playwright konnte kein Bild erstellen für #{nr}", 0, log=list(log))
+                    return
+            if pic_found:
+                log.append(f"✅ Bild: {pic_found.name}")
+
+            # Video
+            if row.get("status_video") != "X":
+                log.append("⏳ Video rendern...")
+                set_task("running", f"Video für #{nr} rendern...", 35, log=list(log))
+                run_script(["generate_videos.py", "--story", nr, "--subtitles",
+                            "--bg-music", "Demeter - O.P..mp3", "--bg-music-volume", "0.2"])
+                log.append("✅ Video + Cloudinary Upload")
+            else:
+                log.append("✅ Video vorhanden")
+
+            # Posten
+            log.append("⏳ Instagram + YouTube posten...")
+            set_task("running", f"Poste #{nr}...", 82, log=list(log))
+            env = os.environ.copy()
+            env["STORY_NR"] = nr
+            env["FORCE_POST"] = "1"
+            proc = subprocess.Popen(
+                [sys.executable, "instagram_poster.py"],
+                cwd=Path(__file__).parent,
+                env=env,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                stdin=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            for line in proc.stdout:
+                line = line.rstrip()
+                if line:
+                    append_log(line)
+            proc.wait()
+            log.append("✅ Gepostet!")
+            refresh_dashboard()
+            set_task("complete", f"✅ Story #{nr} '{stereotyp}' gepostet!", 100, log=list(log))
+        except Exception as e:
+            set_task("error", str(e), 0)
+
+    set_task("running", f"Smart Post #{nr}...", 5, log=[])
     threading.Thread(target=task, daemon=True).start()
     return jsonify({"status": "started"})
 
@@ -1090,15 +1424,12 @@ def sofort_posten():
                 new_nr = existing["nr"].strip()
                 append_log(f"ℹ️  [1/8] CSV: #{new_nr} bereits vorhanden")
             else:
-                max_nr = max(int(r["nr"].strip()) for r in rows if r.get("nr", "").strip().isdigit())
-                new_nr = str(max_nr + 1)
+                new_nr = next_story_nr(rows, is_name_story=False)
                 fieldnames = list(rows[0].keys())
                 new_row = {k: "" for k in fieldnames}
                 new_row["nr"] = new_nr
                 new_row["stereotyp"] = stereotyp
-                with open(input_file, "a", encoding="utf-8", newline="") as f:
-                    writer = csv.DictWriter(f, fieldnames=fieldnames)
-                    writer.writerow(new_row)
+                csv_insert_sorted(input_file, new_row, fieldnames)
                 append_log(f"✅ [1/8] CSV: #{new_nr} eingetragen")
 
             # 2. Story generieren

@@ -81,13 +81,27 @@ def build_caption(stereotyp: str, hashtags: list[str], stichworte: list[str] | N
     return f"Aufgepasst - {stereotyp}\n\n{tags}"
 
 
-def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0) -> list[str]:
+def parse_vorgaben(text: str) -> tuple[list[str] | None, str | None]:
+    """Kurze Kommaliste → Stichworte (werden Hashtags). Sonst freie Beschreibung → nur Kontext."""
+    text = (text or "").strip()
+    if not text:
+        return None, None
+    items = [s.strip() for s in text.split(",") if s.strip()]
+    if "\n" not in text and all(len(i.split()) <= 3 for i in items):
+        return items, None
+    return None, text
+
+
+def generate_hashtags(stereotyp: str, stichworte: list[str] | None = None, nr: int = 0,
+                      kontext: str | None = None) -> list[str]:
     if 2000 <= nr <= 2999:
         prompt = NAME_HASHTAG_PROMPT.format(name=stereotyp)
         max_tags = 6
     else:
         if stichworte:
             stichworte_block = f"\n\nDie folgenden Begriffe sollen als Hashtags vorkommen: {', '.join(stichworte)}"
+        elif kontext:
+            stichworte_block = f"\n\nWorum es in der Story konkret geht (Hashtags darauf abstimmen):\n{kontext}"
         else:
             stichworte_block = ""
         prompt = HASHTAG_PROMPT.format(stereotyp=stereotyp, stichworte_block=stichworte_block)
@@ -122,7 +136,7 @@ def _nr_str(nr: str) -> str:
 
 def process_caption(row: dict, config: dict, captions_data: dict,
                     logger: logging.Logger, force: bool = False,
-                    stichworte: list[str] | None = None) -> bool:
+                    stichworte: list[str] | None = None, kontext: str | None = None) -> bool:
     nr = str(row["nr"]).strip()
     stereotyp = row["stereotyp"].strip()
     input_file = config["output"]["input_file"]
@@ -140,7 +154,7 @@ def process_caption(row: dict, config: dict, captions_data: dict,
     if stichworte:
         logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
-    hashtags = generate_hashtags(stereotyp, stichworte, nr=int(nr))
+    hashtags = generate_hashtags(stereotyp, stichworte, nr=int(nr), kontext=kontext)
     caption = build_caption(stereotyp, hashtags, stichworte)
 
     logger.info(f"[+] {caption}")
@@ -177,7 +191,7 @@ def main():
     captions_path = Path(output_dir) / "captions.json"
     captions_data = load_captions_file(captions_path)
 
-    stichworte = [s.strip() for s in args.stichworte.split(",") if s.strip()] if args.stichworte else None
+    stichworte, kontext = parse_vorgaben(args.stichworte)
 
     rows = ir.read_rows(input_file)
 
@@ -186,7 +200,8 @@ def main():
         if not row:
             logger.error(f"[-] Story #{args.story} nicht gefunden")
             sys.exit(1)
-        process_caption(row, config, captions_data, logger, force=args.all, stichworte=stichworte)
+        process_caption(row, config, captions_data, logger, force=args.all,
+                        stichworte=stichworte, kontext=kontext)
     else:
         for row in rows:
             if row.get("status_story") != "X":
@@ -194,7 +209,8 @@ def main():
             if row.get("status_caption") == "X" and not args.all:
                 continue
             try:
-                process_caption(row, config, captions_data, logger, force=args.all, stichworte=stichworte)
+                process_caption(row, config, captions_data, logger, force=args.all,
+                                stichworte=stichworte, kontext=kontext)
             except Exception as e:
                 logger.error(f"[-] Fehler bei Story #{row['nr']}: {e}")
 
