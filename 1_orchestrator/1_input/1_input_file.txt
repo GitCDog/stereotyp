@@ -203,7 +203,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 202,Autoscooter,X,X,48,X,X,,X,X,
 203,Bierzelt,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792052465/stereotypen/0203_vid_Bierzelt.mp4,X,,
 204,Bauchladen JGA,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792052611/stereotypen/0204_vid_Bauchladen%20JGA.mp4,X,,
-205,Sonntagsgarten,X,X,48,X,,,X,,
+205,Sonntagsgarten,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792052740/stereotypen/0205_vid_Sonntagsgarten.mp4,X,,
 206,Karmapunkte,X,X,55,X,,,X,,
 207,Wahlversprechen,X,X,55,,,,X,,
 208,Kurzarmhemd,X,X,56,,,,X,,
