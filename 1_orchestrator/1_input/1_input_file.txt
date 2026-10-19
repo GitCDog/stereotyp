@@ -354,6 +354,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 353,Generation Influencer,X,X,63,X,X,,X,X,
 354,Der Löwe und die nassen Hunde,X,X,56,X,X,,X,X,
 355,barbarische Schülerproteste,X,X,60,X,X,,X,X,
+356,Barbaren in Paris,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792410769/stereotypen/0356_vid_Barbaren%20in%20Paris.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
