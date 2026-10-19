@@ -175,6 +175,22 @@ def csv_insert_sorted(input_file: Path, new_row: dict, fieldnames: list) -> None
         writer.writerows(rows)
 
 
+def start_task(task):
+    # Ein früheres "Abbrechen" darf neue Tasks nicht still alle Scripts überspringen lassen
+    _abort_flag.clear()
+    threading.Thread(target=task, daemon=True).start()
+
+
+def require_story_file(nr, returncode: int) -> None:
+    nr4 = f"{int(nr):04d}"
+    exists = any((Path(__file__).parent / "1_input").glob(f"{nr4}_*.txt"))
+    if returncode != 0 or not exists:
+        raise RuntimeError(
+            f"Story-Text für #{nr} wurde nicht erstellt (generate_stories.py Exit-Code {returncode}). "
+            f"Details in logs/workflow.log."
+        )
+
+
 def run_script(args: list[str]) -> int:
     global _current_proc
     if _abort_flag.is_set():
@@ -332,7 +348,7 @@ def generate_audio():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -378,7 +394,7 @@ def generate_audio_for_pics():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -404,7 +420,7 @@ def generate_picture():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5)
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -465,7 +481,7 @@ def create_story():
                 args += ["--name-story"]
             elif is_name_story is False:
                 args += ["--no-name-story"]
-            run_script(args)
+            require_story_file(new_nr, run_script(args))
             log.append(f"✅ Story-Text gespeichert")
 
             # Provokanten Titel generieren und in TITLES-Dict speichern
@@ -526,7 +542,7 @@ def create_story():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -585,7 +601,7 @@ def pipeline_start():
                 args += ["--name-story"]
             elif is_name_story is False:
                 args += ["--no-name-story"]
-            run_script(args)
+            require_story_file(new_nr, run_script(args))
             log.append("✅ Story-Text gespeichert")
 
             set_task("running", f"Titel für #{new_nr} generieren...", 70, log=list(log))
@@ -628,7 +644,7 @@ def pipeline_start():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -724,7 +740,7 @@ def pipeline_continue():
             set_task("error", str(e), 0)
 
     set_task("running", "Pipeline läuft...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -756,7 +772,7 @@ def generate_story():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5)
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -788,7 +804,7 @@ def generate_caption():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5)
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -853,7 +869,7 @@ def generate_video():
 
     _abort_flag.clear()
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -893,7 +909,7 @@ def generate_pictures_playwright():
 
     _abort_flag.clear()
     set_task("running", "Starte Playwright...", 5)
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -1009,7 +1025,7 @@ def smart_post():
             set_task("error", str(e), 0)
 
     set_task("running", f"Smart Post #{nr}...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -1081,7 +1097,7 @@ def instagram_post():
             set_task("error", str(e), 0)
 
     set_task("running", "Starte...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -1153,7 +1169,7 @@ def refresh():
 
     _abort_flag.clear()
     set_task("running", "Starte Refresh...", 5, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 
@@ -1438,7 +1454,7 @@ def sofort_posten():
             args = ["generate_stories.py", "--story", new_nr]
             if stichworte:
                 args += ["--stichworte", stichworte]
-            run_script_logged(args)
+            require_story_file(new_nr, run_script_logged(args))
             append_log(f"✅ [2/8] Story-Text gespeichert")
 
             # 3. Titel – Excel-Titel hat Vorrang, dann TITLES-Dict, sonst neu generieren
@@ -1595,7 +1611,7 @@ def sofort_posten():
             set_task("error", f"{e}\n{traceback.format_exc()}", 0)
 
     set_task("running", "Starte Sofort-Posten...", 3, log=[])
-    threading.Thread(target=task, daemon=True).start()
+    start_task(task)
     return jsonify({"status": "started"})
 
 

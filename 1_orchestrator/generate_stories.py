@@ -183,7 +183,10 @@ def _add_end_pause(text: str) -> str:
 
 
 def _strip_meta_comments(text: str) -> str:
-    """Entfernt alles ab dem ersten --- (Claude-interne Kommentare nach dem Story-Text)."""
+    """Entfernt Claude-Kommentare vor "Aufgepasst" und alles ab einem --- nach der Story."""
+    start = text.find("Aufgepasst")
+    if start > 0:
+        text = text[start:]
     return re.split(r'\n\s*---+', text)[0].strip()
 
 

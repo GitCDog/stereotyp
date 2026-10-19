@@ -21,6 +21,30 @@ TITLE_STYLE = (
     'KEINE runde oder fette Sans-Serif-Schrift'
 )
 
+# Zusätzliche Bildvorgaben pro Story-Nr (optional)
+IMAGE_HINTS = {
+    355: (
+        'Bildinhalt: Im Hintergrund brennt ein französisches Rathaus mit Trikolore-Flagge, Rauch und Feuer, '
+        'umgestürzte Mülltonnen und Polizei in Schutzausrüstung. Im Vordergrund steht gelassen und lächelnd ein '
+        'Fernsehteam des deutschen öffentlich-rechtlichen Rundfunks: eine Reporterin mit Mikrofon, auf dem '
+        'Mikrofon-Würfel deutlich das ARD-Logo (Das Erste, blaue 1), ein Kameramann mit deutlich sichtbarem '
+        'ZDF-Logo auf der Kamera, auf der Pressejacke gut lesbar "ÖRR". Unten eine TV-Bauchbinde mit dem Text '
+        '"Schülerproteste". ARD, ZDF und ÖRR müssen sofort erkennbar sein.'
+    ),
+    354: (
+        'Bildinhalt: Der neue rote Tesla Roadster steht stolz und erhöht im Zentrum wie ein Löwe, mit einer '
+        'angedeuteten Löwenmähne als Schatten oder Spiegelung. Davor bzw. darunter stehen vier deutsche Autos '
+        'wie begossene Pudel im Regen, nass und kleinlaut: ein Mercedes mit deutlich sichtbarem Mercedes-Stern, '
+        'ein BMW mit der typischen Niere und BMW-Logo, ein Audi mit den vier Ringen, ein Porsche 911 mit '
+        'Porsche-Schriftzug. Alle vier Marken müssen sofort erkennbar sein.'
+    ),
+}
+
+
+def image_hint(nr: int) -> str:
+    hint = IMAGE_HINTS.get(int(nr))
+    return f"{hint} " if hint else ""
+
 # Provokante Titel pro Story-Nr (plain integer als Key)
 TITLES = {
     19:  "Bargeld ist Freiheit?",
@@ -368,6 +392,11 @@ TITLES = {
     348: "Warum waehlt Berlin immer wieder dieselbe Katastrophe?",
     349: "Warum wird Berlin zum Khalifat - und keiner stoppt es?",
     350: "Kassiert Merz jetzt sogar an deiner Cola mit?",
+    351: "Wie oft tauscht die SPD ihr Gesicht, bevor sie ihren Kurs ändert?",
+    352: "Teslas Auto fliegt - und Mercedes gründet einen Arbeitskreis?",
+    353: "Influencer statt Azubi - wer repariert bald noch deine Heizung?",
+    354: "Tesla brüllt - und Deutschlands Autobauer ziehen den Schwanz ein?",
+    355: "Frankreichs Rathäuser brennen - kommen die Schülerproteste auch zu uns?",
 }
 
 
@@ -427,7 +456,7 @@ def main():
                 f'und nehme nicht so viel text in das bild rein, '
                 f'stelle realistische alltagsmenschen dar – keine models, keine attraktiven idealtypen, '
                 f'normale körper, verschiedene altersgruppen (20-65 jahre), unscheinbares aussehen wie echte deutsche, '
-                f'Titel "{title}". {TITLE_STYLE}. Story: "{text}"'
+                f'{image_hint(nr_int)}Titel "{title}". {TITLE_STYLE}. Story: "{text}"'
             )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

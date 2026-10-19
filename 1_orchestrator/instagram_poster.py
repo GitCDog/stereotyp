@@ -594,47 +594,6 @@ class InstagramPoster:
             logger.info("=" * 60)
             return True
 
-        # YouTube Short (optional – nur wenn Credentials vorhanden und noch nicht gepostet)
-        youtube_video_id = None
-        already_on_yt = str(row.get("youtube_post", "")).strip() == "X"
-        if not already_on_yt and all(os.getenv(k) for k in ("YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET", "YOUTUBE_REFRESH_TOKEN")):
-            try:
-                import json as _json
-                from youtube_poster import upload_short
-                yt_desc = caption
-                captions_file = Path(self.config["output"]["output_dir"]) / "captions.json"
-                yt_tags = []
-                if captions_file.exists():
-                    caps = _json.loads(captions_file.read_text(encoding="utf-8"))
-                    cap = caps.get(nr) or caps.get(ns)
-                    if cap:
-                        yt_tags = cap.get("hashtags", [])
-                # Video lokal für YouTube brauchen
-                yt_video = video_path if video_path.exists() else None
-                if not yt_video:
-                    import requests as _req, tempfile, os as _os
-                    logger.info("[*] Lade Video für YouTube herunter...")
-                    r = _req.get(video_url, timeout=120, verify=False)
-                    tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
-                    tmp.write(r.content)
-                    tmp.close()
-                    yt_video = Path(tmp.name)
-                youtube_video_id = upload_short(yt_video, title=stereotyp, description=yt_desc, tags=yt_tags)
-                logger.info(f"[+] YouTube Short: https://youtube.com/shorts/{youtube_video_id}")
-                if yt_video != video_path and yt_video.exists():
-                    yt_video.unlink()
-                # Sofort nach Upload markieren – unabhängig vom Instagram-Ergebnis
-                if self.use_github:
-                    self._update_csv_github_field(row, nr, "youtube_post", "X")
-                else:
-                    ir.update_field(nr, "youtube_post", "X", self.config["output"]["input_file"])
-            except Exception as e:
-                import traceback
-                logger.error(f"[!] YouTube Upload fehlgeschlagen: {e}")
-                logger.error(traceback.format_exc())
-        else:
-            logger.warning("[!] YouTube-Credentials nicht gesetzt – YouTube wird übersprungen")
-
         # Instagram Post
         post_id = self.post_reel(video_url, caption)
         if not post_id:
@@ -647,8 +606,6 @@ class InstagramPoster:
         logger.info("=" * 60)
         logger.info(f"[SUCCESS] '{stereotyp}' auf Instagram gepostet")
         logger.info(f"[SUCCESS] Post-ID: {post_id}")
-        if youtube_video_id:
-            logger.info(f"[SUCCESS] YouTube Short: https://youtube.com/shorts/{youtube_video_id}")
         logger.info("=" * 60)
         return True
 

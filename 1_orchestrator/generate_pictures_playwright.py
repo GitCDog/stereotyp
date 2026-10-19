@@ -26,7 +26,7 @@ import pyperclip
 
 import re
 import input_reader as ir
-from generate_gpt_prompt_titled import TITLES, TITLE_STYLE, find_story_file
+from generate_gpt_prompt_titled import TITLES, TITLE_STYLE, find_story_file, image_hint
 
 EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data")
 INPUT_FILE        = "1_input/1_input_file.txt"
@@ -88,7 +88,7 @@ def build_prompt(nr: str, stereotyp: str) -> str | None:
         f'verändere die szene und personen im vergleich zum vorherigen bild, '
         f'stelle realistische alltagsmenschen dar – keine models, keine attraktiven idealtypen, '
         f'normale körper, verschiedene altersgruppen (20-65 jahre), unscheinbares aussehen wie echte deutsche, '
-        f'Titel "{title}". {TITLE_STYLE}. Story: "{text}"'
+        f'{image_hint(nr_int)}Titel "{title}". {TITLE_STYLE}. Story: "{text}"'
     )
 
 
