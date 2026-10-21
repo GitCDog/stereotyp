@@ -207,7 +207,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 206,Karmapunkte,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792052883/stereotypen/0206_vid_Karmapunkte.mp4,X,,
 207,Wahlversprechen,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792595021/stereotypen/0207_vid_Wahlversprechen.mp4,X,,
 208,Kurzarmhemd,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792595182/stereotypen/0208_vid_Kurzarmhemd.mp4,X,,
-209,Karohemd,X,X,52,X,,,X,,
+209,Karohemd,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792595370/stereotypen/0209_vid_Karohemd.mp4,X,,
 210,Spaghetti Bolognese,X,X,49,X,,,X,,
 211,IKEA,X,X,48,X,,,X,,
 212,Lidl,X,X,50,,,,X,,
