@@ -130,7 +130,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 129,Demeter,X,X,52,X,X,,X,X,
 130,Des deutschen liebstes Kind,X,X,47,X,X,,X,X,
 131,Shisha Boys,X,X,54,X,X,,X,X,
-132,Das Du anbieten,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1789994716/stereotypen/0132_vid_Das%20Du%20anbieten.mp4,X,,
+132,Das Du anbieten,X,X,51,X,X,,X,X,
 133,OnlyFans Girl,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087070/stereotypen/0133_vid_OnlyFans%20Girl.mp4,X,,
 134,Stringtanga 2nd Hand Ebay,X,X,56,X,X,,X,X,
 135,Tinder Girl,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791189606/stereotypen/0135_vid_Tinder%20Girl.mp4,X,,
