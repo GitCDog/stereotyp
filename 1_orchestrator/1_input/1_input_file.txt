@@ -216,7 +216,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 215,Edeka,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200631/stereotypen/0215_vid_Edeka.mp4,X,,
 216,Spar,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200777/stereotypen/0216_vid_Spar.mp4,X,,
 217,Norma,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200931/stereotypen/0217_vid_Norma.mp4,X,,
-218,Tegut,X,X,48,X,,,X,,
+218,Tegut,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793201079/stereotypen/0218_vid_Tegut.mp4,X,,
 219,Penny,X,X,44,X,,,X,,
 220,Netto,X,X,46,,,,X,,
 221,Corona Leugner,X,X,55,,,,X,,
