@@ -214,7 +214,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 213,Aldi,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200345/stereotypen/0213_vid_Aldi.mp4,X,,
 214,Rewe,X,X,44,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200486/stereotypen/0214_vid_Rewe.mp4,X,,
 215,Edeka,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200631/stereotypen/0215_vid_Edeka.mp4,X,,
-216,Spar,X,X,49,X,,,X,,
+216,Spar,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200777/stereotypen/0216_vid_Spar.mp4,X,,
 217,Norma,X,X,52,X,,,X,,
 218,Tegut,X,X,48,X,,,X,,
 219,Penny,X,X,44,X,,,X,,
