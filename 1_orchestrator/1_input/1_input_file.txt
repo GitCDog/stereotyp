@@ -138,7 +138,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 137,Tinder Date sieht anders aus,X,X,49,X,X,,X,X,
 138,Wer zahlt beim Tinder Date,X,X,48,X,X,,X,X,X
 139,GNTM Fan,X,X,48,X,X,,X,X,
-140,Gym Girl,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791295085/stereotypen/0140_vid_Gym%20Girl.mp4,X,,
+140,Gym Girl,X,X,51,X,X,,X,X,
 141,Gym Guy,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791295188/stereotypen/0141_vid_Gym%20Guy.mp4,X,,
 142,Hyrox,X,X,49,X,X,,X,X,
 143,Tight Pants Typ,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791191155/stereotypen/0143_vid_Tight%20Pants%20Typ.mp4,X,,
