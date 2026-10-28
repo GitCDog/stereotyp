@@ -211,7 +211,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 210,Spaghetti Bolognese,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792595529/stereotypen/0210_vid_Spaghetti%20Bolognese.mp4,X,,
 211,IKEA,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1792595711/stereotypen/0211_vid_IKEA.mp4,X,,
 212,Lidl,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200188/stereotypen/0212_vid_Lidl.mp4,X,,
-213,Aldi,X,X,51,X,,,X,,
+213,Aldi,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793200345/stereotypen/0213_vid_Aldi.mp4,X,,
 214,Rewe,X,X,44,X,,,X,,
 215,Edeka,X,X,46,X,,,X,,
 216,Spar,X,X,49,X,,,X,,
