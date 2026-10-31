@@ -142,7 +142,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 141,Gym Guy,X,X,49,X,X,,X,X,
 142,Hyrox,X,X,49,X,X,,X,X,
 143,Tight Pants Typ,X,X,48,X,X,,X,X,
-144,Bachata Tänzer,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396680/stereotypen/0144_vid_Bachata%20T%C3%A4nzer.mp4,X,,
+144,Bachata Tänzer,X,X,55,X,X,,X,X,
 145,Bachata Tänzerin,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396783/stereotypen/0145_vid_Bachata%20T%C3%A4nzerin.mp4,X,,
 146,Twerkerin,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396889/stereotypen/0146_vid_Twerkerin.mp4,X,,
 147,DJ Fan Girl,X,X,46,X,X,,X,X,X
