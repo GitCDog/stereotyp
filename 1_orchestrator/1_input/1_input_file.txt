@@ -226,7 +226,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 225,Hobbygärtner,X,X,52,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629877/stereotypen/0225_vid_Hobbyg%C3%A4rtner.mp4,X,,
 226,Bierkönig,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793630029/stereotypen/0226_vid_Bierk%C3%B6nig.mp4,X,,
 227,Trichtersaufen,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793630172/stereotypen/0227_vid_Trichtersaufen.mp4,X,,
-228,Jägerbomb,X,X,48,X,,,X,,
+228,Jägerbomb,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793630316/stereotypen/0228_vid_J%C3%A4gerbomb.mp4,X,,
 229,Hobby Horsing,X,X,50,X,X,,X,X,X
 230,Smart Home,X,X,43,X,X,,X,X,
 231,rasierte Arme,X,X,51,X,X,,X,X,
