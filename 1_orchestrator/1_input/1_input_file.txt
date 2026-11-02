@@ -222,7 +222,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 221,Corona Leugner,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629278/stereotypen/0221_vid_Corona%20Leugner.mp4,X,,
 222,Long Covid,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629419/stereotypen/0222_vid_Long%20Covid.mp4,X,,
 223,Hypochonder,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629573/stereotypen/0223_vid_Hypochonder.mp4,X,,
-224,Fußballfan,X,X,51,X,,,X,,
+224,Fußballfan,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629728/stereotypen/0224_vid_Fu%C3%9Fballfan.mp4,X,,
 225,Hobbygärtner,X,X,52,X,,,X,,
 226,Bierkönig,X,X,51,X,,,X,,
 227,Trichtersaufen,X,X,50,X,,,X,,
