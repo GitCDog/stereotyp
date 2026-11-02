@@ -235,7 +235,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 234,deutsche Küche,X,X,49,X,X,,X,X,
 235,Negerkuss,X,X,49,X,X,,X,X,
 236,Faxgerät,X,X,45,X,X,,X,X,
-237,Ruhetag,X,X,46,X,,,X,,
+237,Ruhetag,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793630455/stereotypen/0237_vid_Ruhetag.mp4,X,,
 238,Heimwerker nach 22 Uhr,X,X,52,,,,X,,
 239,Reinheitsgebot,X,X,51,,,,X,,
 240,Sauna,X,X,48,,,,X,,
