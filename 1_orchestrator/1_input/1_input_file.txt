@@ -219,7 +219,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 218,Tegut,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793201079/stereotypen/0218_vid_Tegut.mp4,X,,
 219,Penny,X,X,44,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793201223/stereotypen/0219_vid_Penny.mp4,X,,
 220,Netto,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629113/stereotypen/0220_vid_Netto.mp4,X,,
-221,Corona Leugner,X,X,55,X,,,X,,
+221,Corona Leugner,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793629278/stereotypen/0221_vid_Corona%20Leugner.mp4,X,,
 222,Long Covid,X,X,49,X,,,X,,
 223,Hypochonder,X,X,50,X,,,X,,
 224,Fußballfan,X,X,51,X,,,X,,
