@@ -456,4 +456,4 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2097,Ines,X,,,,,,X,,
 2098,Felix,X,,,,,,X,,
 2099,Christine,X,,,,,,X,,
-358,Mike Tyson bei Lidl,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793627500/stereotypen/0358_vid_Mike%20Tyson%20bei%20Lidl.mp4,X,,
+358,Mike Tyson bei Lidl,X,X,54,X,X,,X,X,
