@@ -144,7 +144,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 143,Tight Pants Typ,X,X,48,X,X,,X,X,
 144,Bachata Tänzer,X,X,55,X,X,,X,X,
 145,Bachata Tänzerin,X,X,52,X,X,,X,X,
-146,Twerkerin,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396889/stereotypen/0146_vid_Twerkerin.mp4,X,,
+146,Twerkerin,X,X,54,X,X,,X,X,
 147,DJ Fan Girl,X,X,46,X,X,,X,X,X
 148,DJ Fan Guy,X,X,46,X,X,,X,X,X
 149,Kiffer,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791396996/stereotypen/0149_vid_Kiffer.mp4,X,,
