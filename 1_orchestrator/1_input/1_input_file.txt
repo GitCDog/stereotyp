@@ -356,6 +356,8 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 355,barbarische Schülerproteste,X,X,60,X,X,,X,X,
 356,Barbaren in Paris,X,X,55,X,X,,X,X,
 357,Absurde Forderungen der IG Metall,X,X,62,X,X,,X,X,
+358,Mike Tyson bei Lidl,X,X,54,X,X,,X,X,
+359,IG Metall ruiniert unsere Zugpferde,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793733328/stereotypen/0359_vid_IG%20Metall%20ruiniert%20unsere%20Zugpferde.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
@@ -456,4 +458,3 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2097,Ines,X,,,,,,X,,
 2098,Felix,X,,,,,,X,,
 2099,Christine,X,,,,,,X,,
-358,Mike Tyson bei Lidl,X,X,54,X,X,,X,X,
