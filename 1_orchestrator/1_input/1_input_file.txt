@@ -358,6 +358,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 357,Absurde Forderungen der IG Metall,X,X,62,X,X,,X,X,
 358,Mike Tyson bei Lidl,X,X,54,X,X,,X,X,
 359,IG Metall ruiniert unsere Zugpferde,X,X,58,X,X,,X,X,
+360,IG Metall gehört abgeschafft,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1793734949/stereotypen/0360_vid_IG%20Metall%20geh%C3%B6rt%20abgeschafft.mp4,X,,
 2000,Andreas,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1785744112/stereotypen/2000_vid_Andreas.mp4,X,,
 2001,Anna,X,X,49,X,X,,X,X,
 2002,Michael,X,X,49,X,X,,X,X,
