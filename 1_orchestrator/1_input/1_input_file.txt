@@ -153,7 +153,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 152,Zu alt für Skaterklamotten,X,X,52,X,X,,X,X,X
 153,Mama und Tochter in Disko,X,X,55,X,X,,X,X,X
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,,X,X,X
-155,20 Kaffee am Tag,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087224/stereotypen/0155_vid_20%20Kaffee%20am%20Tag.mp4,X,,
+155,20 Kaffee am Tag,X,X,50,X,X,,X,X,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222676/stereotypen/0156_Tussi%20mit%20vielen%20kleinen%20Tattoos.mp4,X,,
 157,Veganes Steak,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222840/stereotypen/0157_Veganes%20Steak.mp4,X,,
 158,Papierstrohhalm,X,X,49,X,X,,X,X,
