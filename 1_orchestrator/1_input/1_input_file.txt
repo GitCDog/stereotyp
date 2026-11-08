@@ -155,7 +155,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 154,Fjällräven KÅNKEN Rucksack,X,X,54,X,X,,X,X,X
 155,20 Kaffee am Tag,X,X,50,X,X,,X,X,
 156,Tussi mit vielen kleinen Tattoos,X,X,58,X,X,,X,X,
-157,Veganes Steak,X,X,55,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1782222840/stereotypen/0157_Veganes%20Steak.mp4,X,,
+157,Veganes Steak,X,X,55,X,X,,X,X,
 158,Papierstrohhalm,X,X,49,X,X,,X,X,
 159,Pornosüchtiger,X,X,51,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087309/stereotypen/0159_vid_Pornos%C3%BCchtiger.mp4,X,,
 160,Unfallgaffer,X,X,50,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1783087412/stereotypen/0160_vid_Unfallgaffer.mp4,X,X,
