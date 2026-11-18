@@ -244,7 +244,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 243,Helene Fischer,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795004995/stereotypen/0243_vid_Helene%20Fischer.mp4,X,,
 244,Florian Silbereisen,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005140/stereotypen/0244_vid_Florian%20Silbereisen.mp4,X,,
 245,Gartenzwerg,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005256/stereotypen/0245_vid_Gartenzwerg.mp4,X,,
-246,Antifa,X,X,48,X,,,X,,
+246,Antifa,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005362/stereotypen/0246_vid_Antifa.mp4,X,,
 247,Politische Korrektheit,X,X,46,X,,,X,,
 248,IG Metall,X,X,49,X,,,X,,
 249,Fasching,X,X,38,X,,,X,,
