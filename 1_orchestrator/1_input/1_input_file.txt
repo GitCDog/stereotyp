@@ -247,7 +247,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 246,Antifa,X,X,48,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005362/stereotypen/0246_vid_Antifa.mp4,X,,
 247,Politische Korrektheit,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005499/stereotypen/0247_vid_Politische%20Korrektheit.mp4,X,,
 248,IG Metall,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005631/stereotypen/0248_vid_IG%20Metall.mp4,X,,
-249,Fasching,X,X,38,X,,,X,,
+249,Fasching,X,X,38,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005764/stereotypen/0249_vid_Fasching.mp4,X,,
 250,Karneval,X,X,45,X,,,X,,
 251,Wandteller,X,X,46,X,,,X,,
 252,Schultüte,X,X,45,X,,,X,,
