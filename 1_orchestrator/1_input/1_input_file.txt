@@ -250,7 +250,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 249,Fasching,X,X,38,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005764/stereotypen/0249_vid_Fasching.mp4,X,,
 250,Karneval,X,X,45,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795005897/stereotypen/0250_vid_Karneval.mp4,X,,
 251,Wandteller,X,X,46,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795006031/stereotypen/0251_vid_Wandteller.mp4,X,,
-252,Schultüte,X,X,45,X,,,X,,
+252,Schultüte,X,X,45,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795006129/stereotypen/0252_vid_Schult%C3%BCte.mp4,X,,
 253,Kuckucksuhr,X,X,46,,,,X,,
 254,Campingurlaub,X,X,44,,,,X,,
 255,Spaghettieis,X,X,48,,,,X,,
