@@ -23,6 +23,13 @@ TITLE_STYLE = (
 
 # Zusätzliche Bildvorgaben pro Story-Nr (optional)
 IMAGE_HINTS = {
+    356: (
+        'Bildinhalt: Nacht in einer eleganten Pariser Einkaufsstrasse mit Luxusboutiquen. Ein vermummter Mob in '
+        'schwarzen Trainingsanzuegen, Kapuzen und Sturmhauben, Gesichter nicht erkennbar, zerschlaegt Schaufenster '
+        'und rennt mit vollen Einkaufstueten voller Markenware aus einer zersplitterten Boutique. Eine Boutique '
+        'brennt, ueberall Glasscherben. Ein zerrissenes Plakat am Boden mit der Aufschrift "Mehr Bücher für Schulen!". '
+        'Im Vordergrund ein aelterer Ladenbesitzer, der fassungslos vor seinem zerstoerten Geschaeft steht.'
+    ),
     355: (
         'Bildinhalt: Im Hintergrund brennt ein französisches Rathaus mit Trikolore-Flagge, Rauch und Feuer, '
         'umgestürzte Mülltonnen und Polizei in Schutzausrüstung. Im Vordergrund steht gelassen und lächelnd ein '
@@ -397,6 +404,11 @@ TITLES = {
     353: "Influencer statt Azubi - wer repariert bald noch deine Heizung?",
     354: "Tesla brüllt - und Deutschlands Autobauer ziehen den Schwanz ein?",
     355: "Frankreichs Rathäuser brennen - kommen die Schülerproteste auch zu uns?",
+    356: "Boutiquen plündern für mehr Bücher - Protest oder Barbarei?",
+    357: "Warum darf die IG Metall fordern, während Audi in die USA flüchtet?",
+    359: "Wer ruiniert hier eigentlich unsere Zugpferde wirklich?",
+    360: "Wer zahlt eigentlich für die 220 freien Tage der IG Metall?",
+    361: "Wer kassiert mehr: IG Metall oder die Mafia?",
 }
 
 
