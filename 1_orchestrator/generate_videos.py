@@ -116,8 +116,10 @@ def _seconds_to_ass(s: float) -> str:
 
 
 def generate_subtitles(audio_path: Path, ass_path: Path, model_size: str = "small",
-                       chunk_size: int = 5, logger: logging.Logger = None) -> bool:
-    """Transkribiert Audio mit Whisper und erstellt ASS-Untertiteldatei."""
+                       chunk_size: int = 5, logger: logging.Logger = None,
+                       story_text: str = "") -> bool:
+    """Transkribiert Audio mit Whisper und erstellt ASS-Untertiteldatei.
+    story_text dient als initial_prompt, damit Whisper die Schreibweisen der Story übernimmt."""
     try:
         import whisper
     except ImportError:
@@ -129,7 +131,8 @@ def generate_subtitles(audio_path: Path, ass_path: Path, model_size: str = "smal
         if logger:
             logger.info(f"[*] Whisper ({model_size}) transkribiert Audio...")
         model = whisper.load_model(model_size)
-        result = model.transcribe(str(audio_path), language="de", word_timestamps=True)
+        result = model.transcribe(str(audio_path), language="de", word_timestamps=True,
+                                  initial_prompt=story_text or None)
 
         # Wörter aus allen Segmenten sammeln
         words = []
@@ -257,8 +260,10 @@ def create_video(nr: int, stereotyp: str, config: dict, logger: logging.Logger,
     if subtitles:
         ass_path = Path(tempfile.mktemp(suffix=".ass"))
         model_size = video_config.get("whisper_model", "small")
+        story_file = next((f for f in Path(input_file).parent.glob(f"{_nr_str(nr)}_*.txt")), None)
+        story_text = story_file.read_text(encoding="utf-8").replace("•", "") if story_file else ""
         if not generate_subtitles(audio_path, ass_path, model_size=model_size,
-                                  chunk_size=subtitle_words, logger=logger):
+                                  chunk_size=subtitle_words, logger=logger, story_text=story_text):
             ass_path = None
 
     # ffmpeg: Bild in Schleife + Audio, bis Audio endet

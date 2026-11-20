@@ -161,7 +161,7 @@ Neue Bilder in `C:\Users\slawa\OneDrive\8_stereotypen\` ablegen:
 GPT-Bild-Prompts generieren: Dashboard → `📝 GPT Prompts` (speichert in `1_input/gpt_prompts.txt`)
 
 **Zwei ChatGPT-Chats für Bildgenerierung (`generate_pictures_playwright.py`):**
-- Stereotypen (nr < 2000): `https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7`
+- Stereotypen (nr < 2000): `https://chatgpt.com/c/6afae076-cc4c-83ed-8e2e-bc659788d91b`
 - Namen (nr 2000–2999): `https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8`
 
 Das Script wählt automatisch den richtigen Chat anhand der Story-Nummer und navigiert bei Wechsel.

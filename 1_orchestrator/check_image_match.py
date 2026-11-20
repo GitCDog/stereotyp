@@ -14,6 +14,7 @@ import input_reader as ir
 OUTPUT_DIR = Path(__file__).parent / "output"
 USED_DIR = OUTPUT_DIR / "0_used"
 INPUT_FILE = "1_input/1_input_file.txt"
+MIN_IMG_SIDE = 800  # generierte Bilder sind >= 1024px
 
 
 def find_image(ns: str) -> Path | None:
@@ -30,20 +31,22 @@ def check_match(image_path: Path, stereotyp: str) -> tuple[bool, str]:
         f"Schau dir dieses Bild an: {image_path}\n\n"
         f"Es soll ein Instagram-Reel-Cover für den deutschen Stereotypen-Humor-Content "
         f"zum Thema \"{stereotyp}\" sein.\n\n"
-        f"Passt das Bild thematisch zu diesem Stereotyp? "
+        f"Die Bilder sind KI-generierte Szenen (oft fotorealistisch, meist mit großem Titel-Text) – das ist korrekt. "
+        f"Screenshots, Werbeprospekte, Produktfotos, Laptop-/Handy-Mockups oder Shop-Anzeigen sind dagegen IMMER falsch. "
+        f"Passt das Bild klar und direkt zu diesem Stereotyp? "
         f"Antworte NUR mit 'JA' oder 'NEIN', dann ein Doppelpunkt, dann max. 1 Satz Begründung."
     )
     try:
         result = subprocess.run(
-            ["claude", "-p", prompt, "--allowedTools", "Read",
+            ["claude", "-p", prompt, "--model", "claude-sonnet-4-6", "--allowedTools", "Read",
              "--dangerously-skip-permissions"],
-            capture_output=True, text=True, timeout=90,
+            stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=90,
             encoding="utf-8", errors="replace"
         )
         output = result.stdout.strip()
         if not output:
             output = result.stderr.strip() or "Keine Antwort"
-        ok = output.upper().startswith("JA")
+        ok = output.lstrip("*_ ").upper().startswith("JA")
         return ok, output
     except Exception as e:
         return False, f"Claude-Aufruf fehlgeschlagen: {e}"
@@ -66,6 +69,12 @@ def main():
     if not image_path:
         print(f"KEIN_BILD: Kein Bild für #{args.story} gefunden", file=sys.stderr)
         sys.exit(1)
+
+    from PIL import Image
+    w, h = Image.open(image_path).size
+    if min(w, h) < MIN_IMG_SIDE:
+        print(f"NEIN: Bild nur {w}x{h} – kein generiertes Bild (vermutlich Werbung/Thumbnail)")
+        sys.exit(2)
 
     ok, reason = check_match(image_path, stereotyp)
     print(reason)

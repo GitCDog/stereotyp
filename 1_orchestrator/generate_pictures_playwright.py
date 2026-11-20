@@ -16,6 +16,7 @@ Verwendung:
 
 import argparse
 import base64
+import io
 import logging
 import sys
 import time
@@ -23,6 +24,7 @@ from pathlib import Path
 
 import requests
 import pyperclip
+from PIL import Image
 
 import re
 import input_reader as ir
@@ -32,7 +34,7 @@ EDGE_PROFILE      = Path(r"C:\Users\slawa\AppData\Local\Microsoft\Edge\User Data
 INPUT_FILE        = "1_input/1_input_file.txt"
 OUTPUT_DIR        = Path("output")
 PROMPTS_FILE      = Path(r"C:\Users\slawa\OneDrive\8_stereotypen\gpt_prompts.txt")
-CHATGPT_IMAGE_URL  = "https://chatgpt.com/c/6a5c8a83-11b4-83ed-9211-cb89ff3906f7"  # Stereotypen
+CHATGPT_IMAGE_URL  = "https://chatgpt.com/c/6afae076-cc4c-83ed-8e2e-bc659788d91b"  # Stereotypen
 CHATGPT_NAMES_URL  = "https://chatgpt.com/c/6a638035-5948-83eb-a0b2-087e174f69d8"  # Namen 2000–2999
 
 
@@ -116,13 +118,17 @@ def find_input(page):
         "textarea",
     ]
     for sel in candidates:
-        loc = page.locator(sel).first
-        try:
-            loc.wait_for(state="visible", timeout=5000)
-            logging.getLogger(__name__).info(f"[*] Eingabefeld gefunden: {sel}")
-            return loc
-        except Exception:
-            continue
+        # ChatGPT rendert oft mehrere Eingabefelder, von denen nur eines sichtbar ist.
+        # .first würde ein verstecktes Duplikat erwischen – also das erste sichtbare nehmen.
+        matches = page.locator(sel)
+        for i in range(matches.count()):
+            loc = matches.nth(i)
+            try:
+                loc.wait_for(state="visible", timeout=2000)
+                logging.getLogger(__name__).info(f"[*] Eingabefeld gefunden: {sel} (#{i})")
+                return loc
+            except Exception:
+                continue
     return None
 
 
@@ -257,25 +263,39 @@ def get_image_snapshot(page) -> set:
     return {_extract_file_id(s) for s in (srcs or [])}
 
 
+# Nur echte ChatGPT-Bild-URLs zulassen (Whitelist). ChatGPT blendet Werbung/Produktkarten
+# mit externen Bildern in die Antwort ein – die dürfen nie als generiertes Bild gelten.
+IS_GENERATED_IMG_JS = """
+    function isGeneratedImg(img) {
+        const src = (img && img.src) || '';
+        if (!src || src.endsWith('.svg')) return false;
+        if (img.closest('a[href^="http"]:not([href*="chatgpt.com"])')) return false;
+        const ok = src.startsWith('blob:') || src.includes('chatgpt.com/backend-api') ||
+                   src.includes('oaiusercontent') || src.includes('oaidalleapiprodscus') ||
+                   src.includes('files.oai');
+        if (!ok) return false;
+        const w = img.naturalWidth || 0, h = img.naturalHeight || 0;
+        return w > 0 && h > 0 && Math.min(w, h) >= MIN_IMG_SIDE;
+    }
+"""
+
+MIN_IMG_SIDE = 800  # generierte Bilder sind >= 1024px; Werbe-Thumbnails deutlich kleiner
+
+
 def find_bottom_image(page) -> str | None:
     """Nimmt das unterste generierte Bild im DOM – das ist immer die aktuellste Antwort."""
     return page.evaluate("""() => {
-        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button', 'auth0'];
+        const MIN_IMG_SIDE = %d;
+        %s
 
-        function isGeneratedImg(src) {
-            if (!src || src.endsWith('.svg')) return false;
-            if (skip.some(s => src.toLowerCase().includes(s))) return false;
-            return true;
-        }
-
-        // Strategie 1: letzter Assistant-Message-Container (treffsicher, egal ob noch am Laden)
+        // Strategie 1: letzter Assistant-Message-Container
         const msgs = document.querySelectorAll(
             '[data-message-author-role="assistant"], article[data-testid*="conversation-turn"]'
         );
         if (msgs.length > 0) {
             const lastMsg = msgs[msgs.length - 1];
             for (const img of lastMsg.querySelectorAll('img[src]')) {
-                if (isGeneratedImg(img.src)) return img.src;
+                if (isGeneratedImg(img)) return img.src;
             }
         }
 
@@ -287,17 +307,10 @@ def find_bottom_image(page) -> str | None:
             return by - ay;
         });
         for (const img of imgs) {
-            const src = img.src || '';
-            if (!isGeneratedImg(src)) continue;
-            const w = img.naturalWidth || img.width || 0;
-            const h = img.naturalHeight || img.height || 0;
-            if (w > 200 || h > 200) return src;
-            if (src.startsWith('blob:') || src.includes('chatgpt.com/backend') ||
-                src.includes('oaiusercontent') || src.includes('oaidalleapiprodscus') ||
-                src.includes('files.oai') || src.includes('file-')) return src;
+            if (isGeneratedImg(img)) return img.src;
         }
         return null;
-    }""")
+    }""" % (MIN_IMG_SIDE, IS_GENERATED_IMG_JS))
 
 
 def wait_for_new_image(page, logger, snapshot: set, timeout_sec: int = 180) -> str | None:
@@ -331,22 +344,19 @@ def wait_for_new_image(page, logger, snapshot: set, timeout_sec: int = 180) -> s
     # Timeout abgelaufen — als Fallback: letztes Bild aus dem letzten Assistenten-Turn holen.
     # Das passiert wenn dasselbe Bild schon aus einem vorherigen Run im Snapshot ist.
     fallback_src = page.evaluate("""() => {
-        const skip = ['avatar', 'logo', 'favicon', 'icon', 'spinner', 'profile', 'badge', 'button', 'auth0'];
-        function isGeneratedImg(src) {
-            if (!src || src.endsWith('.svg')) return false;
-            return !skip.some(s => src.toLowerCase().includes(s));
-        }
+        const MIN_IMG_SIDE = %d;
+        %s
         const msgs = document.querySelectorAll(
             '[data-message-author-role="assistant"], article[data-testid*="conversation-turn"]'
         );
         if (msgs.length > 0) {
             const lastMsg = msgs[msgs.length - 1];
             for (const img of lastMsg.querySelectorAll('img[src]')) {
-                if (isGeneratedImg(img.src)) return img.src;
+                if (isGeneratedImg(img)) return img.src;
             }
         }
         return null;
-    }""")
+    }""" % (MIN_IMG_SIDE, IS_GENERATED_IMG_JS))
     if fallback_src:
         logger.info(f"[*] Fallback: letztes Assistenten-Bild verwendet: {fallback_src[:80]}")
         return fallback_src
@@ -426,6 +436,14 @@ def process_story(page, nr: str, logger) -> bool:
     # Herunterladen
     logger.info(f"[*] Lade Bild herunter...")
     img_bytes = download_image(page, src)
+    try:
+        w, h = Image.open(io.BytesIO(img_bytes)).size
+    except Exception as e:
+        logger.error(f"[-] Download ist kein gültiges Bild: {e}")
+        return False
+    if min(w, h) < MIN_IMG_SIDE:
+        logger.error(f"[-] Bild zu klein ({w}x{h}) – vermutlich Werbung statt generiertem Bild, verworfen")
+        return False
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path.write_bytes(img_bytes)
     logger.info(f"[+] Gespeichert: {out_path} ({len(img_bytes):,} Bytes)")
