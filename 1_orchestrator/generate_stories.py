@@ -36,7 +36,7 @@ Die Story soll exakt diese Struktur haben (130-140 Woerter gesamt):
 
 Starte mit: "Aufgepasst - " (genau so, mit Bindestrich und Leerzeichen danach).
 
-1. Der Aufreisser: Ein kurzer, provokanter Satz, der das Klischee in eine konkrete Alltagssituation einbettet. Bei echten Personen (Politiker, Celebrities): direkt und scharf – kein Schutz, kein Verstaendnis, nur Demontage.
+1. Der Aufreisser (die ersten 3 Sekunden entscheiden alles): Ein konkreter Moment aus dem Alltag mit einem Detail, Zeitpunkt oder einer Zahl, die man sofort wiedererkennt. Keine Ankündigung wie "Das Klischee ist ..." oder "Die Deutschen ...". Wenn es passt, als Frage oder Behauptung formulieren, der man sofort widersprechen will. Bei echten Personen (Politiker, Celebrities): direkt und scharf – kein Schutz, kein Verstaendnis, nur Demontage.
 
 2. Der Mythos: Beschreibe das Verhalten so, als waere es eine heilige Zeremonie oder ein ungeschriebenes Gesetz der Physik (2-3 Saetze). Bei Personen: uebertreibe ihre bekanntesten Eigenheiten ins Absurde.
 
@@ -44,7 +44,7 @@ Starte mit: "Aufgepasst - " (genau so, mit Bindestrich und Leerzeichen danach).
 
 4. Der soziale Endgegner: Beschreibe in 1-2 Saetzen die Reaktion der Gesellschaft – oder den Schaden den diese Person/dieses Verhalten anrichtet.
 
-5. Der virale Twist: Beende mit einem trockenen, vernichtenden Vergleich oder einem Satz der haengen bleibt (1 Satz).
+5. Der virale Twist: Beende mit einem trockenen, vernichtenden Vergleich oder einem Satz, der haengen bleibt und den man zitieren oder jemandem schicken will (1 Satz, max. 15 Woerter).
 
 Tonalitaet: Scharf, sarkastisch, gnadenlos – wie ein Comedian der kein Blatt vor den Mund nimmt. Bei echten Personen darf es eine richtige Abrechnung sein: verbitterte Hexen, selbsternannte Retter, Vollidioten mit Mikrofon – alles erlaubt. Kein Emoji. Kein Hashtag. Nur reiner Text. Keine Meta-Kommentare oder Erklaerungen nach dem Text (kein "--- X Woerter" o.ae.).
 Falls du am Ende eine abschliessende Floskel verwendest, nutze "Tja," statt "Ah ja,".{stichworte_block}"""
@@ -83,6 +83,7 @@ das alle Traeger verbindet? Finde den Kern-Witz der NUR fuer diesen Namen funkti
 
 FORMAT (zwingend):
 - Beginnt mit "Aufgepasst - "
+- Der erste Satz nach dem Opener ist ein konkreter Alltagsmoment mit Detail (keine Ankuendigung, kein "Der Name ..."-Einstieg)
 - 130-140 Woerter
 - Erster Absatz (~50%): Das Kern-Klischee des Namens, 2-3 Alltagsmomente die NUR fuer diesen Namen passen
 - Leerzeile

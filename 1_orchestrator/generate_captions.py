@@ -69,7 +69,23 @@ def load_config(config_path: str = "config.yaml") -> dict:
         return yaml.safe_load(f)
 
 
-def build_caption(stereotyp: str, hashtags: list[str], stichworte: list[str] | None = None) -> str:
+STEREOTYP_CTAS = [
+    "Wer kennt so jemanden? Markier ihn in den Kommentaren.",
+    "Welcher Typ bist du? Schreib es in die Kommentare.",
+    "Das muss jemand aus deinem Freundeskreis lesen. Schick es ihm.",
+    "Ehrlich: Wer hat dabei sofort an dich gedacht?",
+]
+
+
+def build_cta(stereotyp: str, nr: int) -> str:
+    """Teilen-/Kommentar-Aufforderung. Rotiert pro Story, damit nicht jede Caption gleich klingt."""
+    if 2000 <= nr <= 2999:
+        return f"Schick das deinem Freund, der so heißt wie {stereotyp}."
+    return STEREOTYP_CTAS[nr % len(STEREOTYP_CTAS)]
+
+
+def build_caption(stereotyp: str, hashtags: list[str], stichworte: list[str] | None = None,
+                  nr: int = 0) -> str:
     all_tags = list(hashtags)
     if stichworte:
         # Stichworte als zusätzliche Hashtags hinzufügen (ohne Leerzeichen)
@@ -78,7 +94,8 @@ def build_caption(stereotyp: str, hashtags: list[str], stichworte: list[str] | N
             if tag and f"#{tag}" not in [f"#{t}" for t in all_tags]:
                 all_tags.append(tag)
     tags = " ".join(f"#{h.strip()}" for h in all_tags)
-    return f"Aufgepasst - {stereotyp}\n\n{tags}"
+    cta = build_cta(stereotyp, nr)
+    return f"Aufgepasst - {stereotyp}\n\n{cta}\n\n{tags}"
 
 
 def parse_vorgaben(text: str) -> tuple[list[str] | None, str | None]:
@@ -155,7 +172,7 @@ def process_caption(row: dict, config: dict, captions_data: dict,
         logger.info(f"[*] Stichworte: {', '.join(stichworte)}")
 
     hashtags = generate_hashtags(stereotyp, stichworte, nr=int(nr), kontext=kontext)
-    caption = build_caption(stereotyp, hashtags, stichworte)
+    caption = build_caption(stereotyp, hashtags, stichworte, nr=int(nr))
 
     logger.info(f"[+] {caption}")
 
