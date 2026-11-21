@@ -176,7 +176,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 175,Gammler,X,X,52,X,X,,X,X,
 176,GEZ,X,X,48,X,X,,X,X,
 177,Technomädchen,X,X,52,X,X,,X,X,
-178,Technojunge,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532552/stereotypen/0178_vid_Technojunge.mp4,X,,
+178,Technojunge,X,X,49,X,X,,X,X,
 179,Love Parade,X,X,53,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532699/stereotypen/0179_vid_Love%20Parade.mp4,X,,
 180,Buffaloschuhe,X,X,49,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532834/stereotypen/0180_vid_Buffaloschuhe.mp4,X,,
 181,Klimakleber,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532972/stereotypen/0181_vid_Klimakleber.mp4,X,,
