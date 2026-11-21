@@ -460,7 +460,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2097,Ines,X,,,,,,X,,
 2098,Felix,X,,,,,,X,,
 2099,Christine,X,,,,,,X,,
-362,Arbeitslos durch KI,X,X,57,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795289770/stereotypen/0362_vid_Arbeitslos%20durch%20KI.mp4,,,
+362,Arbeitslos durch KI,X,X,57,X,X,,,X,
 363,Weihnachtskalender,X,X,51,X,,,,,
 364,Weihnachtsgeschenke auf den letzten Drücker,X,X,56,X,,,,,
 365,Der schönste Adventskranz,X,X,64,,,,,,
