@@ -462,5 +462,5 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 2099,Christine,X,,,,,,X,,
 362,Arbeitslos durch KI,X,X,57,X,X,,,X,
 363,Weihnachtskalender,X,X,51,X,X,,X,X,
-364,Weihnachtsgeschenke auf den letzten Drücker,X,X,56,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1795291102/stereotypen/0364_vid_Weihnachtsgeschenke%20auf%20den%20letzten%20Dr%C3%BCcker.mp4,X,,
+364,Weihnachtsgeschenke auf den letzten Drücker,X,X,56,X,X,,X,X,
 365,Der schönste Adventskranz,X,X,64,,,,X,,
