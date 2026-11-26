@@ -179,7 +179,7 @@ nr,stereotyp,status_story,status_audio,seconds,status_pic,status_video,status_cl
 178,Technojunge,X,X,49,X,X,,X,X,
 179,Love Parade,X,X,53,X,X,,X,X,
 180,Buffaloschuhe,X,X,49,X,X,,X,X,
-181,Klimakleber,X,X,54,X,X,https://res.cloudinary.com/dekvcn9el/video/upload/v1791532972/stereotypen/0181_vid_Klimakleber.mp4,X,,
+181,Klimakleber,X,X,54,X,X,,X,X,
 182,CDU,X,X,49,X,X,,X,X,X
 183,SPD,X,X,54,X,X,,X,X,X
 184,FDP,X,X,45,X,X,,X,X,X
